@@ -1,0 +1,6 @@
+.idea
+.debug
+.gitignore
+cmake-build-debug
+CMakeLists.txt
+main.cpp

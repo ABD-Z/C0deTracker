@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <functional>
 
 namespace CodeTracker {
 #define TWOPI 6.283185307
@@ -24,12 +25,30 @@ namespace CodeTracker {
         float key2freq(Key key);
     }
 
-    float SINUS(float f, float t);
-    float SQUARE(float f, float t, float dc);
-    float TRIANGLE(float f, float t, float dc);
-    float SAW(float f, float t, float dc);
-    float WHITENOISE(float f, float t, float dc);
+    enum{
+        SINUS, SQUARE, TRIANGLE, SAW, WHITENOISE, WAVETYPES
+    };
 
+    class Oscillator{
+    public :
+        explicit Oscillator(char wavetype);
+        float oscillate(float a, float f, float t, float dc);
+        void setWavetype(char wavetype);
+    private:
+        char wavetype = SINUS;
+        float sinus(float a, float f, float t, float dc);
+        float square(float a, float f, float t, float dc);
+        float triangle(float a, float f, float t, float dc);
+        float saw(float a, float f, float t, float dc);
+        float whitenoise(float a, float f, float t, float dc);
+
+        //function table
+        std::vector<std::function<float(Oscillator&, float, float, float, float)>> wavefunc_table =
+            {&Oscillator::sinus, &Oscillator::square, &Oscillator::triangle, &Oscillator::saw, &Oscillator::whitenoise};
+
+
+
+    };
 }
 
 #endif //CODETRACKER_CODE_TRACKER_HPP

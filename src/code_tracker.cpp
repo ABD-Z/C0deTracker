@@ -5,10 +5,14 @@
 
 namespace  CodeTracker{
 
+    Key::Key(char n, char o) {this->note = n; this->octave = o;}
+    ADSR::ADSR(float A, float D, float S, float R) { this->attack = A; this->decay = D; this->sustain = S; this->release = R;}
+
+
     namespace Notes {
         float pitch(float p){return pow(1.059460646483f, p) * 440.0f;}
 
-        float key2freq(int note , int octave){
+        float key2freq(char note , char octave){
             //A4 == 440 HZ = pitch 0
             //-12 pitch == 3A == 220 HZ
             //+12

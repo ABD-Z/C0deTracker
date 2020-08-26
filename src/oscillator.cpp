@@ -6,7 +6,7 @@
 
 namespace CodeTracker {
 
-    Oscillator::Oscillator(char wavetype) {
+    Oscillator::Oscillator(char wavetype){
         this->wavetype = wavetype;
     }
 
@@ -16,6 +16,10 @@ namespace CodeTracker {
 
     float Oscillator::oscillate(float a, float f, float t, float dc) {
         return this->wavefunc_table[this->wavetype](*this, a, f, t, dc);
+    }
+
+    float Oscillator::oscillate(float a, float f, float t, float dc, float p) {
+        return this->wavefunc_table[this->wavetype](*this, a, f, t - p*1./f, dc);
     }
 
     float Oscillator::sinus(float a, float f, float t, float dc) {
@@ -46,5 +50,7 @@ namespace CodeTracker {
         float s = this->sinus(a, f, t, 0) / dc;
         return  a * (s - floor(s) - 0.5f);
     }
+
+
 
 }

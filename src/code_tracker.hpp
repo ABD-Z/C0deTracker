@@ -42,13 +42,13 @@ namespace CodeTracker {
         void setWavetype(char wavetype);
     private:
         char wavetype = SINUS;
-        float sinus(float a, float f, float t, float dc);
-        float square(float a, float f, float t, float dc);
-        float triangle(float a, float f, float t, float dc);
-        float saw(float a, float f, float t, float dc);
-        float whitenoise(float a, float f, float t, float dc);
+        float sinus(float a, float f, float t, float dc, float FMfeed);
+        float square(float a, float f, float t, float dc, float FMfeed);
+        float triangle(float a, float f, float t, float dc, float FMfeed);
+        float saw(float a, float f, float t, float dc, float FMfeed);
+        float whitenoise(float a, float f, float t, float dc, float FMfeed);
         //function table
-        std::vector<std::function<float(Oscillator&, float, float, float, float)>> wavefunc_table =
+        std::vector<std::function<float(Oscillator&, float, float, float, float, float)>> wavefunc_table =
             {&Oscillator::sinus, &Oscillator::square, &Oscillator::triangle, &Oscillator::saw, &Oscillator::whitenoise};
 
         virtual float handle_amp_envelope(float t) = 0;

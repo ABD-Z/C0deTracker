@@ -6,13 +6,20 @@
 
 namespace CodeTracker {
 
-    Oscillator::Oscillator(char wavetype){
-        this->wavetype = wavetype;
-    }
+    Oscillator::Oscillator(char wavetype){ this->wavetype = wavetype;}
 
-    void Oscillator::setWavetype(char wavetype) {
-        this->wavetype = wavetype;
-    }
+    Oscillator::Oscillator(char wavetype, float dc) {this->wavetype = wavetype; this->dutycycle = dc;}
+
+    Oscillator::Oscillator(char wavetype, float dc, float p) {this->wavetype = wavetype; this->dutycycle = dc; this->phase = p;}
+
+    void Oscillator::set_wavetype(char wavetype) {this->wavetype = wavetype;}
+    char Oscillator::get_wavetype() {return this->wavetype;}
+
+    void Oscillator::set_dutycycle(float dc) {this->dutycycle = dc;}
+    float Oscillator::get_dutycycle() {return this->dutycycle;}
+
+    void Oscillator::set_phase(float p) {this->phase = p;}
+    float Oscillator::get_phase() {return this->phase;}
 
     float Oscillator::oscillate(float a, float f, float t, float dc) {
         return this->wavefunc_table[this->wavetype](*this, a, f, t, dc, 0.f);
@@ -50,6 +57,7 @@ namespace CodeTracker {
         float s = this->sinus(a, f, t, 0.f, FMfeed) / dc;
         return  a * (s - floor(s) - 0.5f);
     }
+
 
 
 

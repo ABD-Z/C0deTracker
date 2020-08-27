@@ -4,9 +4,10 @@
 #include "code_tracker.hpp"
 
 namespace CodeTracker {
-    PSG::PSG(char wavetype, ADSR amp_enveloppe) : Oscillator(wavetype) {
-        this->amp_envelope = amp_enveloppe;
-    }
+    PSG::PSG(char wavetype, ADSR amp_enveloppe) : Oscillator(wavetype) {this->amp_envelope = amp_enveloppe;}
+    PSG::PSG(char wavetype, float dc, ADSR amp_enveloppe) : Oscillator(wavetype, dc) {this->amp_envelope = amp_enveloppe;}
+    PSG::PSG(char wavetype, float dc, float p, ADSR amp_enveloppe) : Oscillator(wavetype, dc, p) {this->amp_envelope = amp_enveloppe;}
+
     float PSG::handle_amp_envelope(float t) {
         float output = MASTER_VOLUME;
         float attack_amp = fmin(MASTER_VOLUME, t*this->amp_envelope.attack);
@@ -29,4 +30,12 @@ namespace CodeTracker {
     void PSG::set_release(bool r) {
         this->release = true;
     }
+
+    ADSR* PSG::get_amp_envelope() {
+        return (&this->amp_envelope);
+    }
+
+
+
+
 }

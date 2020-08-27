@@ -29,4 +29,24 @@ namespace  CodeTracker{
                                ));
         }
     }
+
+    Instruction::Instruction(uint8_t instrument, Key k, float vol) : key(k) {
+        this->instrument_index = instrument; this->volume = vol; this->effects = nullptr;
+    }
+
+    Instruction::Instruction(uint8_t instrument, char note, char octave, float vol) : key(Key(note,octave)) {
+        this->instrument_index = instrument; this->volume = vol; this->effects = nullptr;
+    }
+
+    Instruction::Instruction(uint8_t instrument, Key k, float vol, uint32_t *effects) : key(k){
+        this->instrument_index = instrument; this->volume = vol; this->effects = effects;
+    }
+
+    Instruction::Instruction(uint8_t instrument, char note, char octave, float vol, uint32_t *effects) : key(note,octave) {
+        this->instrument_index = instrument; this->volume = vol; this->effects = effects;
+    }
+
+
+
+
 }

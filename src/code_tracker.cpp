@@ -6,6 +6,9 @@
 namespace  CodeTracker{
 
     Key::Key(char n, char o) {this->note = n; this->octave = o;}
+
+    Key::Key(){this->note = 0.f; this->octave = 0.f;};
+
     ADSR::ADSR(float A, float D, float S, float R) { this->attack = A; this->decay = D; this->sustain = S; this->release = R;}
 
 
@@ -48,7 +51,22 @@ namespace  CodeTracker{
 
     Instruction::~Instruction() {delete[] this->effects;}
 
-    Pattern::~Pattern() {delete[] this->instructions;}
+    Instruction::Instruction() {this->volume = 0.0f; this->instrument_index = CONTINUE; this->key = Key(0.0f,0.0f); this->effects = nullptr;}
+
+    Pattern::~Pattern() {
+        for(uint8_t i = 0; i < this->rows; ++i){
+            delete this->instructions[i];
+        }
+        delete[] this->instructions;
+    }
+
+    Pattern::Pattern(uint8_t rows) {
+        this->instructions = new Instruction* [rows];
+        for(uint8_t i = 0; i < rows; ++i){
+            this->instructions[i] = new Instruction();
+        }
+        this->rows = rows;
+    }
 
 
     Channel::Channel(uint8_t number) {this->number = number;}
@@ -76,49 +94,66 @@ namespace  CodeTracker{
 
     void Channel::setTime(float time) {this->time = time;}
 
+    uint8_t Channel::chancount = 0;
 
-    Track::~Track() {delete[] this->instruments_bank; delete[] this->pattern_indices;
-        for(uint8_t i = 0; i < this->channels; ++i){ delete[] this->track_patterns;}
+    Channel::Channel() {
+        this->number = Channel::chancount++;
+    }
+
+
+    Track::~Track() {
+        //delete[] this->pattern_indices;
+        //for(uint8_t i = 0; i < this->channels; ++i){ delete[] this->track_patterns;}
+        for(uint8_t i = 0; i < this->instruments; ++i){ delete this->instruments_bank[i];}
+        delete[] this->instruments_bank;
     }
 
     Track::Track(float clk, float basetime, float speed, uint8_t rows, uint8_t frames, uint8_t channels,
-                 Instrument *instruments_bank, uint8_t numb_of_instruments, Pattern** track_patterns, uint8_t* pattern_indices) {
+                 Instrument** instruments_bank, uint8_t numb_of_instruments, Pattern** track_patterns, uint8_t** pattern_indices) {
         this->clk = clk; this->basetime = basetime; this->speed = speed;
         this->rows = rows; this->frames = frames;
         this->channels = channels; this->instruments_bank = instruments_bank; this->instruments = numb_of_instruments;
         this->track_patterns = track_patterns; this->pattern_indices = pattern_indices;
         this->step = this->basetime * this->speed / this->clk;
         this->duration = float(this->frames * this->rows) * this-> step;
-
+        printf("STEP : %f\n",this->step);
+        printf("DURATION : %f\n", this->duration);
     }
 
     float Track::play(float t, Channel *chan) {
+        if(chan->getNumber() > this->channels){return 0.0f;}
         if(chan->isEnable()) {
-            float time_in_track = fmod(t, duration);
+            float time_in_track = fmod(t, this->duration);
+            //printf("Time : %f ; Time in track : %f\n", t, time_in_track);
             uint8_t row_index = floor(time_in_track / this->step);
-            row_index = row_index % rows;
+            //printf("row index %d\n", row_index);
             uint8_t pattern_index = floor(row_index / this->rows);
+            row_index = row_index % this->rows;
+            //printf("ROW INDEX %d\n", row_index);
             uint8_t chan_number = chan->getNumber();
-            Instruction *current_instruction = &this->track_patterns[chan_number][this->pattern_indices[chan_number * this->frames + pattern_index]].instructions[row_index];
-            if (current_instruction != nullptr) {
+            pattern_index = *this->pattern_indices[chan_number * this->frames + pattern_index];
+            Pattern* pat = this->track_patterns[chan_number * (this->frames) + pattern_index];
+            Instruction* current_instruction = pat->instructions[row_index];
+            if (current_instruction->instrument_index != CONTINUE){
                 if(current_instruction->instrument_index < this->instruments){
                     chan->setLastInstruction(current_instruction);
-                    chan->setTime(time_in_track);
+                    chan->setTime(t);
                     chan->setTrack(this);
                     return this->volume * chan->getVolume()
-                            * this->instruments_bank[current_instruction->instrument_index].play(current_instruction->volume, current_instruction->key, time_in_track - chan->getTime());
+                            * this->instruments_bank[current_instruction->instrument_index]->play(current_instruction->volume, current_instruction->key, t - chan->getTime());
+                }else{
+                    return 0.0f;
                 }
             } else {
                 if (chan->getLastInstruction() != nullptr && chan->getTrack() != nullptr){
                     return this->volume * chan->getVolume()
-                           * this->instruments_bank[chan->getLastInstruction()->instrument_index].play(chan->getLastInstruction()->volume, chan->getLastInstruction()->key, time_in_track - chan->getTime());
+                           * this->instruments_bank[chan->getLastInstruction()->instrument_index]->play(chan->getLastInstruction()->volume, chan->getLastInstruction()->key, t - chan->getTime());
                 }else{
                     return 0.f;
                 }
             }
-        }else {
-            return 0.f;
         }
+        return 0.0f;
     }
 
 

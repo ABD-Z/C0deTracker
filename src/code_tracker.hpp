@@ -15,7 +15,7 @@ namespace CodeTracker {
 #define MASTER_VOLUME 1.f
 
 
-    struct Key{Key(char n, char o); char note, octave;};
+    struct Key{Key(); Key(char n, char o); char note, octave;};
     namespace Notes {
         enum {
             C, C_S, D, D_S, E, F, F_S, G, G_S, A, A_S, B, PITCHES_PER_OCTAVE, OCTAVE_PITCH_OFFSET = 4, NOTE_PITCH_OFFSET = A
@@ -64,7 +64,7 @@ namespace CodeTracker {
 
     class PSG : public Oscillator{
     public:
-        PSG(char wavetype);
+        explicit PSG(char wavetype);
         PSG(char wavetype, ADSR amp_enveloppe);
         PSG(char wavetype, float dc, ADSR amp_enveloppe);
         PSG(char wavetype, float dc, float p, ADSR amp_enveloppe);
@@ -82,6 +82,7 @@ namespace CodeTracker {
 
     class Instrument{
     public:
+        Instrument();
         explicit Instrument(Oscillator* osc);
         Instrument(Oscillator* osc, float global_volume);
         ~Instrument();
@@ -90,11 +91,13 @@ namespace CodeTracker {
         float play(float a, char note, char octave, float t);
     private:
         float global_volume = 1.0f;
-        Oscillator* osc;
+        Oscillator* osc = nullptr;
     };
 
+    enum{RELEASE = 244, CONTINUE};
     struct Instruction{
-        uint8_t instrument_index; Key key; float volume; uint32_t* effects;//efect tab
+        uint8_t instrument_index{}; Key key; float volume{}; uint32_t* effects{};//efect tab
+        Instruction();
         Instruction(uint8_t instrument, Key k, float vol);
         Instruction(uint8_t instrument, char note, char octave, float vol);
         Instruction(uint8_t instrument, Key k, float vol, uint32_t* effects);
@@ -103,7 +106,8 @@ namespace CodeTracker {
     };
 
     struct Pattern{
-        Instruction* instructions;
+        Instruction** instructions; uint8_t rows;
+        explicit Pattern(uint8_t rows);
         ~Pattern();
     };
 
@@ -112,7 +116,7 @@ namespace CodeTracker {
     class Track{
     public:
         Track(float clk, float basetime, float speed, uint8_t rows, uint8_t frames, uint8_t channels,
-              Instrument* instruments_bank, uint8_t numb_of_instruments, Pattern** track_patterns, uint8_t * pattern_indices);
+              Instrument** instruments_bank, uint8_t numb_of_instruments, Pattern** track_patterns, uint8_t** pattern_indices);
         ~Track();
         float play(float t, Channel* chan);
     private:
@@ -120,15 +124,16 @@ namespace CodeTracker {
         uint8_t  rows, frames;
         uint8_t channels;
         float volume = 1.0f, pitch = 1.0f;
-        Instrument* instruments_bank;
+        Instrument** instruments_bank;
         uint8_t instruments;
         Pattern** track_patterns;
-        uint8_t* pattern_indices;//new uint_8[channels*frames]
+        uint8_t** pattern_indices;//new uint_8[channels*frames]
         float duration;
     };
 
     class Channel{
     public:
+        Channel();
         explicit Channel(uint8_t number);
         [[nodiscard]] uint8_t getNumber() const;
         [[nodiscard]] bool isEnable() const; void enable(); void disable();
@@ -139,6 +144,7 @@ namespace CodeTracker {
         [[nodiscard]] Track *getTrack() const; void setTrack(Track *track);
         [[nodiscard]] float getTime() const; void setTime(float time);
     private:
+        static uint8_t chancount;
         bool enable_sound = true;
         float volume = 1.0f, pitch = 1.0f, speed = 1.0f;
         Instruction* last_instruction = nullptr;

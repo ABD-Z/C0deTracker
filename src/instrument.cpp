@@ -5,10 +5,13 @@
 #include "code_tracker.hpp"
 
 namespace CodeTracker{
+
+    Instrument::Instrument() = default;
+
     Instrument::Instrument(Oscillator *osc) {this->osc = osc;}
     Instrument::Instrument(Oscillator* osc, float global_volume){this->osc = osc; this->global_volume = global_volume;}
 
-    Instrument::~Instrument() {delete this->osc;}
+    Instrument::~Instrument() {printf("destroying instrument\n");delete this->osc;printf("destroying instrument end\n");}
 
     Oscillator *Instrument::get_oscillator() {return this->osc;}
 

@@ -136,9 +136,11 @@ namespace  CodeTracker{
             Instruction* current_instruction = pat->instructions[row_index];
             if (current_instruction->instrument_index != CONTINUE){
                 if(current_instruction->instrument_index < this->instruments){
-                    chan->setLastInstruction(current_instruction);
-                    chan->setTime(t);
-                    chan->setTrack(this);
+                    if(current_instruction != chan->getLastInstruction()){
+                        chan->setLastInstruction(current_instruction);
+                        chan->setTime(t);
+                        chan->setTrack(this);
+                    }
                     return this->volume * chan->getVolume()
                             * this->instruments_bank[current_instruction->instrument_index]->play(current_instruction->volume, current_instruction->key, t - chan->getTime());
                 }else{

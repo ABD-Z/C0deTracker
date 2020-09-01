@@ -10,8 +10,8 @@
 
 namespace ssf2_credit_theme{
     const uint8_t ROWS = 64;
-    const uint8_t FRAMES = 2;
-    const uint8_t CHANNELS = 2;
+    const uint8_t FRAMES = 4;
+    const uint8_t CHANNELS = 4;
     const float CLOCK = 60.f;
     const float SPEED = 3.f;
     const float BASETIME = 2.f;

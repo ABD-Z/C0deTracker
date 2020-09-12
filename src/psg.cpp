@@ -1,41 +1,54 @@
 //
-// Created by Administrateur on 26/08/2020.
+// Created by Abdulmajid, Olivier NASSER on 26/08/2020.
 //
 #include "code_tracker.hpp"
 
 namespace CodeTracker {
-    PSG::PSG(char wavetype) : Oscillator(wavetype) {}
-    PSG::PSG(char wavetype, ADSR amp_enveloppe) : Oscillator(wavetype) {this->amp_envelope = amp_enveloppe;}
-    PSG::PSG(char wavetype, float dc, ADSR amp_enveloppe) : Oscillator(wavetype, dc) {this->amp_envelope = amp_enveloppe;}
-    PSG::PSG(char wavetype, float dc, float p, ADSR amp_enveloppe) : Oscillator(wavetype, dc, p) {this->amp_envelope = amp_enveloppe;}
+    PSG::PSG(uint8_t wavetype) : Oscillator(wavetype) {}
+    PSG::PSG(uint8_t wavetype, ADSR amp_enveloppe) : Oscillator(wavetype) {this->amp_envelope = amp_enveloppe;}
+    PSG::PSG(uint8_t wavetype, float dc, ADSR amp_enveloppe) : Oscillator(wavetype, dc) {this->amp_envelope = amp_enveloppe;}
+    PSG::PSG(uint8_t wavetype, float dc, float p, ADSR amp_enveloppe) : Oscillator(wavetype, dc, p) {this->amp_envelope = amp_enveloppe;}
 
     PSG::~PSG() {Oscillator::~Oscillator();}
 
-    float PSG::handleAmpEnvelope(float t) {
+    float PSG::handleAmpEnvelope(float t, float rt) {
         float output = MASTER_VOLUME;
+        float attacktime = MASTER_VOLUME / this->amp_envelope.attack;
         float attack_amp = fmin(MASTER_VOLUME, t*this->amp_envelope.attack);
-        if(attack_amp < MASTER_VOLUME){//attack
-            output *= attack_amp;
+        if(this->release && rt >= 0.f){//release
+            output *= fmax(0.f, this->current_envelope_amplitude - (rt) * this->amp_envelope.release);
         }else{
-            (this->release) ? output *= fmax(0.f, 1.f - t*this->amp_envelope.release) : output *= fmax(this->amp_envelope.sustain, 1.f - t * this->amp_envelope.decay);
+            if(attack_amp < MASTER_VOLUME){//attack
+                output *= attack_amp;
+                this->current_envelope_amplitude = output;
+            }else{//decay sustain
+                output *= fmax(this->amp_envelope.sustain, MASTER_VOLUME - (t - attacktime) * this->amp_envelope.decay);
+                this->current_envelope_amplitude = output;
+            }
         }
         return output;
     }
 
-    float PSG::oscillate(float a, float f, float t, float dc) {
-        return this->handleAmpEnvelope(t) * Oscillator::oscillate(a, f, t, dc);
+
+
+    float PSG::oscillate(float a, float f, float t, float rt, float dc, float p) {
+        return this->handleAmpEnvelope(t, rt) * Oscillator::oscillate(a, f, t, dc, p);;
     }
 
     float PSG::oscillate(float a, float f, float t, float dc, float p) {
-        return this->handleAmpEnvelope(t) * Oscillator::oscillate(a, f, t, dc, p);
+        return this->oscillate(a, f, t, -1.f, dc, p);
     }
 
     void PSG::setRelease(bool r) {
-        this->release = true;
+        this->release = r;
     }
 
     ADSR* PSG::getAmpEnvelope() {
         return (&this->amp_envelope);
+    }
+
+    bool PSG::isReleased() {
+        return this->release;
     }
 
 

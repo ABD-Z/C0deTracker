@@ -12,17 +12,20 @@ namespace ssf2_credit_theme{
         instrubank = new CodeTracker::Instrument*[INSTRUMENTS];
         instrubank[KICK] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.1f, CodeTracker::ADSR(1000000.f, 80.75f, 0.0f, 0.f)));
         instrubank[SNARE] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.00001f, CodeTracker::ADSR(100000000.f, 4.44f, 0.0f, 0.f)));
-        instrubank[STRING] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::SAW, 1.0f, CodeTracker::ADSR(10.f, 0.88, 0.33, 0.0f)));
-        instrubank[BASS] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::TRIANGLE, 0.78f, CodeTracker::ADSR(100.0f, 2.5f, 0.3f, 0.0f)));
+        instrubank[STRING] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::SQUARE, .5f, CodeTracker::ADSR(10.f, 0.88, 0.5, 0.0f)));
+        instrubank[BASS] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::TRIANGLE, 0.78f, 0.5f, CodeTracker::ADSR(100.0f, 0.3f, 0.2f, 17.75f)));
         instrubank[MAIN2] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::SQUARE, .125f, 0.f, CodeTracker::ADSR(10.0f, 1.f, .075f, 10.f)));
         return instrubank;
     }
 
     void INPUT(CodeTracker::Pattern** p, uint8_t pattern_index, uint8_t instruction_index, uint8_t instrument_index, float volume, CodeTracker::Key key){
-        //printf("WRITING INSTRUCTION\n");
         p[pattern_index]->instructions[instruction_index]->instrument_index = instrument_index;
         p[pattern_index]->instructions[instruction_index]->volume = volume;
         p[pattern_index]->instructions[instruction_index]->key = key;
+    }
+
+    void INPUT(CodeTracker::Pattern** p, uint8_t pattern_index, uint8_t instruction_index, uint8_t instrument_index){
+        p[pattern_index]->instructions[instruction_index]->instrument_index = instrument_index;
     }
 
     CodeTracker::Pattern** gen_patterns(){
@@ -105,40 +108,57 @@ namespace ssf2_credit_theme{
 
         printf("WRITING PATTERN 0 CHAN 1\n");
         INPUT(patterns, 1 * FRAMES + 0, 4, MAIN2, 0.16f, Key(F,5));
+        INPUT(patterns, 1 * FRAMES + 0, 6, RELEASE);
         INPUT(patterns, 1 * FRAMES + 0, 8, MAIN2, 0.16f, Key(D_S,5));
         INPUT(patterns, 1 * FRAMES + 0, 10, MAIN2, 0.16f, Key(F,5));
+        INPUT(patterns, 1 * FRAMES + 0, 12, RELEASE);
         INPUT(patterns, 1 * FRAMES + 0, 14, MAIN2, 0.16f, Key(F_S,5));
+        INPUT(patterns, 1 * FRAMES + 0, 16, RELEASE);
 
         INPUT(patterns, 1 * FRAMES + 0, 18, MAIN2, 0.16f, Key(F_S,5));
         INPUT(patterns, 1 * FRAMES + 0, 20, MAIN2, 0.16f, Key(F,5));
+        INPUT(patterns, 1 * FRAMES + 0, 22, RELEASE);
         INPUT(patterns, 1 * FRAMES + 0, 24, MAIN2, 0.16f, Key(D_S,5));
         INPUT(patterns, 1 * FRAMES + 0, 28, MAIN2, 0.16f, Key(F,5));
+        INPUT(patterns, 1 * FRAMES + 0, 30, RELEASE);
 
-        INPUT(patterns, 1 * FRAMES + 0, 32 +4, MAIN2, 0.16f, Key(F,5));
+        INPUT(patterns, 1 * FRAMES + 0, 32 + 4, MAIN2, 0.16f, Key(F,5));
+        INPUT(patterns, 1 * FRAMES + 0, 32 + 6, RELEASE);
         INPUT(patterns, 1 * FRAMES + 0, 32 + 8, MAIN2, 0.16f, Key(D_S,5));
         INPUT(patterns, 1 * FRAMES + 0, 32 + 10, MAIN2, 0.16f, Key(F,5));
+        INPUT(patterns, 1 * FRAMES + 0, 32 + 12, RELEASE);
         INPUT(patterns, 1 * FRAMES + 0, 32 + 14, MAIN2, 0.16f, Key(F_S,5));
+        INPUT(patterns, 1 * FRAMES + 0, 32 + 16, RELEASE);
 
         INPUT(patterns, 1 * FRAMES + 0, 32 + 18, MAIN2, 0.16f, Key(F_S,5));
         INPUT(patterns, 1 * FRAMES + 0, 32 + 20, MAIN2, 0.16f, Key(F,5));
+        INPUT(patterns, 1 * FRAMES + 0, 32 + 22, RELEASE);
         INPUT(patterns, 1 * FRAMES + 0, 32 + 24, MAIN2, 0.16f, Key(D_S,5));
         INPUT(patterns, 1 * FRAMES + 0, 32 + 28, MAIN2, 0.16f, Key(F,5));
+        INPUT(patterns, 1 * FRAMES + 0, 32 + 30, RELEASE);
 
         printf("WRITING PATTERN 1 CHAN 1\n");
         INPUT(patterns, 1 * FRAMES + 1, 4, MAIN2, 0.16f, Key(F,5));
+        INPUT(patterns, 1 * FRAMES + 1, 6, RELEASE);
         INPUT(patterns, 1 * FRAMES + 1, 8, MAIN2, 0.16f, Key(D_S,5));
         INPUT(patterns, 1 * FRAMES + 1, 10, MAIN2, 0.16f, Key(F,5));
+        INPUT(patterns, 1 * FRAMES + 1, 12, RELEASE);
         INPUT(patterns, 1 * FRAMES + 1, 14, MAIN2, 0.16f, Key(F_S,5));
+        INPUT(patterns, 1 * FRAMES + 1, 16, RELEASE);
 
         INPUT(patterns, 1 * FRAMES + 1, 18, MAIN2, 0.16f, Key(F_S,5));
         INPUT(patterns, 1 * FRAMES + 1, 20, MAIN2, 0.16f, Key(F,5));
+        INPUT(patterns, 1 * FRAMES + 1, 22, RELEASE);
         INPUT(patterns, 1 * FRAMES + 1, 24, MAIN2, 0.16f, Key(D_S,5));
         INPUT(patterns, 1 * FRAMES + 1, 28, MAIN2, 0.16f, Key(F,5));
+        INPUT(patterns, 1 * FRAMES + 1, 30, RELEASE);
 
         INPUT(patterns, 1 * FRAMES + 1, 32 + 0, MAIN2, 0.16f, Key(F_S,5));
         INPUT(patterns, 1 * FRAMES + 1, 32 + 6, MAIN2, 0.16f, Key(F_S,5));
+        INPUT(patterns, 1 * FRAMES + 1, 32 + 12, RELEASE);
 
         INPUT(patterns, 1 * FRAMES + 1, 32 + 14, MAIN2, 0.16f, Key(G_S,5));
+        INPUT(patterns, 1 * FRAMES + 1, 32 + 14 + 12, RELEASE);
 
         printf("WRITING PATTERN 0 CHAN 2\n");
         INPUT(patterns, 2 * FRAMES + 0, 0, STRING, 0.15f, Key(G_S,4));
@@ -151,84 +171,151 @@ namespace ssf2_credit_theme{
 
         printf("WRITING PATTERN 0 CHAN 3\n");
         INPUT(patterns, 3 * FRAMES + 0, 0, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 0, 31, RELEASE);
         INPUT(patterns, 3 * FRAMES + 0, 32, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 0, 61, RELEASE);
         INPUT(patterns, 3 * FRAMES + 0, 62, BASS, 1.f, Key(A_S,1));
 
         printf("WRITING PATTERN 1 CHAN 3\n");
+        INPUT(patterns, 3 * FRAMES + 1, 31, RELEASE);
         INPUT(patterns, 3 * FRAMES + 1, 32, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 1, 45, RELEASE);
         INPUT(patterns, 3 * FRAMES + 1, 46, BASS, 1.f, Key(G_S,1));
+        INPUT(patterns, 3 * FRAMES + 1, 63, RELEASE);
 
         printf("WRITING PATTERN 2 CHAN 3\n");
         INPUT(patterns, 3 * FRAMES + 2, 0, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 1, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 2, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 3, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 4, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 5, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 6, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 7, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 8, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 9, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 10, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 11, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 12, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 13, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 14, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 15, RELEASE);
 
         INPUT(patterns, 3 * FRAMES + 2, 16, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 17, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 18, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 19, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 20, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 21, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 22, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 23, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 24, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 25, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 26, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 27, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 28, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 29, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 30, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 31, RELEASE);
 
         INPUT(patterns, 3 * FRAMES + 2, 32, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 2, 33, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 34, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 2, 35, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 36, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 2, 37, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 38, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 2, 39, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 40, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 2, 41, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 42, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 2, 43, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 44, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 2, 45, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 46, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 2, 47, RELEASE);
 
         INPUT(patterns, 3 * FRAMES + 2, 48, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 2, 49, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 50, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 2, 51, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 52, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 2, 53, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 54, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 2, 55, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 56, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 2, 57, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 58, BASS, 1.f, Key(F_S,1));
+        INPUT(patterns, 3 * FRAMES + 2, 59, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 60, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 2, 61, RELEASE);
         INPUT(patterns, 3 * FRAMES + 2, 62, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 2, 63, RELEASE);
 
         printf("WRITING PATTERN 3 CHAN 3\n");
         INPUT(patterns, 3 * FRAMES + 3, 2, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 3, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 4, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 5, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 6, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 7, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 8, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 9, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 10, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 11, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 12, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 13, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 14, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 15, RELEASE);
 
         INPUT(patterns, 3 * FRAMES + 3, 16, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 17, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 18, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 19, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 20, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 21, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 22, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 23, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 24, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 25, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 26, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 27, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 28, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 29, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 30, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 31, RELEASE);
 
         INPUT(patterns, 3 * FRAMES + 3, 32, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 3, 33, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 34, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 3, 35, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 36, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 3, 37, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 38, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 3, 39, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 40, BASS, 1.f, Key(B,1));
+        INPUT(patterns, 3 * FRAMES + 3, 41, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 42, BASS, 1.f, Key(A_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 43, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 44, BASS, 1.f, Key(A,1));
+        INPUT(patterns, 3 * FRAMES + 3, 45, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 46, BASS, 1.f, Key(G_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 49, RELEASE);
 
         INPUT(patterns, 3 * FRAMES + 3, 50, BASS, 1.f, Key(G_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 51, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 52, BASS, 1.f, Key(G_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 53, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 54, BASS, 1.f, Key(G_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 55, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 56, BASS, 1.f, Key(G_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 57, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 58, BASS, 1.f, Key(G_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 59, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 60, BASS, 1.f, Key(G_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 61, RELEASE);
         INPUT(patterns, 3 * FRAMES + 3, 62, BASS, 1.f, Key(G_S,1));
+        INPUT(patterns, 3 * FRAMES + 3, 63, RELEASE);
 
         return patterns;
     }
@@ -269,10 +356,5 @@ namespace ssf2_credit_theme{
         return track->play(t, chan);
     }
 
-    void destroy_track(CodeTracker::Track* track){
-        printf("DESTROYING TRACK\n");
-       // delete[] instrument_bank;
-        //blank.~Pattern();
-    }
 
 }

@@ -5,9 +5,9 @@
 
 namespace  CodeTracker{
 
-    Key::Key(char n, char o) {this->note = n; this->octave = o;}
+    Key::Key(uint8_t n, uint8_t o) {this->note = n; this->octave = o;}
 
-    Key::Key(){this->note = 0.f; this->octave = 0.f;};
+    Key::Key(){this->note = CONTINUE; this->octave = CONTINUE;};
 
     ADSR::ADSR(float A, float D, float S, float R) { this->attack = A; this->decay = D; this->sustain = S; this->release = R;}
 
@@ -15,7 +15,7 @@ namespace  CodeTracker{
     namespace Notes {
         float pitch(float p){return pow(1.059460646483f, p) * 440.0f;}
 
-        float key2freq(char note , char octave){
+        float key2freq(uint8_t note , uint8_t octave){
             //A4 == 440 HZ = pitch 0
             //-12 pitch == 3A == 220 HZ
             //+12
@@ -37,7 +37,7 @@ namespace  CodeTracker{
         this->instrument_index = instrument; this->volume = vol; this->effects = nullptr;
     }
 
-    Instruction::Instruction(uint8_t instrument, char note, char octave, float vol) : key(Key(note,octave)) {
+    Instruction::Instruction(uint8_t instrument, uint8_t note, uint8_t octave, float vol) : key(Key(note,octave)) {
         this->instrument_index = instrument; this->volume = vol; this->effects = nullptr;
     }
 
@@ -45,13 +45,13 @@ namespace  CodeTracker{
         this->instrument_index = instrument; this->volume = vol; this->effects = effects;
     }
 
-    Instruction::Instruction(uint8_t instrument, char note, char octave, float vol, uint32_t *effects) : key(note,octave) {
+    Instruction::Instruction(uint8_t instrument, uint8_t note, uint8_t octave, float vol, uint32_t *effects) : key(note,octave) {
         this->instrument_index = instrument; this->volume = vol; this->effects = effects;
     }
 
     Instruction::~Instruction() {delete[] this->effects;}
 
-    Instruction::Instruction() {this->volume = 0.0f; this->instrument_index = CONTINUE; this->key = Key(0.0f,0.0f); this->effects = nullptr;}
+    Instruction::Instruction() {this->volume = CONTINUE; this->instrument_index = CONTINUE; this->key = Key(); this->effects = nullptr;}
 
     Pattern::~Pattern() {
         for(uint8_t i = 0; i < this->rows; ++i){
@@ -100,10 +100,28 @@ namespace  CodeTracker{
         this->number = Channel::chancount++;
     }
 
+    float Channel::getTimeRelease() const {
+        return this->time_release;
+    }
+
+    void Channel::setTimeRelease(float time) {
+        this->time_release = time;
+    }
+
+    bool Channel::isReleased() const {
+        return this->released;
+    }
+
+    void Channel::setRelease(bool r) {
+        this->released = r;
+    }
+
 
     Track::~Track() {
-        //delete[] this->pattern_indices;
-        //for(uint8_t i = 0; i < this->channels; ++i){ delete[] this->track_patterns;}
+        for(uint8_t i = 0; i < this->channels * this->frames; ++i){delete this->pattern_indices[i];}
+        delete[] this->pattern_indices;
+        for(uint8_t i = 0; i < this->channels * this->frames; ++i){delete this->track_patterns[i];}
+        delete[] this->track_patterns;
         for(uint8_t i = 0; i < this->instruments; ++i){ delete this->instruments_bank[i];}
         delete[] this->instruments_bank;
     }
@@ -124,12 +142,9 @@ namespace  CodeTracker{
         if(chan->getNumber() > this->channels){return 0.0f;}
         if(chan->isEnable()) {
             float time_in_track = fmod(t, this->duration);
-            //printf("Time : %f ; Time in track : %f\n", t, time_in_track);
             uint8_t row_index = floor(time_in_track / this->step);
-            //printf("row index %d\n", row_index);
             uint8_t pattern_index = floor(row_index / this->rows);
             row_index = row_index % this->rows;
-            //printf("ROW INDEX %d\n", row_index);
             uint8_t chan_number = chan->getNumber();
             pattern_index = *this->pattern_indices[chan_number * this->frames + pattern_index];
             Pattern* pat = this->track_patterns[chan_number * (this->frames) + pattern_index];
@@ -138,18 +153,37 @@ namespace  CodeTracker{
                 if(current_instruction->instrument_index < this->instruments){
                     if(current_instruction != chan->getLastInstruction()){
                         chan->setLastInstruction(current_instruction);
+                        this->instruments_bank[current_instruction->instrument_index]->get_oscillator()->setRelease(false);
+                        chan->setRelease(false);
                         chan->setTime(t);
                         chan->setTrack(this);
                     }
                     return this->volume * chan->getVolume()
                             * this->instruments_bank[current_instruction->instrument_index]->play(current_instruction->volume, current_instruction->key, t - chan->getTime());
                 }else{
+                    if(current_instruction->instrument_index == RELEASE){
+                        if(!chan->isReleased()){
+                            chan->setRelease(true);
+                            chan->setTimeRelease(t);
+                            chan->setTrack(this);
+                            //play sound with correct envelop in release
+                            this->instruments_bank[chan->getLastInstruction()->instrument_index]->get_oscillator()->setRelease(true);
+                        }
+
+                        return this->volume * chan->getVolume()
+                               * this->instruments_bank[chan->getLastInstruction()->instrument_index]->play(chan->getLastInstruction()->volume, chan->getLastInstruction()->key, t - chan->getTime(), t - chan->getTimeRelease());
+                    }
                     return 0.0f;
                 }
-            } else {
+            }else {
                 if (chan->getLastInstruction() != nullptr && chan->getTrack() != nullptr){
-                    return this->volume * chan->getVolume()
-                           * this->instruments_bank[chan->getLastInstruction()->instrument_index]->play(chan->getLastInstruction()->volume, chan->getLastInstruction()->key, t - chan->getTime());
+                    if(!chan->isReleased()){
+                        return this->volume * chan->getVolume()
+                               * this->instruments_bank[chan->getLastInstruction()->instrument_index]->play(chan->getLastInstruction()->volume, chan->getLastInstruction()->key, t - chan->getTime());
+                    }else{
+                        return this->volume * chan->getVolume()
+                              * this->instruments_bank[chan->getLastInstruction()->instrument_index]->play(chan->getLastInstruction()->volume, chan->getLastInstruction()->key, t - chan->getTime(), t - chan->getTimeRelease());
+                    }
                 }else{
                     return 0.f;
                 }

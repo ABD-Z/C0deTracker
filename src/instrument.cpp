@@ -13,15 +13,26 @@ namespace CodeTracker{
 
     Instrument::~Instrument() {printf("destroying instrument\n");delete this->osc;printf("destroying instrument end\n");}
 
-    Oscillator *Instrument::get_oscillator() {return this->osc;}
+    Oscillator *Instrument::get_oscillator() const {return this->osc;}
 
     float Instrument::play(float a, Key k, float t) {
         return this->global_volume * this->osc->oscillate(a, Notes::key2freq(k), t, this->osc->getDutycycle(),
                                                           this->osc->getPhase());
     }
-
-    float Instrument::play(float a, char note, char octave, float t) {
+    float Instrument::play(float a, uint8_t note, uint8_t octave, float t) {
         return this->global_volume * this->osc->oscillate(a, Notes::key2freq(note, octave), t, this->osc->getDutycycle(),
                                                           this->osc->getPhase());
     }
+
+    float Instrument::play(float a, Key k, float t, float rt) {
+        return this->global_volume * this->osc->oscillate(a, Notes::key2freq(k), t, rt, this->osc->getDutycycle(),
+                                                                 this->osc->getPhase());
+    }
+
+    float Instrument::play(float a, uint8_t note, uint8_t octave, float t, float rt) {
+        return this->global_volume * this->osc->oscillate(a, Notes::key2freq(note, octave), t, rt, this->osc->getDutycycle(),
+                                                          this->osc->getPhase());
+    }
+
+
 }

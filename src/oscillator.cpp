@@ -50,9 +50,14 @@ namespace CodeTracker {
     }
 
     float Oscillator::whitenoise(float a, float f, float t, float dc, float FMfeed) {
-        float s = this->sinus(a, f, t, 0.f, FMfeed) / dc;
+        float s = this->sinus(a, f, t, 0.f, FMfeed)/dc;
         return  a * (s - floor(s) - 0.5f);
     }
+
+    /*float Oscillator::whitenoise2(float a, float f, float t, float dc, float FMfeed) {
+        float s = this->sinus(a, f, t/dc, 0.f, FMfeed);
+        return  a * (s - floor(s) - 0.5f);
+    }*/
 
 
 

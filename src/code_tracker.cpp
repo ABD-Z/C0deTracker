@@ -49,9 +49,9 @@ namespace  CodeTracker{
         this->instrument_index = instrument; this->volume = vol; this->effects = effects;
     }
 
-    Instruction::~Instruction() {delete[] this->effects;}
-
     Instruction::Instruction() {this->volume = CONTINUE; this->instrument_index = CONTINUE; this->key = Key(); this->effects = nullptr;}
+
+    Instruction::~Instruction() {delete[] this->effects;}
 
     Pattern::~Pattern() {
         for(uint8_t i = 0; i < this->rows; ++i){
@@ -149,7 +149,6 @@ namespace  CodeTracker{
             pattern_index = *this->pattern_indices[chan_number * this->frames + pattern_index];
             Pattern* pat = this->track_patterns[chan_number * (this->frames) + pattern_index];
             Instruction* current_instruction = pat->instructions[row_index];
-            if (current_instruction->instrument_index != CONTINUE){
                 if(current_instruction->instrument_index < this->instruments){
                     if(current_instruction != chan->getLastInstruction()){
                         chan->setLastInstruction(current_instruction);
@@ -161,21 +160,17 @@ namespace  CodeTracker{
                     return this->volume * chan->getVolume()
                             * this->instruments_bank[current_instruction->instrument_index]->play(current_instruction->volume, current_instruction->key, t - chan->getTime());
                 }else{
-                    if(current_instruction->instrument_index == RELEASE){
+                    if(current_instruction->instrument_index == RELEASE && chan->getLastInstruction()->instrument_index < this->instruments){
                         if(!chan->isReleased()){
                             chan->setRelease(true);
                             chan->setTimeRelease(t);
                             chan->setTrack(this);
-                            //play sound with correct envelop in release
                             this->instruments_bank[chan->getLastInstruction()->instrument_index]->get_oscillator()->setRelease(true);
                         }
-
                         return this->volume * chan->getVolume()
                                * this->instruments_bank[chan->getLastInstruction()->instrument_index]->play(chan->getLastInstruction()->volume, chan->getLastInstruction()->key, t - chan->getTime(), t - chan->getTimeRelease());
                     }
-                    return 0.0f;
                 }
-            }else {
                 if (chan->getLastInstruction() != nullptr && chan->getTrack() != nullptr){
                     if(!chan->isReleased()){
                         return this->volume * chan->getVolume()
@@ -184,10 +179,8 @@ namespace  CodeTracker{
                         return this->volume * chan->getVolume()
                               * this->instruments_bank[chan->getLastInstruction()->instrument_index]->play(chan->getLastInstruction()->volume, chan->getLastInstruction()->key, t - chan->getTime(), t - chan->getTimeRelease());
                     }
-                }else{
-                    return 0.f;
                 }
-            }
+
         }
         return 0.0f;
     }

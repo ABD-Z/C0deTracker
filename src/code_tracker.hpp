@@ -50,23 +50,23 @@ namespace CodeTracker {
         void setDutycycle(float dc); float getDutycycle();
         void setPhase(float p); float getPhase();
 
-        virtual float oscillate(float a, float f, float t, float dc, float p);
-        virtual float oscillate(float a, float f, float t, float rt, float dc, float p) = 0;
+        virtual float oscillate(float a, float f, double t, float dc, float p);
+        virtual float oscillate(float a, float f, double t, double rt, float dc, float p) = 0;
         virtual ADSR* getAmpEnvelope() = 0;
         virtual void setRelease(bool r) = 0;
         virtual bool isReleased() = 0;
     private:
         uint8_t wavetype = SINUS; float dutycycle = 0.5f; float phase = 0.0f;
-        float sinus(float a, float f, float t, float dc, float FMfeed);
-        float square(float a, float f, float t, float dc, float FMfeed);
-        float triangle(float a, float f, float t, float dc, float FMfeed);
-        float saw(float a, float f, float t, float dc, float FMfeed);
-        float whitenoise(float a, float f, float t, float dc, float FMfeed);
+        float sinus(float a, float f, double t, float dc, float FMfeed);
+        float square(float a, float f, double t, float dc, float FMfeed);
+        float triangle(float a, float f, double t, float dc, float FMfeed);
+        float saw(float a, float f, double t, float dc, float FMfeed);
+        float whitenoise(float a, float f, double t, float dc, float FMfeed);
         //function table
-        std::vector<std::function<float(Oscillator&, float, float, float, float, float)>> wavefunc_table =
+        std::vector<std::function<float(Oscillator&, float, float, double, float, float)>> wavefunc_table =
             {&Oscillator::sinus, &Oscillator::square, &Oscillator::triangle, &Oscillator::saw, &Oscillator::whitenoise};
 
-        virtual float handleAmpEnvelope(float t, float rt) = 0;
+        virtual float handleAmpEnvelope(double t, double rt) = 0;
 
 
     };
@@ -79,14 +79,14 @@ namespace CodeTracker {
         PSG(uint8_t wavetype, float dc, float p, ADSR amp_enveloppe);
         ~PSG() override;
 
-        float oscillate(float a, float f, float t, float dc, float p) override;
-        float oscillate(float a, float f, float t, float rt, float dc, float p) override;
+        float oscillate(float a, float f, double t, float dc, float p) override;
+        float oscillate(float a, float f, double t, double rt, float dc, float p) override;
         ADSR* getAmpEnvelope() override;
         void setRelease(bool r) override;
         bool isReleased() override;
     private:
         ADSR amp_envelope = ADSR(100.f, 0.0f, 1.0f, 1.0f);
-        float handleAmpEnvelope(float t, float rt) override;
+        float handleAmpEnvelope(double t, double rt) override;
     protected:
         bool release = false;
         float current_envelope_amplitude = 0.f;
@@ -99,9 +99,9 @@ namespace CodeTracker {
         Instrument(Oscillator* osc, float global_volume);
         ~Instrument();
         [[nodiscard]] Oscillator* get_oscillator() const;
-        float play(float a, Key k,float t);
+        float play(float a, Key k, double t);
         float play(float a, uint8_t note, uint8_t octave, float t);
-        float play(float a, Key k,float t, float rt);
+        float play(float a, Key k, double t, double rt);
         float play(float a, uint8_t note, uint8_t octave, float t, float rt);
 
     private:
@@ -133,7 +133,9 @@ namespace CodeTracker {
         Track(float clk, float basetime, float speed, uint8_t rows, uint8_t frames, uint8_t channels,
               Instrument** instruments_bank, uint8_t numb_of_instruments, Pattern** track_patterns, uint8_t** pattern_indices);
         ~Track();
-        float play(float t, Channel* chan);
+        float play(double t, Channel* chan);
+        uint8_t getNumberofChannels();
+        float getDuration();
     private:
         float clk , basetime, speed, step;
         uint8_t  rows, frames;
@@ -157,8 +159,8 @@ namespace CodeTracker {
         [[nodiscard]] float getVolume() const; void setVolume(float volume);
         [[nodiscard]] Instruction *getLastInstruction() const; void setLastInstruction(Instruction *lastInstruction);
         [[nodiscard]] Track *getTrack() const; void setTrack(Track *track);
-        [[nodiscard]] float getTime() const; void setTime(float time);
-        [[nodiscard]] float getTimeRelease() const; void setTimeRelease(float time);
+        [[nodiscard]] double getTime() const; void setTime(double time);
+        [[nodiscard]] double getTimeRelease() const; void setTimeRelease(double time);
         [[nodiscard]] bool isReleased() const; void setRelease(bool r);
     private:
         static uint8_t chancount;
@@ -166,9 +168,9 @@ namespace CodeTracker {
         float volume = 1.0f, pitch = 1.0f, speed = 1.0f;
         Instruction* last_instruction = nullptr;
         Track* track = nullptr;
-        float time = 0.0;
+        double time = 0.0;
         bool released = false;
-        float time_release = 0.0;
+        double time_release = 0.0;
         uint8_t number;
     };
 }

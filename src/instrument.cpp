@@ -15,7 +15,7 @@ namespace CodeTracker{
 
     Oscillator *Instrument::get_oscillator() const {return this->osc;}
 
-    float Instrument::play(float a, Key k, float t) {
+    float Instrument::play(float a, Key k, double t) {
         return this->global_volume * this->osc->oscillate(a, Notes::key2freq(k), t, this->osc->getDutycycle(),
                                                           this->osc->getPhase());
     }
@@ -24,7 +24,7 @@ namespace CodeTracker{
                                                           this->osc->getPhase());
     }
 
-    float Instrument::play(float a, Key k, float t, float rt) {
+    float Instrument::play(float a, Key k, double t, double rt) {
         return this->global_volume * this->osc->oscillate(a, Notes::key2freq(k), t, rt, this->osc->getDutycycle(),
                                                                  this->osc->getPhase());
     }

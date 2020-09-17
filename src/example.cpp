@@ -10,8 +10,8 @@ namespace ssf2_credit_theme{
         //*******************************************INSTRUMENTS BANK*************************************************//
         CodeTracker::Instrument** instrubank;
         instrubank = new CodeTracker::Instrument*[INSTRUMENTS];
-        instrubank[KICK] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.1f, CodeTracker::ADSR(1000000.f, 80.75f, 0.0f, 0.f)), 1.f);
-        instrubank[SNARE] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.0015f, CodeTracker::ADSR(100000000.f, 4.44f, 0.0f, 0.f)),0.68f);
+        instrubank[KICK] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.1f, CodeTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f)), 1.f);
+        instrubank[SNARE] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, .1f, CodeTracker::ADSR(10000.f, 4.44f, 0.0f, 0.f)),0.78f);
         instrubank[STRING] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::SAW, .08f, CodeTracker::ADSR(10.f, 0.88, 0.5, 0.0f)),.78f);
         instrubank[BASS] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::TRIANGLE, 0.78f, 0.5f, CodeTracker::ADSR(666.0f, 0.3f, 0.2f, 17.75f)),1.f);
         instrubank[MAIN2] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::SQUARE, .125f, 0.f, CodeTracker::ADSR(10.0f, 1.f, .075f, 10.f)),0.5f);
@@ -63,58 +63,58 @@ namespace ssf2_credit_theme{
         INPUT(patterns, 0 * FRAMES + 1, 46, KICK, 0.5f, Key(A,1));
 
         INPUT(patterns, 0 * FRAMES + 1, 50, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 1, 52, SNARE, 0.5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 1, 52, SNARE, 0.5f, Key(G_S,2));
         INPUT(patterns, 0 * FRAMES + 1, 56, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 1, 58, SNARE, 0.5f, Key(G_S,1));
-        INPUT(patterns, 0 * FRAMES + 1, 60, SNARE, 0.5f, Key(G_S,2));
+        INPUT(patterns, 0 * FRAMES + 1, 58, SNARE, 0.5f, Key(G_S,2));
+        INPUT(patterns, 0 * FRAMES + 1, 60, SNARE, 0.5f, Key(G_S,3));
 
         printf("WRITING PATTERN 2 CHAN 0\n");
         INPUT(patterns, 0 * FRAMES + 2,  0, KICK, .5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 2, 4, SNARE, .5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 2, 4, SNARE, .5f, Key(G_S,2));
         INPUT(patterns, 0 * FRAMES + 2,  8, KICK, .5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 2, 12, SNARE, .5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 2, 12, SNARE, .5f, Key(G_S,2));
 
         INPUT(patterns, 0 * FRAMES + 2,  16, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 2, 20, SNARE, 0.5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 2, 20, SNARE, 0.5f, Key(G_S,2));
         INPUT(patterns, 0 * FRAMES + 2,  24, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 2,  26, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 2, 28, SNARE, 0.5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 2, 28, SNARE, 0.5f, Key(G_S,2));
 
         INPUT(patterns, 0 * FRAMES + 2,  32, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 2, 36, SNARE, 0.5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 2, 36, SNARE, 0.5f, Key(G_S,2));
         INPUT(patterns, 0 * FRAMES + 2,  40, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 2, 44, SNARE, 0.5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 2, 44, SNARE, 0.5f, Key(G_S,2));
 
         INPUT(patterns, 0 * FRAMES + 2,  48, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 2, 52, SNARE, 0.5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 2, 52, SNARE, 0.5f, Key(G_S,2));
         INPUT(patterns, 0 * FRAMES + 2,  56, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 2,  58, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 2, 60, SNARE, 0.5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 2, 60, SNARE, 0.5f, Key(G_S,2));
         INPUT(patterns, 0 * FRAMES + 2, 62, KICK, 0.5f, Key(A,1));
 
         printf("WRITING PATTERN 3 CHAN 0\n");
         INPUT(patterns, 0 * FRAMES + 3,  2, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 3, 4, SNARE, 0.5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 3, 4, SNARE, 0.5f, Key(G_S,2));
         INPUT(patterns, 0 * FRAMES + 3,  8, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 3, 12, SNARE, 0.5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 3, 12, SNARE, 0.5f, Key(G_S,2));
 
         INPUT(patterns, 0 * FRAMES + 3,  16, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 3, 20, SNARE, 0.5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 3, 20, SNARE, 0.5f, Key(G_S,2));
         INPUT(patterns, 0 * FRAMES + 3,  24, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 3,  26, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 3, 28, SNARE, 0.5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 3, 28, SNARE, 0.5f, Key(G_S,2));
 
         INPUT(patterns, 0 * FRAMES + 3,  32, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 3, 36, SNARE, 0.5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 3, 36, SNARE, 0.5f, Key(G_S,2));
         INPUT(patterns, 0 * FRAMES + 3,  40, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 3, 44, SNARE, 0.5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 3, 44, SNARE, 0.5f, Key(G_S,2));
         INPUT(patterns, 0 * FRAMES + 3,  46, KICK, 0.5f, Key(A,1));
 
         INPUT(patterns, 0 * FRAMES + 3, 50, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 3, 52, SNARE, 0.5f, Key(G_S,1));
+        INPUT(patterns, 0 * FRAMES + 3, 52, SNARE, 0.5f, Key(G_S,2));
         INPUT(patterns, 0 * FRAMES + 3, 56, KICK, 0.5f, Key(A,1));
-        INPUT(patterns, 0 * FRAMES + 3, 58, SNARE, 0.5f, Key(G_S,1));
-        INPUT(patterns, 0 * FRAMES + 3, 60, SNARE, 0.5f, Key(G_S,2));
+        INPUT(patterns, 0 * FRAMES + 3, 58, SNARE, 0.5f, Key(G_S,2));
+        INPUT(patterns, 0 * FRAMES + 3, 60, SNARE, 0.5f, Key(G_S,3));
 
         printf("WRITING PATTERN 0 CHAN 1\n");
         INPUT(patterns, 1 * FRAMES + 0, 4, MAIN2, 0.16f, Key(F,5));

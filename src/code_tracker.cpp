@@ -90,9 +90,9 @@ namespace  CodeTracker{
 
     void Channel::setTrack(Track *track) {this->track = track;} Track *Channel::getTrack() const {return this->track;}
 
-    float Channel::getTime() const{return this->time;}
+    double Channel::getTime() const{return this->time;}
 
-    void Channel::setTime(float time) {this->time = time;}
+    void Channel::setTime(double time) { this->time = time;}
 
     uint8_t Channel::chancount = 0;
 
@@ -100,11 +100,11 @@ namespace  CodeTracker{
         this->number = Channel::chancount++;
     }
 
-    float Channel::getTimeRelease() const {
+    double Channel::getTimeRelease() const {
         return this->time_release;
     }
 
-    void Channel::setTimeRelease(float time) {
+    void Channel::setTimeRelease(double time) {
         this->time_release = time;
     }
 
@@ -138,10 +138,17 @@ namespace  CodeTracker{
         printf("DURATION : %f\n", this->duration);
     }
 
-    float Track::play(float t, Channel *chan) {
+    uint8_t Track::getNumberofChannels() {
+        return this->channels;
+    }
+    float Track::getDuration() {
+        return this->duration;
+    }
+
+    float Track::play(double t, Channel *chan) {
         if(chan->getNumber() > this->channels){return 0.0f;}
         if(chan->isEnable()) {
-            float time_in_track = fmod(t, this->duration);
+            double time_in_track = fmod(t, double(this->duration));
             uint8_t row_index = floor(time_in_track / this->step);
             uint8_t pattern_index = floor(row_index / this->rows);
             row_index = row_index % this->rows;
@@ -157,8 +164,8 @@ namespace  CodeTracker{
                         chan->setTime(t);
                         chan->setTrack(this);
                     }
-                    return this->volume * chan->getVolume()
-                            * this->instruments_bank[current_instruction->instrument_index]->play(current_instruction->volume, current_instruction->key, t - chan->getTime());
+                    //return this->volume * chan->getVolume()
+                     //       * this->instruments_bank[current_instruction->instrument_index]->play(current_instruction->volume, current_instruction->key, t - chan->getTime());
                 }else{
                     if(current_instruction->instrument_index == RELEASE && chan->getLastInstruction()->instrument_index < this->instruments){
                         if(!chan->isReleased()){
@@ -167,8 +174,8 @@ namespace  CodeTracker{
                             chan->setTrack(this);
                             this->instruments_bank[chan->getLastInstruction()->instrument_index]->get_oscillator()->setRelease(true);
                         }
-                        return this->volume * chan->getVolume()
-                               * this->instruments_bank[chan->getLastInstruction()->instrument_index]->play(chan->getLastInstruction()->volume, chan->getLastInstruction()->key, t - chan->getTime(), t - chan->getTimeRelease());
+                       // return this->volume * chan->getVolume()
+                          ///     * this->instruments_bank[chan->getLastInstruction()->instrument_index]->play(chan->getLastInstruction()->volume, chan->getLastInstruction()->key, t - chan->getTime(), t - chan->getTimeRelease());
                     }
                 }
                 if (chan->getLastInstruction() != nullptr && chan->getTrack() != nullptr){
@@ -184,6 +191,4 @@ namespace  CodeTracker{
         }
         return 0.0f;
     }
-
-
 }

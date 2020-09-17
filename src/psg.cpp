@@ -11,7 +11,7 @@ namespace CodeTracker {
 
     PSG::~PSG() {Oscillator::~Oscillator();}
 
-    float PSG::handleAmpEnvelope(float t, float rt) {
+    float PSG::handleAmpEnvelope(double t, double rt) {
         float output = MASTER_VOLUME;
         float attacktime = MASTER_VOLUME / this->amp_envelope.attack;
         float attack_amp = fmin(MASTER_VOLUME, t*this->amp_envelope.attack);
@@ -31,11 +31,11 @@ namespace CodeTracker {
 
 
 
-    float PSG::oscillate(float a, float f, float t, float rt, float dc, float p) {
+    float PSG::oscillate(float a, float f, double t, double rt, float dc, float p) {
         return this->handleAmpEnvelope(t, rt) * Oscillator::oscillate(a, f, t, dc, p);;
     }
 
-    float PSG::oscillate(float a, float f, float t, float dc, float p) {
+    float PSG::oscillate(float a, float f, double t, float dc, float p) {
         return this->oscillate(a, f, t, -1.f, dc, p);
     }
 

@@ -11,7 +11,7 @@ namespace ssf2_credit_theme{
         CodeTracker::Instrument** instrubank;
         instrubank = new CodeTracker::Instrument*[INSTRUMENTS];
         instrubank[KICK] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.1f, CodeTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f)), 1.f);
-        instrubank[SNARE] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, .1f, CodeTracker::ADSR(10000.f, 4.44f, 0.0f, 0.f)),0.78f);
+        instrubank[SNARE] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, .0025f, CodeTracker::ADSR(10000.f, 4.44f, 0.0f, 0.f)),0.78f);
         instrubank[STRING] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::SAW, .08f, CodeTracker::ADSR(10.f, 0.88, 0.5, 0.0f)),.78f);
         instrubank[BASS] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::TRIANGLE, 0.78f, 0.5f, CodeTracker::ADSR(666.0f, 0.3f, 0.2f, 17.75f)),1.f);
         instrubank[MAIN2] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::SQUARE, .125f, 0.f, CodeTracker::ADSR(10.0f, 1.f, .075f, 10.f)),0.5f);

@@ -259,12 +259,42 @@ namespace CodeTracker {
     class Instrument{
     public:
         Instrument();
+        /**
+         * @brief Creates an instrument which is based on an Oscillator (PSG, FM...)
+         * @param osc Oscillator
+         */
         explicit Instrument(Oscillator* osc);
+        /**
+         * @brief Creates an instrument which is based on an Oscillator (PSG, FM...)
+         * @param osc Oscillator
+         * @param global_volume specifies instrument global volume
+         */
         Instrument(Oscillator* osc, float global_volume);
+        /**
+         * @brief Destructor
+         */
         ~Instrument();
+        /**
+         * @brief Gets instrument core, which is the Oscillator
+         * @return a pointer to Oscillator
+         */
         [[nodiscard]] Oscillator* get_oscillator() const;
+        /**
+         * @brief Plays sounds at t time with a given key and amplitude
+         * @param a Amplitude
+         * @param k Structure Key (note, octave)
+         * @param t Time
+         * @return The signal
+         */
         float play(float a, Key k, double t);
         float play(float a, uint8_t note, uint8_t octave, float t);
+        /**
+         * @brief Plays sounds at t time and rt release time with a given key and amplitude
+         * @param a Amplitude
+         * @param k Structure Key (note, octave)
+         * @param t Time
+         * @return The signal
+         */
         float play(float a, Key k, double t, double rt);
         float play(float a, uint8_t note, uint8_t octave, float t, float rt);
 

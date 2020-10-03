@@ -1,5 +1,5 @@
 //
-// Created by Abdulmajid NASSER on 24/08/2020.
+// Created by Abdulmajid, Olivier NASSER on 24/08/2020.
 //
 #include "code_tracker.hpp"
 
@@ -7,7 +7,7 @@ namespace  CodeTracker{
 
     Key::Key(uint8_t n, uint8_t o) {this->note = n; this->octave = o;}
 
-    Key::Key(){this->note = CONTINUE; this->octave = CONTINUE;};
+    Key::Key(){this->note = Notes::CONTINUE; this->octave = Notes::CONTINUE;};
 
     ADSR::ADSR(float A, float D, float S, float R) { this->attack = A; this->decay = D; this->sustain = S; this->release = R;}
 
@@ -26,10 +26,7 @@ namespace  CodeTracker{
         }
 
         float key2freq(Key key){
-            return pitch(float(PITCHES_PER_OCTAVE
-                               *(key.octave - OCTAVE_PITCH_OFFSET)
-                               +(key.note - NOTE_PITCH_OFFSET)
-                               ));
+            return key2freq(key.note, key.octave);
         }
     }
 
@@ -49,7 +46,7 @@ namespace  CodeTracker{
         this->instrument_index = instrument; this->volume = vol; this->effects = effects;
     }
 
-    Instruction::Instruction() {this->volume = CONTINUE; this->instrument_index = CONTINUE; this->key = Key(); this->effects = nullptr;}
+    Instruction::Instruction() {this->volume = Notes::CONTINUE; this->instrument_index = Notes::CONTINUE; this->key = Key(); this->effects = nullptr;}
 
     Instruction::~Instruction() {delete[] this->effects;}
 
@@ -148,6 +145,9 @@ namespace  CodeTracker{
     float Track::play(double t, Channel *chan) {
         if(chan->getNumber() > this->channels){return 0.0f;}
         if(chan->isEnable()) {
+            /*double time_in_track = t;//fmod(t, double(this->duration));
+            while(time_in_track >= this->duration)
+                time_in_track -= this->duration;*/
             double time_in_track = fmod(t, double(this->duration));
             uint8_t row_index = floor(time_in_track / this->step);
             uint8_t pattern_index = floor(row_index / this->rows);
@@ -164,18 +164,14 @@ namespace  CodeTracker{
                         chan->setTime(t);
                         chan->setTrack(this);
                     }
-                    //return this->volume * chan->getVolume()
-                     //       * this->instruments_bank[current_instruction->instrument_index]->play(current_instruction->volume, current_instruction->key, t - chan->getTime());
                 }else{
-                    if(current_instruction->instrument_index == RELEASE && chan->getLastInstruction()->instrument_index < this->instruments){
+                    if(current_instruction->instrument_index == Notes::RELEASE && chan->getLastInstruction()->instrument_index < this->instruments){
                         if(!chan->isReleased()){
                             chan->setRelease(true);
                             chan->setTimeRelease(t);
                             chan->setTrack(this);
                             this->instruments_bank[chan->getLastInstruction()->instrument_index]->get_oscillator()->setRelease(true);
                         }
-                       // return this->volume * chan->getVolume()
-                          ///     * this->instruments_bank[chan->getLastInstruction()->instrument_index]->play(chan->getLastInstruction()->volume, chan->getLastInstruction()->key, t - chan->getTime(), t - chan->getTimeRelease());
                     }
                 }
                 if (chan->getLastInstruction() != nullptr && chan->getTrack() != nullptr){

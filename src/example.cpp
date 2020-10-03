@@ -1,12 +1,12 @@
 //
-// Created by Administrateur on 30/08/2020.
+// Created by Abdulmajid, Olivier NASSER on 30/08/2020.
 //
 
 #include "example.hpp"
 namespace ssf2_credit_theme{
 
     CodeTracker::Instrument** gen_instrubank(){
-        printf("BANK OF %d INITIALIZING\n", INSTRUMENTS);
+        printf("BANK OF %d INSTRUMENTS INITIALIZING\n", INSTRUMENTS);
         //*******************************************INSTRUMENTS BANK*************************************************//
         CodeTracker::Instrument** instrubank;
         instrubank = new CodeTracker::Instrument*[INSTRUMENTS];

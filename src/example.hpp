@@ -1,5 +1,5 @@
 //
-// Created by Administrateur on 30/08/2020.
+// Created by Abdulmajid, Olivier NASSER on 30/08/2020.
 //
 
 #ifndef CODETRACKER_EXAMPLE_HPP

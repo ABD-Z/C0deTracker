@@ -221,7 +221,7 @@ namespace  CodeTracker{
 
 
         float s = 0.f;
-        for(int_fast8_t i = this->getNumberofChannels()-1; i >= 3; --i){
+        for(int_fast8_t i = this->getNumberofChannels()-1; i >= 0; --i){
             if(chan[i].isEnable()) {
                 uint_fast8_t chan_number = chan[i].getNumber();
                 uint_fast8_t pattern_index = *this->pattern_indices[chan_number * this->frames + index];

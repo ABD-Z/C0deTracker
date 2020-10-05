@@ -6,14 +6,14 @@
 
 namespace CodeTracker {
 
-    Oscillator::Oscillator(uint8_t wavetype){ this->wavetype = wavetype;}
-    Oscillator::Oscillator(uint8_t wavetype, float dc) {this->wavetype = wavetype; this->dutycycle = dc;}
-    Oscillator::Oscillator(uint8_t wavetype, float dc, float p) {this->wavetype = wavetype; this->dutycycle = dc; this->phase = p;}
+    Oscillator::Oscillator(uint_fast8_t wavetype){ this->wavetype = wavetype;}
+    Oscillator::Oscillator(uint_fast8_t wavetype, float dc) {this->wavetype = wavetype; this->dutycycle = dc;}
+    Oscillator::Oscillator(uint_fast8_t wavetype, float dc, float p) {this->wavetype = wavetype; this->dutycycle = dc; this->phase = p;}
 
     Oscillator::~Oscillator() = default;
 
-    void Oscillator::setWavetype(uint8_t wavetype) { this->wavetype = wavetype;}
-    uint8_t Oscillator::getWavetype() {return this->wavetype;}
+    void Oscillator::setWavetype(uint_fast8_t wavetype) { this->wavetype = wavetype;}
+    uint_fast8_t Oscillator::getWavetype() {return this->wavetype;}
 
     void Oscillator::setDutycycle(float dc) { this->dutycycle = dc;}
     float Oscillator::getDutycycle() {return this->dutycycle;}

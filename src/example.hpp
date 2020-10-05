@@ -8,19 +8,19 @@
 
 
 namespace ssf2_credit_theme{
-    const uint8_t ROWS = 64;
-    const uint8_t FRAMES = 4;
-    const uint8_t CHANNELS = 5;
+    const uint_fast8_t ROWS = 64;
+    const uint_fast8_t FRAMES = 4;
+    const uint_fast8_t CHANNELS = 5;
     const float CLOCK = 60.f;
     const float SPEED = 3.f;
     const float BASETIME = 2.f;
-    const uint8_t INSTRUMENTS = 5;
+    const uint_fast8_t INSTRUMENTS = 5;
     enum instrument_name{KICK, SNARE, STRING, BASS, MAIN2};
 
     CodeTracker::Track* init_track();
 
     CodeTracker::Instrument** gen_instrubank();
-    uint8_t**  gen_track_patterns_indices();
+    uint_fast8_t**  gen_track_patterns_indices();
     CodeTracker::Pattern** gen_patterns();
 
 

@@ -4,10 +4,10 @@
 #include "code_tracker.hpp"
 
 namespace CodeTracker {
-    PSG::PSG(uint8_t wavetype) : Oscillator(wavetype) {}
-    PSG::PSG(uint8_t wavetype, ADSR amp_enveloppe) : Oscillator(wavetype) {this->amp_envelope = amp_enveloppe;}
-    PSG::PSG(uint8_t wavetype, float dc, ADSR amp_enveloppe) : Oscillator(wavetype, dc) {this->amp_envelope = amp_enveloppe;}
-    PSG::PSG(uint8_t wavetype, float dc, float p, ADSR amp_enveloppe) : Oscillator(wavetype, dc, p) {this->amp_envelope = amp_enveloppe;}
+    PSG::PSG(uint_fast8_t wavetype) : Oscillator(wavetype) {}
+    PSG::PSG(uint_fast8_t wavetype, ADSR amp_enveloppe) : Oscillator(wavetype) { this->amp_envelope = amp_enveloppe;}
+    PSG::PSG(uint_fast8_t wavetype, float dc, ADSR amp_enveloppe) : Oscillator(wavetype, dc) { this->amp_envelope = amp_enveloppe;}
+    PSG::PSG(uint_fast8_t wavetype, float dc, float p, ADSR amp_enveloppe) : Oscillator(wavetype, dc, p) { this->amp_envelope = amp_enveloppe;}
 
     PSG::~PSG() {Oscillator::~Oscillator();}
 

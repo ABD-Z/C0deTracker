@@ -5,7 +5,7 @@
 
 namespace  CodeTracker{
 
-    Key::Key(uint_fast8_t n, uint_fast8_t o) {this->note = n; this->octave = o;}
+    Key::Key(float n, float o) { this->note = n; this->octave = o;}
 
     Key::Key(){this->note = Notes::CONTINUE; this->octave = Notes::CONTINUE;};
 
@@ -15,7 +15,7 @@ namespace  CodeTracker{
     namespace Notes {
         float pitch(float p){return pow(1.059460646483f, p) * 440.0f;}
 
-        float key2freq(uint_fast8_t note , uint_fast8_t octave){
+        float key2freq(float note , float octave){
             //A4 == 440 HZ = pitch 0
             //-12 pitch == 3A == 220 HZ
             //+12
@@ -34,15 +34,15 @@ namespace  CodeTracker{
         this->instrument_index = instrument; this->volume = vol; this->effects = nullptr;
     }
 
-    Instruction::Instruction(uint_fast8_t instrument, uint_fast8_t note, uint_fast8_t octave, float vol) : key(Key(note,octave)) {
+    Instruction::Instruction(uint_fast8_t instrument, float note, float octave, float vol) : key(Key(note, octave)) {
         this->instrument_index = instrument; this->volume = vol; this->effects = nullptr;
     }
 
-    Instruction::Instruction(uint_fast8_t instrument, Key k, float vol, uint_fast32_t *effects) : key(k){
+    Instruction::Instruction(uint_fast8_t instrument, Key k, float vol, uint_fast32_t**effects) : key(k){
         this->instrument_index = instrument; this->volume = vol; this->effects = effects;
     }
 
-    Instruction::Instruction(uint_fast8_t instrument, uint_fast8_t note, uint_fast8_t octave, float vol, uint_fast32_t *effects) : key(note,octave) {
+    Instruction::Instruction(uint_fast8_t instrument, float note, float octave, float vol, uint_fast32_t**effects) : key(note, octave) {
         this->instrument_index = instrument; this->volume = vol; this->effects = effects;
     }
 
@@ -130,13 +130,15 @@ namespace  CodeTracker{
 
 
     Track::Track(float clk, float basetime, float speed, uint_fast8_t rows, uint_fast8_t frames, uint_fast8_t channels,
-                 Instrument** instruments_bank, uint_fast8_t numb_of_instruments, Pattern** track_patterns, uint_fast8_t** pattern_indices) {
+                 Instrument** instruments_bank, uint_fast8_t numb_of_instruments, Pattern** track_patterns, uint_fast8_t** pattern_indices,
+                 const uint_fast8_t* effects_per_chan) {
         this->clk = clk; this->basetime = basetime; this->speed = speed;
         this->rows = rows; this->frames = frames;
         this->channels = channels; this->instruments_bank = instruments_bank; this->instruments = numb_of_instruments;
         this->track_patterns = track_patterns; this->pattern_indices = pattern_indices;
         this->step = this->basetime * this->speed / this->clk;
         this->duration = float(this->frames * this->rows) * this-> step;
+        this->fx_per_chan = effects_per_chan;
         printf("STEP : %f\n",this->step);
         printf("DURATION : %f\n", this->duration);
     }
@@ -212,7 +214,47 @@ namespace  CodeTracker{
         return 0.0f;
     }
 
+
+    void Track::update_fx(double t) {
+        this->volume -= this->volume_slide_down*(t-this->volume_slide_time)*this->step;
+        if(this->volume <= 0){this->volume = 0.f; this->volume_slide_down = 0.f;}
+        this->volume += this->volume_slide_up*(t-this->volume_slide_time)*this->step;
+        if(this->volume >= MASTER_VOLUME){this->volume = MASTER_VOLUME; this->volume_slide_up = 0.f;}
+        if(this->tremolo_speed == 0.f || this->tremolo_depth == 0.f){
+            this->tremolo_val = 1.0f;
+        }else{
+            this->tremolo_val = this->tremolo_depth * sin(TWOPI * this->tremolo_speed *(t - this->tremolo_time));
+        }
+        //printf("volume %f", this->volume);
+    }
+
+    void Track::decode_fx(uint_fast32_t fx, double t) {
+        uint_fast8_t fx_code =  fx >> 4*6;
+        uint_fast32_t fx_val = fx & 0x00FFFFFF;
+        printf("%.3f FX CODE : %x ; FX VAL : %x\n",t, fx_code, fx_val);
+        switch(fx_code){
+            case 0x03://set pitch
+                this->pitch = (float(fx_val) - float(0x800000))/float(0x800000); printf("pitch %f\n", this->pitch);
+                break;
+            case 0x04://set volume
+                this->volume = float(fx_val) / float(0x00FFFFFF);
+                break;
+            case 0x05://volume slide up
+                this->volume_slide_up = float(fx_val) / float(0x00FFFFFF); this->volume_slide_down = 0.f; this->volume_slide_time = t;
+                break;
+            case 0x06://volume slide down
+                this->volume_slide_down = float(fx_val) / float(0x00FFFFFF); this->volume_slide_up = 0.f; this->volume_slide_time = t;
+                break;
+            case 0x07://tremolo
+                this->tremolo_speed = float((fx_val >> 4*3))/float(0xFFF); this->tremolo_depth = float(fx_val & 0xFFF)/float(0xFFF); this->tremolo_time = t;
+                break;
+            default:
+                (printf("unsupported fx"));
+        }
+    }
+
     float Track::play(double t, Channel *chan) {
+        this->update_fx(t);
         double time_in_track = fmod(t, double(this->duration));
 
         uint_fast8_t row_index = floor(time_in_track / this->step);
@@ -235,6 +277,16 @@ namespace  CodeTracker{
                         chan[i].setTrack(this);
                         chan[i].setInstructionState(current_instruction);
                         this->instruments_bank[chan[i].getInstructionState()->instrument_index]->get_oscillator()->setRelease(false);
+                        if(current_instruction->effects != nullptr){
+                            for(int_fast8_t fx_indx = this->fx_per_chan[chan_number] - 1; fx_indx >= 0; --fx_indx) {
+                                if (current_instruction->effects[fx_indx] != nullptr) {
+                                    //printf("CHAN %d EFFECT %d : %x\n", chan_number, fx_indx,
+                                       //*current_instruction->effects[fx_indx]);
+                                    this->decode_fx(*current_instruction->effects[fx_indx], t);
+                                }
+                            }
+
+                        }
                     }
                 }else{
                     if(chan[i].getLastInstructionAddress() != nullptr){
@@ -256,19 +308,28 @@ namespace  CodeTracker{
                         }
                     }
                 }
+
                 if (chan[i].getLastInstructionAddress() != nullptr && chan[i].getTrack() != nullptr){
                     if(!chan[i].isReleased()){
-                        s += this->volume * chan[i].getVolume()
+                        s +=  chan[i].getVolume()
                                * this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
-                                chan[i].getInstructionState()->volume, chan[i].getInstructionState()->key, t - chan[i].getTime());
+                                chan[i].getInstructionState()->volume,
+                                chan[i].getInstructionState()->key.note + this->pitch, chan[i].getInstructionState()->key.octave,
+                                t - chan[i].getTime());
                     }else{
-                        s += this->volume * chan[i].getVolume()
+                        s +=   chan[i].getVolume()
                                * this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
-                                chan[i].getInstructionState()->volume, chan[i].getInstructionState()->key, t - chan[i].getTime(), t - chan[i].getTimeRelease());
+                                chan[i].getInstructionState()->volume,
+                                chan[i].getInstructionState()->key.note + this->pitch, chan[i].getInstructionState()->key.octave,
+                                t - chan[i].getTime(), t - chan[i].getTimeRelease());
                     }
                 }
             }
         }
-        return s;
+        return this->volume * this->tremolo_val * s;
     }
+
+
+
+
 }

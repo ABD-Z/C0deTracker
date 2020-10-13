@@ -38,7 +38,7 @@
 #define CODETRACKER_CODE_TRACKER_HPP
 
 #include <cmath>
-#include <iostream>
+//#include <iostream>
 #include <functional>
 
 
@@ -74,7 +74,7 @@ namespace CodeTracker {
          * @param n note of the key. See enumeration in Notes namespace.
          * @param o octave of the key, from 0 to 8 (above 8 should not be hearable).
          */
-        Key(uint_fast8_t n, uint_fast8_t o); uint_fast8_t note, octave;
+        Key(float n, float o); float note, octave;
     };
 
     namespace Notes {
@@ -114,7 +114,7 @@ namespace CodeTracker {
          * @return frequency of the note and octave in float
          * @note This function calls pitch(float p). A4 (440 Hz) corresponds to pitch 0.
          */
-        float key2freq(uint_fast8_t note , uint_fast8_t octave);
+        float key2freq(float note , float octave);
         /**
          * @brief This function gives the frequency of a given key
          * @param key (see structure Key)
@@ -287,7 +287,7 @@ namespace CodeTracker {
          * @return The signal
          */
         float play(float a, Key k, double t);
-        float play(float a, uint_fast8_t note, uint_fast8_t octave, float t);
+        float play(float a, float note, float octave, float t);
         /**
          * @brief Plays sounds at t time and rt release time with a given key and amplitude
          * @param a Amplitude
@@ -296,7 +296,7 @@ namespace CodeTracker {
          * @return The signal
          */
         float play(float a, Key k, double t, double rt);
-        float play(float a, uint_fast8_t note, uint_fast8_t octave, float t, float rt);
+        float play(float a, float note, float octave, float t, float rt);
 
     private:
         float global_volume = 1.0f;
@@ -310,15 +310,15 @@ namespace CodeTracker {
      * @see Pattern
      */
     struct Instruction{
-        uint_fast8_t instrument_index{}; Key key; float volume{}; uint_fast32_t * effects{};//efect tab
+        uint_fast8_t instrument_index{}; Key key; float volume{}; uint_fast32_t** effects{};//efect tab
         /**
          * @brief Default constructor to create empty instruction
          */
         Instruction();
         Instruction(uint_fast8_t instrument, Key k, float vol);
-        Instruction(uint_fast8_t instrument, uint_fast8_t note, uint_fast8_t octave, float vol);
-        Instruction(uint_fast8_t instrument, Key k, float vol, uint_fast32_t* effects);
-        Instruction(uint_fast8_t instrument, uint_fast8_t note, uint_fast8_t octave, float vol, uint_fast32_t *effects);
+        Instruction(uint_fast8_t instrument, float note, float octave, float vol);
+        Instruction(uint_fast8_t instrument, Key k, float vol, uint_fast32_t** effects);
+        Instruction(uint_fast8_t instrument, float note, float octave, float vol, uint_fast32_t** effects);
         /**
          * @brief Destructor.
          */
@@ -364,7 +364,8 @@ namespace CodeTracker {
          * @param pattern_indices Pointer to the array containing the pointers to the indices of the patterns (to avoid writing several time same pattern)
          */
         Track(float clk, float basetime, float speed, uint_fast8_t rows, uint_fast8_t frames, uint_fast8_t channels,
-              Instrument** instruments_bank, uint_fast8_t numb_of_instruments, Pattern** track_patterns, uint_fast8_t** pattern_indices);
+              Instrument** instruments_bank, uint_fast8_t numb_of_instruments, Pattern** track_patterns, uint_fast8_t** pattern_indices,
+              const uint_fast8_t* effects_per_chan);
         /**
          * @brief free everything related to the track, patterns, patterns indices, instruments
          */
@@ -391,12 +392,23 @@ namespace CodeTracker {
         float clk , basetime, speed, step;
         uint_fast8_t  rows, frames;
         uint_fast8_t channels;
-        float volume = 1.0f, pitch = 1.0f;
+        float volume = 1.0f, pitch = 0.0f;
         Instrument** instruments_bank;
         uint_fast8_t instruments;
         Pattern** track_patterns;
         uint_fast8_t** pattern_indices;//new uint_8[channels*frames]
         float duration;
+        const uint_fast8_t *fx_per_chan;
+        void decode_fx(uint_fast32_t fx, double t);
+        float volume_slide_up = 0.f;
+        float volume_slide_down = 0.f;
+        double volume_slide_time = 0.0;
+        float tremolo_speed = 0.0f;
+        float tremolo_depth = 0.0f;
+        float tremolo_val = 1.0f;
+        double tremolo_time = 0.0;
+
+        void update_fx(double t);
     };
 
     /**

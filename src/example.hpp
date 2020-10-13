@@ -15,6 +15,7 @@ namespace ssf2_credit_theme{
     const float SPEED = 3.f;
     const float BASETIME = 2.f;
     const uint_fast8_t INSTRUMENTS = 5;
+    const uint_fast8_t fx_per_chan[CHANNELS] = {2,1,1,1,1};
     enum instrument_name{KICK, SNARE, STRING, BASS, MAIN2};
 
     CodeTracker::Track* init_track();

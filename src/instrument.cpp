@@ -19,7 +19,7 @@ namespace CodeTracker{
         return this->global_volume * this->osc->oscillate(a, Notes::key2freq(k), t, this->osc->getDutycycle(),
                                                           this->osc->getPhase());
     }
-    float Instrument::play(float a, uint_fast8_t note, uint_fast8_t octave, float t) {
+    float Instrument::play(float a, float note, float octave, float t) {
         return this->global_volume * this->osc->oscillate(a, Notes::key2freq(note, octave), t, this->osc->getDutycycle(),
                                                           this->osc->getPhase());
     }
@@ -29,7 +29,7 @@ namespace CodeTracker{
                                                                  this->osc->getPhase());
     }
 
-    float Instrument::play(float a, uint_fast8_t note, uint_fast8_t octave, float t, float rt) {
+    float Instrument::play(float a, float note, float octave, float t, float rt) {
         return this->global_volume * this->osc->oscillate(a, Notes::key2freq(note, octave), t, rt, this->osc->getDutycycle(),
                                                           this->osc->getPhase());
     }

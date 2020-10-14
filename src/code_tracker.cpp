@@ -223,7 +223,12 @@ namespace  CodeTracker{
         if(this->tremolo_speed == 0.f || this->tremolo_depth == 0.f){
             this->tremolo_val = 1.0f;
         }else{
-            this->tremolo_val = this->tremolo_depth * sin(TWOPI * this->tremolo_speed *(t - this->tremolo_time));
+            this->tremolo_val = 0.5f * this->tremolo_depth * sin(TWOPI * this->tremolo_speed *(t - this->tremolo_time)) + (1 - 0.5f * this->tremolo_depth);
+        }
+        if(this->vibrato_speed == 0.f || this->vibrato_depth == 0.f){
+            this->vibrato_val = 0.0f;
+        }else{
+            this->vibrato_val = this->vibrato_depth * sin(TWOPI * this->vibrato_speed *(t - this->vibrato_time));
         }
         //printf("volume %f", this->volume);
     }
@@ -233,6 +238,9 @@ namespace  CodeTracker{
         uint_fast32_t fx_val = fx & 0x00FFFFFF;
         printf("%.3f FX CODE : %x ; FX VAL : %x\n",t, fx_code, fx_val);
         switch(fx_code){
+            case 0x02://vibrato
+                this->vibrato_speed = float((fx_val >> 4*3))/float(0x100); this->vibrato_depth = float(fx_val & 0xFFF)/float(0x800); this->vibrato_time = t; printf("vibrato speed %.2f  depth %.2f\n", this->vibrato_speed, this->vibrato_depth);
+                break;
             case 0x03://set pitch
                 this->pitch = (float(fx_val) - float(0x800000))/float(0x800000); printf("pitch %f\n", this->pitch);
                 break;
@@ -246,7 +254,7 @@ namespace  CodeTracker{
                 this->volume_slide_down = float(fx_val) / float(0x00FFFFFF); this->volume_slide_up = 0.f; this->volume_slide_time = t;
                 break;
             case 0x07://tremolo
-                this->tremolo_speed = float((fx_val >> 4*3))/float(0xFFF); this->tremolo_depth = float(fx_val & 0xFFF)/float(0xFFF); this->tremolo_time = t;
+                this->tremolo_speed =  float(fx_val >> 4*3)/float(0x800); this->tremolo_depth = float(fx_val & 0xFFF)/float(0xFFF); this->tremolo_time = t; //printf("tremolo speed %f\n", this->tremolo_speed);
                 break;
             default:
                 (printf("unsupported fx"));
@@ -314,13 +322,13 @@ namespace  CodeTracker{
                         s +=  chan[i].getVolume()
                                * this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
                                 chan[i].getInstructionState()->volume,
-                                chan[i].getInstructionState()->key.note + this->pitch, chan[i].getInstructionState()->key.octave,
+                                (chan[i].getInstructionState()->key.note + this->pitch) + this->vibrato_val, chan[i].getInstructionState()->key.octave,
                                 t - chan[i].getTime());
                     }else{
                         s +=   chan[i].getVolume()
                                * this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
                                 chan[i].getInstructionState()->volume,
-                                chan[i].getInstructionState()->key.note + this->pitch, chan[i].getInstructionState()->key.octave,
+                                (chan[i].getInstructionState()->key.note + this->pitch) + this->vibrato_val, chan[i].getInstructionState()->key.octave,
                                 t - chan[i].getTime(), t - chan[i].getTimeRelease());
                     }
                 }

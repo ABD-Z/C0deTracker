@@ -408,6 +408,10 @@ namespace CodeTracker {
         float tremolo_val = 1.0f;
         double tremolo_time = 0.0;
 
+        float vibrato_speed = 0.0f;
+        float vibrato_depth = 0.0f;
+        float vibrato_val = 1.0f;
+        double vibrato_time = 0.0;
         void update_fx(double t);
     };
 

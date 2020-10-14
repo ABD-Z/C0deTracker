@@ -90,7 +90,7 @@ namespace ssf2_credit_theme{
         INPUT(patterns, 0 * FRAMES + 1, 60, SNARE, 0.5f, Key(G_S,3));
 
         printf("WRITING PATTERN 2 CHAN 0\n");
-        INPUT(patterns, 0 * FRAMES + 2,  0, KICK, .5f, Key(A,1));
+        INPUT(patterns, 0 * FRAMES + 2,  0, KICK, .5f, Key(A,1)/*, new uint_fast32_t* [fx_per_chan[0]]{ new uint_fast32_t(0x02FFFFFF)}*/);
         INPUT(patterns, 0 * FRAMES + 2, 4, SNARE, .5f, Key(G_S,2));
         INPUT(patterns, 0 * FRAMES + 2,  8, KICK, .5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 2, 12, SNARE, .5f, Key(G_S,2));
@@ -192,7 +192,7 @@ namespace ssf2_credit_theme{
         RELES(patterns, 1 * FRAMES + 1, 32 + 14 + 12);
 
         printf("WRITING PATTERN 0 CHAN 2\n");
-        INPUT(patterns, 2 * FRAMES + 0, 0, STRING, 0.15f, Key(G_S,4), new uint_fast32_t* [fx_per_chan[2]]{ new uint_fast32_t(0x07000000)});
+        INPUT(patterns, 2 * FRAMES + 0, 0, STRING, 0.15f, Key(G_S,4), new uint_fast32_t* [fx_per_chan[2]]{ new uint_fast32_t(0x02A0005F)});
         INPUT(patterns, 2 * FRAMES + 0, 32, STRING, 0.15f, Key(G_S,4));
         INPUT(patterns, 2 * FRAMES + 0, 62, STRING, 0.15f, Key(G_S,4));
 
@@ -215,7 +215,7 @@ namespace ssf2_credit_theme{
         RELES(patterns, 3 * FRAMES + 1, 63);
 
         printf("WRITING PATTERN 2 CHAN 3\n");
-        INPUT(patterns, 3 * FRAMES + 2, 0, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 2, 0, BASS, 1.f, Key(C_S,2), new uint_fast32_t* [fx_per_chan[0]]{ new uint_fast32_t(0x03800000)});
         RELES(patterns, 3 * FRAMES + 2, 1);
         INPUT(patterns, 3 * FRAMES + 2, 2, BASS, 1.f, Key(C_S,2));
         RELES(patterns, 3 * FRAMES + 2, 3);
@@ -350,7 +350,7 @@ namespace ssf2_credit_theme{
         RELES(patterns, 3 * FRAMES + 3, 63);
 
         printf("WRITING PATTERN 0 CHAN 4\n");
-        INPUT(patterns, 4 * FRAMES + 0, 4, MAIN2, 0.1f, Key(G_S,5), new uint_fast32_t* [fx_per_chan[0]]{ new uint_fast32_t(0x03000000)});
+        INPUT(patterns, 4 * FRAMES + 0, 4, MAIN2, 0.1f, Key(G_S,5));
         RELES(patterns, 4 * FRAMES + 0, 6);
         INPUT(patterns, 4 * FRAMES + 0, 8, MAIN2, 0.1f, Key(G_S,5));
         INPUT(patterns, 4 * FRAMES + 0, 10, MAIN2, 0.1f, Key(G_S,5));

@@ -380,6 +380,8 @@ namespace CodeTracker {
 
         float play(double t, Channel* chan);
 
+        float play_(double t, Channel* chan);
+
         /**
          * @return number of channels dedicated fo the track
          */
@@ -399,10 +401,19 @@ namespace CodeTracker {
         uint_fast8_t** pattern_indices;//new uint_8[channels*frames]
         float duration;
         const uint_fast8_t *fx_per_chan;
+
+        uint_fast8_t row_counter = 0, frame_counter = 0;
+        double time_advance = 0.0;
+
         void decode_fx(uint_fast32_t fx, double t);
         float volume_slide_up = 0.f;
         float volume_slide_down = 0.f;
         double volume_slide_time = 0.0;
+
+        float pitch_slide_up = 0.f;
+        float pitch_slide_down = 0.f;
+        double pitch_slide_time = 0.0;
+
         float tremolo_speed = 0.0f;
         float tremolo_depth = 0.0f;
         float tremolo_val = 1.0f;
@@ -412,6 +423,10 @@ namespace CodeTracker {
         float vibrato_depth = 0.0f;
         float vibrato_val = 1.0f;
         double vibrato_time = 0.0;
+
+        float newstep;
+        double time_offset = 0.0;
+        double time_mul = 2.0;
         void update_fx(double t);
     };
 

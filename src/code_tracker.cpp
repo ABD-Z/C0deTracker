@@ -136,7 +136,7 @@ namespace  CodeTracker{
         this->rows = rows; this->frames = frames;
         this->channels = channels; this->instruments_bank = instruments_bank; this->instruments = numb_of_instruments;
         this->track_patterns = track_patterns; this->pattern_indices = pattern_indices;
-        this->step = this->basetime * this->speed / this->clk;
+        this->step = this->basetime * this->speed / this->clk; this->newstep = step;
         this->duration = float(this->frames * this->rows) * this-> step;
         this->fx_per_chan = effects_per_chan;
         printf("STEP : %f\n",this->step);
@@ -216,10 +216,18 @@ namespace  CodeTracker{
 
 
     void Track::update_fx(double t) {
-        this->volume -= this->volume_slide_down*(t-this->volume_slide_time)*this->step;
+        this->volume -= (this->volume_slide_down/this->speed) *(t-this->volume_slide_time);
         if(this->volume <= 0){this->volume = 0.f; this->volume_slide_down = 0.f;}
-        this->volume += this->volume_slide_up*(t-this->volume_slide_time)*this->step;
+        this->volume += (this->volume_slide_up/this->speed) *(t-this->volume_slide_time);
         if(this->volume >= MASTER_VOLUME){this->volume = MASTER_VOLUME; this->volume_slide_up = 0.f;}
+
+
+        this->pitch -= (this->pitch_slide_down/this->speed) * (t-this->pitch_slide_time);
+        this->pitch += (this->pitch_slide_up/this->speed) * (t-this->pitch_slide_time);
+
+
+
+
         if(this->tremolo_speed == 0.f || this->tremolo_depth == 0.f){
             this->tremolo_val = 1.0f;
         }else{
@@ -236,8 +244,15 @@ namespace  CodeTracker{
     void Track::decode_fx(uint_fast32_t fx, double t) {
         uint_fast8_t fx_code =  fx >> 4*6;
         uint_fast32_t fx_val = fx & 0x00FFFFFF;
+        printf("pitch %f\n", this->pitch);
         printf("%.3f FX CODE : %x ; FX VAL : %x\n",t, fx_code, fx_val);
         switch(fx_code){
+            case 0x00://pitch slide up
+                this->pitch_slide_up = float(fx_val) / float(0x00FFFFFF); this->pitch_slide_down = 0.f; this->pitch_slide_time = t;
+                break;
+            case 0x01://pitch slide down
+                this->pitch_slide_down = float(fx_val) / float(0x00FFFFFF); this->pitch_slide_up = 0.f; this->pitch_slide_time = t;
+                break;
             case 0x02://vibrato
                 this->vibrato_speed = float((fx_val >> 4*3))/float(0x100); this->vibrato_depth = float(fx_val & 0xFFF)/float(0x800); this->vibrato_time = t; printf("vibrato speed %.2f  depth %.2f\n", this->vibrato_speed, this->vibrato_depth);
                 break;
@@ -256,19 +271,24 @@ namespace  CodeTracker{
             case 0x07://tremolo
                 this->tremolo_speed =  float(fx_val >> 4*3)/float(0x800); this->tremolo_depth = float(fx_val & 0xFFF)/float(0xFFF); this->tremolo_time = t; //printf("tremolo speed %f\n", this->tremolo_speed);
                 break;
+            case 0x09:
+                    this->speed = float(fx_val >> 4 * 3) + float(fx_val & 0xFFF) / float(0xFFF);;
+                    this->step = this->basetime * this->speed / this->clk;
+                    this->duration = float(this->frames * this->rows) * this->step;
+                break;
             default:
-                (printf("unsupported fx"));
+                printf("unknown effect\n");
+                break;
         }
     }
 
     float Track::play(double t, Channel *chan) {
+        t += this->time_offset;
         this->update_fx(t);
         double time_in_track = fmod(t, double(this->duration));
-
         uint_fast8_t row_index = floor(time_in_track / this->step);
         uint_fast8_t index = floor(row_index / this->rows);
-        row_index =  row_index% this->rows;
-
+        row_index =  row_index % this->rows;
 
         float s = 0.f;
         for(int_fast8_t i = this->getNumberofChannels()-1; i >= 0; --i){
@@ -337,7 +357,94 @@ namespace  CodeTracker{
         return this->volume * this->tremolo_val * s;
     }
 
+    float Track::play_(double t, Channel *chan) {
+        //t += this->time_offset;
+        this->update_fx(t);
 
+
+        if(t- this->time_advance >= this->step){
+            this->time_advance += this->step;
+            ++this->row_counter;
+           // printf("row ++ \n");
+        }
+
+        if(this->row_counter >= this->rows){
+            this->row_counter = 0;
+            ++this->frame_counter;
+            //printf("frame ++ \n");
+        }
+        if(this->frame_counter >= this->frames){
+            this->frame_counter = 0;
+            //printf("frame counter 0 \n");
+        }
+
+        float s = 0.f;
+        for(int_fast8_t i = this->getNumberofChannels()-1; i >= 0; --i){
+            if(chan[i].isEnable()) {
+                uint_fast8_t chan_number = chan[i].getNumber();
+                uint_fast8_t pattern_index = *this->pattern_indices[chan_number * this->frames + this->frame_counter];
+                Pattern* pat = this->track_patterns[chan_number * (this->frames) + pattern_index];
+                Instruction* current_instruction = pat->instructions[this->row_counter];
+                if(current_instruction->instrument_index < this->instruments){
+                    if(current_instruction != chan[i].getLastInstructionAddress()){
+                        chan[i].setLastInstructionAddress(current_instruction);
+                        chan[i].setRelease(false);
+                        chan[i].setTime(t);
+                        chan[i].setTrack(this);
+                        chan[i].setInstructionState(current_instruction);
+                        this->instruments_bank[chan[i].getInstructionState()->instrument_index]->get_oscillator()->setRelease(false);
+                        if(current_instruction->effects != nullptr){
+                            for(int_fast8_t fx_indx = this->fx_per_chan[chan_number] - 1; fx_indx >= 0; --fx_indx) {
+                                if (current_instruction->effects[fx_indx] != nullptr) {
+                                    //printf("CHAN %d EFFECT %d : %x\n", chan_number, fx_indx,
+                                    //*current_instruction->effects[fx_indx]);
+                                    this->decode_fx(*current_instruction->effects[fx_indx], t);
+                                }
+                            }
+
+                        }
+                    }
+                }else{
+                    if(chan[i].getLastInstructionAddress() != nullptr){
+                        if(current_instruction->instrument_index == Notes::RELEASE && chan[i].getLastInstructionAddress()->instrument_index < this->instruments){
+                            if(!chan[i].isReleased()){
+                                chan[i].setRelease(true);
+                                chan[i].setTimeRelease(t);
+                                chan[i].setTrack(this);
+                                this->instruments_bank[chan[i].getInstructionState()->instrument_index]->get_oscillator()->setRelease(true);
+                            }
+                            if(current_instruction->volume != Notes::CONTINUE &&  ( (0.f <= current_instruction->volume) || (current_instruction->volume <= MASTER_VOLUME) )){
+                                chan[i].setVolumeInstructionState(current_instruction->volume);
+                            }
+                        }
+                        if(current_instruction->instrument_index == Notes::CONTINUE && chan[i].getLastInstructionAddress()->instrument_index < this->instruments){
+                            if(current_instruction->volume != Notes::CONTINUE &&  ( (0.f <= current_instruction->volume) || (current_instruction->volume <= MASTER_VOLUME) )){
+                                chan[i].setVolumeInstructionState(current_instruction->volume);
+                            }
+                        }
+                    }
+                }
+
+                if (chan[i].getLastInstructionAddress() != nullptr && chan[i].getTrack() != nullptr){
+                    if(!chan[i].isReleased()){
+                        s +=  chan[i].getVolume()
+                              * this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
+                                chan[i].getInstructionState()->volume,
+                                (chan[i].getInstructionState()->key.note + this->pitch) + this->vibrato_val, chan[i].getInstructionState()->key.octave,
+                                t - chan[i].getTime());
+                    }else{
+                        s +=   chan[i].getVolume()
+                               * this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
+                                chan[i].getInstructionState()->volume,
+                                (chan[i].getInstructionState()->key.note + this->pitch) + this->vibrato_val, chan[i].getInstructionState()->key.octave,
+                                t - chan[i].getTime(), t - chan[i].getTimeRelease());
+                    }
+                }
+            }
+        }
+
+        return this->volume * this->tremolo_val * s;
+    }
 
 
 }

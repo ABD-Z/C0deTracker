@@ -77,7 +77,7 @@ namespace ssf2_credit_theme{
         INPUT(patterns, 0 * FRAMES + 0, 62, KICK, 0.5f, Key(A,1));
 
         printf("WRITING PATTERN 1 CHAN 0\n");
-        INPUT(patterns, 0 * FRAMES + 1, 8, KICK, 0.5f, Key(A,1));
+        INPUT(patterns, 0 * FRAMES + 1, 8, KICK, 0.5f, Key(A,1), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x090027FF), new uint_fast32_t(0x00000100)});
         INPUT(patterns, 0 * FRAMES + 1, 24, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 1, 32, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 1, 40, KICK, 0.5f, Key(A,1));
@@ -114,7 +114,7 @@ namespace ssf2_credit_theme{
         INPUT(patterns, 0 * FRAMES + 2, 62, KICK, 0.5f, Key(A,1));
 
         printf("WRITING PATTERN 3 CHAN 0\n");
-        INPUT(patterns, 0 * FRAMES + 3,  2, KICK, 0.5f, Key(A,1), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x0600008F)});
+        INPUT(patterns, 0 * FRAMES + 3,  2, KICK, 0.5f, Key(A,1), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x0600003F), new uint_fast32_t(0x01000100)});
         INPUT(patterns, 0 * FRAMES + 3, 4, SNARE, 0.5f, Key(G_S,2));
         INPUT(patterns, 0 * FRAMES + 3,  8, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 3, 12, SNARE, 0.5f, Key(G_S,2));
@@ -192,7 +192,7 @@ namespace ssf2_credit_theme{
         RELES(patterns, 1 * FRAMES + 1, 32 + 14 + 12);
 
         printf("WRITING PATTERN 0 CHAN 2\n");
-        INPUT(patterns, 2 * FRAMES + 0, 0, STRING, 0.15f, Key(G_S,4), new uint_fast32_t* [fx_per_chan[2]]{ new uint_fast32_t(0x02A0005F)});
+        INPUT(patterns, 2 * FRAMES + 0, 0, STRING, 0.15f, Key(G_S,4), new uint_fast32_t* [fx_per_chan[2]]{ new uint_fast32_t(0x02000000)});
         INPUT(patterns, 2 * FRAMES + 0, 32, STRING, 0.15f, Key(G_S,4));
         INPUT(patterns, 2 * FRAMES + 0, 62, STRING, 0.15f, Key(G_S,4));
 
@@ -215,7 +215,7 @@ namespace ssf2_credit_theme{
         RELES(patterns, 3 * FRAMES + 1, 63);
 
         printf("WRITING PATTERN 2 CHAN 3\n");
-        INPUT(patterns, 3 * FRAMES + 2, 0, BASS, 1.f, Key(C_S,2), new uint_fast32_t* [fx_per_chan[0]]{ new uint_fast32_t(0x03800000)});
+        INPUT(patterns, 3 * FRAMES + 2, 0, BASS, 1.f, Key(C_S,2));
         RELES(patterns, 3 * FRAMES + 2, 1);
         INPUT(patterns, 3 * FRAMES + 2, 2, BASS, 1.f, Key(C_S,2));
         RELES(patterns, 3 * FRAMES + 2, 3);

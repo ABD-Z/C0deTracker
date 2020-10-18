@@ -136,7 +136,7 @@ namespace  CodeTracker{
         this->rows = rows; this->frames = frames;
         this->channels = channels; this->instruments_bank = instruments_bank; this->instruments = numb_of_instruments;
         this->track_patterns = track_patterns; this->pattern_indices = pattern_indices;
-        this->step = this->basetime * this->speed / this->clk; this->newstep = step;
+        this->step = this->basetime * this->speed / this->clk;
         this->duration = float(this->frames * this->rows) * this-> step;
         this->fx_per_chan = effects_per_chan;
         printf("STEP : %f\n",this->step);
@@ -271,6 +271,9 @@ namespace  CodeTracker{
             case 0x07://tremolo
                 this->tremolo_speed =  float(fx_val >> 4*3)/float(0x800); this->tremolo_depth = float(fx_val & 0xFFF)/float(0xFFF); this->tremolo_time = t; //printf("tremolo speed %f\n", this->tremolo_speed);
                 break;
+            case 0x08://set global track panning
+                this->panning = float(fx_val)/float(0xFFFFFF);
+                break;
             case 0x09:
                     this->speed = float(fx_val >> 4 * 3) + float(fx_val & 0xFFF) / float(0xFFF);;
                     this->step = this->basetime * this->speed / this->clk;
@@ -357,7 +360,7 @@ namespace  CodeTracker{
         return this->volume * this->tremolo_val * s;
     }
 
-    float Track::play_(double t, Channel *chan) {
+    float* Track::play_(double t, Channel *chan) {
         //t += this->time_offset;
         this->update_fx(t);
 
@@ -442,8 +445,18 @@ namespace  CodeTracker{
                 }
             }
         }
+        static float res[2];
+        res[0] = this->volume * this->tremolo_val * s;
+        res[1] = res[0];
 
-        return this->volume * this->tremolo_val * s;
+        res[0] *= (1 - this->panning);//left
+        res[1] *= this->panning;//right
+
+        return res;
+    }
+
+    float Track::getPanning() {
+        return this->panning;
     }
 
 

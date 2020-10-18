@@ -380,7 +380,9 @@ namespace CodeTracker {
 
         float play(double t, Channel* chan);
 
-        float play_(double t, Channel* chan);
+        float* play_(double t, Channel* chan);
+
+        float getPanning();
 
         /**
          * @return number of channels dedicated fo the track
@@ -424,9 +426,9 @@ namespace CodeTracker {
         float vibrato_val = 1.0f;
         double vibrato_time = 0.0;
 
-        float newstep;
         double time_offset = 0.0;
-        double time_mul = 2.0;
+
+        float panning = 0.5f;
         void update_fx(double t);
     };
 

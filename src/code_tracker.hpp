@@ -436,6 +436,10 @@ namespace CodeTracker {
         uint_fast8_t rowtojump;
 
         bool stop = false;
+
+        float panning_slide_right = 0.f;
+        float panning_slide_left = 0.f;
+        double panning_slide_time = 0.0;
         void update_fx(double t);
 
 

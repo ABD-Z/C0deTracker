@@ -221,12 +221,13 @@ namespace  CodeTracker{
         this->volume += (this->volume_slide_up/this->speed) *(t-this->volume_slide_time);
         if(this->volume >= MASTER_VOLUME){this->volume = MASTER_VOLUME; this->volume_slide_up = 0.f;}
 
-
         this->pitch -= (this->pitch_slide_down/this->speed) * (t-this->pitch_slide_time);
-        this->pitch += (this->pitch_slide_up/this->speed) * (t-this->pitch_slide_time);
+        this->pitch = (this->pitch_slide_up/this->speed) * (t-this->pitch_slide_time);
 
-
-
+        this->panning += (this->panning_slide_right/this->speed) * (t - this->panning_slide_time);
+        if(this->panning >= MASTER_VOLUME){this->panning = MASTER_VOLUME; this->panning_slide_right = 0.f;}
+        this->panning -= (this->panning_slide_left/this->speed) * (t - this->panning_slide_time);
+        if(this->panning <= 0){this->panning = 0; this->panning_slide_left = 0.f;}
 
         if(this->tremolo_speed == 0.f || this->tremolo_depth == 0.f){
             this->tremolo_val = 1.0f;
@@ -248,13 +249,13 @@ namespace  CodeTracker{
         printf("%.3f FX CODE : %x ; FX VAL : %x\n",t, fx_code, fx_val);
         switch(fx_code){
             case 0x00://pitch slide up
-                this->pitch_slide_up = float(fx_val) / float(0x00FFFFFF); this->pitch_slide_down = 0.f; this->pitch_slide_time = t;
+                this->pitch_slide_up = float(fx_val) / float(0x00FFFFFF); this->pitch_slide_down = 0.f; this->pitch_slide_time = t; printf("pitch slide up %f\n", this->pitch_slide_up);
                 break;
             case 0x01://pitch slide down
                 this->pitch_slide_down = float(fx_val) / float(0x00FFFFFF); this->pitch_slide_up = 0.f; this->pitch_slide_time = t;
                 break;
             case 0x02://vibrato
-                this->vibrato_speed = float((fx_val >> 4*3))/float(0x100); this->vibrato_depth = float(fx_val & 0xFFF)/float(0x800); this->vibrato_time = t; printf("vibrato speed %.2f  depth %.2f\n", this->vibrato_speed, this->vibrato_depth);
+                this->vibrato_speed = float((fx_val >> 4*3))/float(0x100); this->vibrato_depth = float(fx_val & 0xFFF)/float(0x800); this->vibrato_time = t;
                 break;
             case 0x03://set pitch
                 this->pitch = (float(fx_val) - float(0x800000))/float(0x800000); printf("pitch %f\n", this->pitch);
@@ -274,12 +275,12 @@ namespace  CodeTracker{
             case 0x08://set global track panning
                 this->panning = float(fx_val)/float(0xFFFFFF);
                 break;
-            case 0x09:
+            case 0x09://change speed of the track
                 this->speed = float(fx_val >> 4 * 3) + float(fx_val & 0xFFF) / float(0xFFF);;
                 this->step = this->basetime * this->speed / this->clk;
                 this->duration = float(this->frames * this->rows) * this->step;
                 break;
-            case 0x0A:
+            case 0x0A:// jumpt to frame row
                 this->branch = true;
                 this->frametojump = fx_val >> 4*3;
                 this->rowtojump = fx_val & 0xFFF;
@@ -287,8 +288,14 @@ namespace  CodeTracker{
                     this->branch = false;
                 }
                 break;
-            case 0x0B:
+            case 0x0B://stop song
                 this->stop = true;
+                break;
+            case 0x0D://slide right panning
+                this->panning_slide_right = float(fx_val)/float(0xFFFFFF); this->panning_slide_left = 0.0f; this->panning_slide_time = t;
+                break;
+            case 0x0E://slide left panning
+                this->panning_slide_left = float(fx_val)/float(0xFFFFFF); this->panning_slide_right = 0.0f; this->panning_slide_time = t;
                 break;
             default:
                 printf("unknown effect\n");

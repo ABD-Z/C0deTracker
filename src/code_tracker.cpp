@@ -287,6 +287,9 @@ namespace  CodeTracker{
                     this->branch = false;
                 }
                 break;
+            case 0x0B:
+                this->stop = true;
+                break;
             default:
                 printf("unknown effect\n");
                 break;
@@ -371,10 +374,15 @@ namespace  CodeTracker{
 
     float* Track::play_(double t, Channel *chan) {
         //t += this->time_offset;
+        static float res[2];
         this->update_fx(t);
 
 
         if(t- this->time_advance >= this->step){
+            if(this->stop){
+                res[0] = 0; res[1] = 0;
+                return res;
+            }
             this->time_advance += this->step;
             ++this->row_counter;
             this->readFx = true;
@@ -460,7 +468,7 @@ namespace  CodeTracker{
                 }
             }
         }
-        static float res[2];
+
         res[0] = this->volume * this->tremolo_val * s;
         res[1] = res[0];
 

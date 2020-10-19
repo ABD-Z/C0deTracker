@@ -430,11 +430,15 @@ namespace CodeTracker {
         double time_offset = 0.0;
 
         float panning = 0.5f;
-        void update_fx(double t);
 
         bool branch = false;
         uint_fast8_t frametojump;
         uint_fast8_t rowtojump;
+
+        bool stop = false;
+        void update_fx(double t);
+
+
     };
 
     /**

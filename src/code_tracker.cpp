@@ -241,7 +241,7 @@ namespace  CodeTracker{
         //printf("volume %f", this->volume);
     }
 
-    void Track::decode_fx(uint_fast32_t fx, double t) {
+    bool Track::decode_fx(uint_fast32_t fx, double t) {
         uint_fast8_t fx_code =  fx >> 4*6;
         uint_fast32_t fx_val = fx & 0x00FFFFFF;
         printf("pitch %f\n", this->pitch);
@@ -275,14 +275,23 @@ namespace  CodeTracker{
                 this->panning = float(fx_val)/float(0xFFFFFF);
                 break;
             case 0x09:
-                    this->speed = float(fx_val >> 4 * 3) + float(fx_val & 0xFFF) / float(0xFFF);;
-                    this->step = this->basetime * this->speed / this->clk;
-                    this->duration = float(this->frames * this->rows) * this->step;
+                this->speed = float(fx_val >> 4 * 3) + float(fx_val & 0xFFF) / float(0xFFF);;
+                this->step = this->basetime * this->speed / this->clk;
+                this->duration = float(this->frames * this->rows) * this->step;
+                break;
+            case 0x0A:
+                this->branch = true;
+                this->frametojump = fx_val >> 4*3;
+                this->rowtojump = fx_val & 0xFFF;
+                if( (this->frametojump == this->frame_counter && this->rowtojump == this->row_counter) || (this->frametojump >= this->frames) || (this->rowtojump >= this->rows)){
+                    this->branch = false;
+                }
                 break;
             default:
                 printf("unknown effect\n");
                 break;
         }
+        return false;
     }
 
     float Track::play(double t, Channel *chan) {
@@ -295,11 +304,21 @@ namespace  CodeTracker{
 
         float s = 0.f;
         for(int_fast8_t i = this->getNumberofChannels()-1; i >= 0; --i){
+
             if(chan[i].isEnable()) {
                 uint_fast8_t chan_number = chan[i].getNumber();
                 uint_fast8_t pattern_index = *this->pattern_indices[chan_number * this->frames + index];
                 Pattern* pat = this->track_patterns[chan_number * (this->frames) + pattern_index];
                 Instruction* current_instruction = pat->instructions[row_index];
+                if(current_instruction->effects != nullptr){
+                    for(int_fast8_t fx_indx = this->fx_per_chan[chan_number] - 1; fx_indx >= 0; --fx_indx) {
+                        if (current_instruction->effects[fx_indx] != nullptr) {
+                            //printf("CHAN %d EFFECT %d : %x\n", chan_number, fx_indx,
+                            //*current_instruction->effects[fx_indx]);
+                            this->decode_fx(*current_instruction->effects[fx_indx], t);
+                        }
+                    }
+                }
                 if(current_instruction->instrument_index < this->instruments){
                     if(current_instruction != chan[i].getLastInstructionAddress()){
                         chan[i].setLastInstructionAddress(current_instruction);
@@ -308,16 +327,6 @@ namespace  CodeTracker{
                         chan[i].setTrack(this);
                         chan[i].setInstructionState(current_instruction);
                         this->instruments_bank[chan[i].getInstructionState()->instrument_index]->get_oscillator()->setRelease(false);
-                        if(current_instruction->effects != nullptr){
-                            for(int_fast8_t fx_indx = this->fx_per_chan[chan_number] - 1; fx_indx >= 0; --fx_indx) {
-                                if (current_instruction->effects[fx_indx] != nullptr) {
-                                    //printf("CHAN %d EFFECT %d : %x\n", chan_number, fx_indx,
-                                       //*current_instruction->effects[fx_indx]);
-                                    this->decode_fx(*current_instruction->effects[fx_indx], t);
-                                }
-                            }
-
-                        }
                     }
                 }else{
                     if(chan[i].getLastInstructionAddress() != nullptr){
@@ -368,6 +377,12 @@ namespace  CodeTracker{
         if(t- this->time_advance >= this->step){
             this->time_advance += this->step;
             ++this->row_counter;
+            this->readFx = true;
+            if(this->branch){
+                this->row_counter = this->rowtojump;
+                this->frame_counter = this->frametojump;
+                this->branch = false;
+            }
            // printf("row ++ \n");
         }
 
@@ -388,6 +403,15 @@ namespace  CodeTracker{
                 uint_fast8_t pattern_index = *this->pattern_indices[chan_number * this->frames + this->frame_counter];
                 Pattern* pat = this->track_patterns[chan_number * (this->frames) + pattern_index];
                 Instruction* current_instruction = pat->instructions[this->row_counter];
+
+                if(current_instruction->effects != nullptr && this->readFx){
+                    for(int_fast8_t fx_indx = this->fx_per_chan[chan_number] - 1; fx_indx >= 0; --fx_indx) {
+                        if (current_instruction->effects[fx_indx] != nullptr) {
+                            this->decode_fx(*current_instruction->effects[fx_indx], t);
+                        }
+                    }
+                }
+
                 if(current_instruction->instrument_index < this->instruments){
                     if(current_instruction != chan[i].getLastInstructionAddress()){
                         chan[i].setLastInstructionAddress(current_instruction);
@@ -396,16 +420,7 @@ namespace  CodeTracker{
                         chan[i].setTrack(this);
                         chan[i].setInstructionState(current_instruction);
                         this->instruments_bank[chan[i].getInstructionState()->instrument_index]->get_oscillator()->setRelease(false);
-                        if(current_instruction->effects != nullptr){
-                            for(int_fast8_t fx_indx = this->fx_per_chan[chan_number] - 1; fx_indx >= 0; --fx_indx) {
-                                if (current_instruction->effects[fx_indx] != nullptr) {
-                                    //printf("CHAN %d EFFECT %d : %x\n", chan_number, fx_indx,
-                                    //*current_instruction->effects[fx_indx]);
-                                    this->decode_fx(*current_instruction->effects[fx_indx], t);
-                                }
-                            }
 
-                        }
                     }
                 }else{
                     if(chan[i].getLastInstructionAddress() != nullptr){
@@ -451,7 +466,7 @@ namespace  CodeTracker{
 
         res[0] *= (1 - this->panning);//left
         res[1] *= this->panning;//right
-
+        this->readFx = false;
         return res;
     }
 

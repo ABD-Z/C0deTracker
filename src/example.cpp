@@ -77,7 +77,7 @@ namespace ssf2_credit_theme{
         INPUT(patterns, 0 * FRAMES + 0, 62, KICK, 0.5f, Key(A,1), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x08800000)});
 
         printf("WRITING PATTERN 1 CHAN 0\n");
-        INPUT(patterns, 0 * FRAMES + 1, 8, KICK, 0.5f, Key(A,1), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x090027FF), new uint_fast32_t(0x00000100)});
+        INPUT(patterns, 0 * FRAMES + 1, 8, KICK, 0.5f, Key(A,1), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x090027FF)});
         INPUT(patterns, 0 * FRAMES + 1, 24, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 1, 32, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 1, 40, KICK, 0.5f, Key(A,1));
@@ -114,7 +114,7 @@ namespace ssf2_credit_theme{
         INPUT(patterns, 0 * FRAMES + 2, 62, KICK, 0.5f, Key(A,1));
 
         printf("WRITING PATTERN 3 CHAN 0\n");
-        INPUT(patterns, 0 * FRAMES + 3,  2, KICK, 0.5f, Key(A,1), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x0600003F), new uint_fast32_t(0x01000100)});
+        INPUT(patterns, 0 * FRAMES + 3,  2, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 3, 4, SNARE, 0.5f, Key(G_S,2));
         INPUT(patterns, 0 * FRAMES + 3,  8, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 3, 12, SNARE, 0.5f, Key(G_S,2));
@@ -347,7 +347,7 @@ namespace ssf2_credit_theme{
         INPUT(patterns, 3 * FRAMES + 3, 60, BASS, 1.f, Key(G_S,1));
         RELES(patterns, 3 * FRAMES + 3, 61);
         INPUT(patterns, 3 * FRAMES + 3, 62, BASS, 1.f, Key(G_S,1));
-        RELES(patterns, 3 * FRAMES + 3, 63);
+        RELES(patterns, 3 * FRAMES + 3, 63, new uint_fast32_t* [fx_per_chan[3]]{ new uint_fast32_t(0x0A002000)});
 
         printf("WRITING PATTERN 0 CHAN 4\n");
         INPUT(patterns, 4 * FRAMES + 0, 4, MAIN2, 0.1f, Key(G_S,5));

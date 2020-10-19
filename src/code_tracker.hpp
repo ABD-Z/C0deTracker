@@ -407,7 +407,8 @@ namespace CodeTracker {
         uint_fast8_t row_counter = 0, frame_counter = 0;
         double time_advance = 0.0;
 
-        void decode_fx(uint_fast32_t fx, double t);
+        bool decode_fx(uint_fast32_t fx, double t);
+        bool readFx = true;
         float volume_slide_up = 0.f;
         float volume_slide_down = 0.f;
         double volume_slide_time = 0.0;
@@ -430,6 +431,10 @@ namespace CodeTracker {
 
         float panning = 0.5f;
         void update_fx(double t);
+
+        bool branch = false;
+        uint_fast8_t frametojump;
+        uint_fast8_t rowtojump;
     };
 
     /**

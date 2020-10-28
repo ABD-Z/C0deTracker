@@ -392,6 +392,7 @@ namespace CodeTracker {
          * @return duration of the track
          */
         float getDuration();
+
     private:
         float clk , basetime, speed, step;
         uint_fast8_t  rows, frames;
@@ -406,6 +407,7 @@ namespace CodeTracker {
 
         uint_fast8_t row_counter = 0, frame_counter = 0;
         double time_advance = 0.0;
+        double time = 0.0;
 
         bool decode_fx(uint_fast32_t fx, double t);
         bool readFx = true;
@@ -424,7 +426,7 @@ namespace CodeTracker {
 
         float vibrato_speed = 0.0f;
         float vibrato_depth = 0.0f;
-        float vibrato_val = 1.0f;
+        float vibrato_val = 0.0f;
         double vibrato_time = 0.0;
 
         double time_offset = 0.0;
@@ -432,8 +434,8 @@ namespace CodeTracker {
         float panning = 0.5f;
 
         bool branch = false;
-        uint_fast8_t frametojump;
-        uint_fast8_t rowtojump;
+        uint_fast8_t frametojump = 0;
+        uint_fast8_t rowtojump = 0;
 
         bool stop = false;
 
@@ -441,8 +443,6 @@ namespace CodeTracker {
         float panning_slide_left = 0.f;
         double panning_slide_time = 0.0;
         void update_fx(double t);
-
-
     };
 
     /**
@@ -498,6 +498,7 @@ namespace CodeTracker {
         [[nodiscard]] const Instruction *getInstructionState() const;
         void setInstructionState(Instruction* instruc);
         void setVolumeInstructionState(float a);
+        friend float* Track::play_(double , CodeTracker::Channel*);
     private:
         static uint_fast8_t chancount;
         Instruction* last_instruct_address = nullptr;
@@ -507,10 +508,37 @@ namespace CodeTracker {
         uint_fast8_t number;
         double time = 0.0;
         bool enable_sound = true;
-        float volume = 1.0f, pitch = 1.0f, speed = 1.0f;
+        float volume = 1.0f, pitch = 0.0f, speed = 1.0f;
         bool released = false;
         double time_release = 0.0;
         Instruction instruct_state{};
+
+        bool decode_fx(uint_fast32_t fx, double t);
+        bool readFx = true;
+        float volume_slide_up = 0.f;
+        float volume_slide_down = 0.f;
+        double volume_slide_time = 0.0;
+
+        float pitch_slide_up = 0.f;
+        float pitch_slide_down = 0.f;
+        double pitch_slide_time = 0.0;
+
+        float tremolo_speed = 0.0f;
+        float tremolo_depth = 0.0f;
+        float tremolo_val = 1.0f;
+        double tremolo_time = 0.0;
+
+        float vibrato_speed = 0.0f;
+        float vibrato_depth = 0.0f;
+        float vibrato_val = 0.0f;
+        double vibrato_time = 0.0;
+
+        float panning = 0.5f;
+
+        float panning_slide_right = 0.f;
+        float panning_slide_left = 0.f;
+        double panning_slide_time = 0.0;
+        void update_fx(double t);
     };
 }
 

@@ -79,9 +79,9 @@ namespace CodeTracker {
             this->volume_slide_up = 0.f;
         }
 
-        this->pitch -= (this->pitch_slide_down / this->speed) * (t - this->pitch_slide_time);
+        this->pitch_slide_val -= (this->pitch_slide_down / this->speed) * (t - this->pitch_slide_time);
 
-        this->pitch += (this->pitch_slide_up / this->speed) * (t - this->pitch_slide_time);
+        this->pitch_slide_val += (this->pitch_slide_up / this->speed) * (t - this->pitch_slide_time);
 
         this->panning += (this->panning_slide_right / this->speed) * (t - this->panning_slide_time);
         if (this->panning >= MASTER_VOLUME) {
@@ -149,7 +149,7 @@ namespace CodeTracker {
                 this->volume_slide_time = t;
                 return true;
             case 0x17://tremolo
-                this->tremolo_speed = float(fx_val >> 4 * 3) / float(0x800);
+                this->tremolo_speed = float(fx_val >> 4 * 3) / float(0x100);
                 this->tremolo_depth = float(fx_val & 0xFFF) / float(0xFFF);
                 this->tremolo_time = t; //printf("tremolo speed %f\n", this->tremolo_speed);
                 return true;

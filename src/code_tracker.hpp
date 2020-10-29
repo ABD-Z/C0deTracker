@@ -522,6 +522,7 @@ namespace CodeTracker {
         float pitch_slide_up = 0.f;
         float pitch_slide_down = 0.f;
         double pitch_slide_time = 0.0;
+        double pitch_slide_val;
 
         float tremolo_speed = 0.0f;
         float tremolo_depth = 0.0f;
@@ -539,6 +540,8 @@ namespace CodeTracker {
         float panning_slide_left = 0.f;
         double panning_slide_time = 0.0;
         void update_fx(double t);
+
+
     };
 }
 

@@ -187,7 +187,7 @@ namespace CodeTracker {
                 this->volume_slide_time = t;
                 return true;
             case 0x07://tremolo
-                this->tremolo_speed = float(fx_val >> 4 * 3) / float(0x800);
+                this->tremolo_speed = float(fx_val >> 4 * 3) / float(0x100);
                 this->tremolo_depth = float(fx_val & 0xFFF) / float(0xFFF);
                 this->tremolo_time = t; //printf("tremolo speed %f\n", this->tremolo_speed);
                 return true;
@@ -373,6 +373,8 @@ namespace CodeTracker {
                         chan[i].setInstructionState(current_instruction);
                         this->instruments_bank[chan[i].getInstructionState()->instrument_index]->get_oscillator()->setRelease(
                                 false);
+                        chan[i].pitch_slide_val = 0;
+                        chan[i].pitch_slide_time = t;
 
                     }
                 } else {
@@ -408,14 +410,14 @@ namespace CodeTracker {
                         s = chan[i].getVolume() * chan[i].tremolo_val
                              * this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
                                 chan[i].getInstructionState()->volume,
-                                chan[i].getInstructionState()->key.note + this->pitch + this->vibrato_val + chan[i].pitch + chan[i].vibrato_val,
+                                chan[i].getInstructionState()->key.note + this->pitch + this->vibrato_val + chan[i].pitch + chan[i].pitch_slide_val + chan[i].vibrato_val,
                                 chan[i].getInstructionState()->key.octave,
                                 t - chan[i].getTime());
                     } else {
                         s = chan[i].getVolume() * chan[i].tremolo_val
                              * this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
                                 chan[i].getInstructionState()->volume,
-                                chan[i].getInstructionState()->key.note + this->pitch + this->vibrato_val + chan[i].pitch + chan[i].vibrato_val,
+                                chan[i].getInstructionState()->key.note + this->pitch + this->vibrato_val + chan[i].pitch + chan[i].pitch_slide_val + chan[i].vibrato_val,
                                 chan[i].getInstructionState()->key.octave,
                                 t - chan[i].getTime(), t - chan[i].getTimeRelease());
                     }

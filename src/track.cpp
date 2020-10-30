@@ -318,6 +318,8 @@ namespace CodeTracker {
         this->update_fx(t);
 
 
+
+
         if (t - this->time_advance >= this->step) {
             if (this->stop) {
                 res[0] = 0;
@@ -405,19 +407,24 @@ namespace CodeTracker {
                     }
                 }
 
+                uint_fast8_t arpeggio = 0;
+                if(chan[i].arpeggio){
+                    arpeggio = chan[i].arpeggio_val[chan[i].arpeggio_index];
+                }
+
                 if (chan[i].getLastInstructionAddress() != nullptr && chan[i].getTrack() != nullptr) {
                     if (!chan[i].isReleased()) {
                         s = chan[i].getVolume() * chan[i].tremolo_val
                              * this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
                                 chan[i].getInstructionState()->volume,
-                                chan[i].getInstructionState()->key.note + this->pitch + this->vibrato_val + chan[i].pitch + chan[i].pitch_slide_val + chan[i].vibrato_val,
+                                chan[i].getInstructionState()->key.note + this->pitch + this->vibrato_val + chan[i].pitch + chan[i].pitch_slide_val + chan[i].vibrato_val + arpeggio,
                                 chan[i].getInstructionState()->key.octave,
                                 t - chan[i].getTime());
                     } else {
                         s = chan[i].getVolume() * chan[i].tremolo_val
                              * this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
                                 chan[i].getInstructionState()->volume,
-                                chan[i].getInstructionState()->key.note + this->pitch + this->vibrato_val + chan[i].pitch + chan[i].pitch_slide_val + chan[i].vibrato_val,
+                                chan[i].getInstructionState()->key.note + this->pitch + this->vibrato_val + chan[i].pitch + chan[i].pitch_slide_val + chan[i].vibrato_val + arpeggio,
                                 chan[i].getInstructionState()->key.octave,
                                 t - chan[i].getTime(), t - chan[i].getTimeRelease());
                     }
@@ -430,8 +437,8 @@ namespace CodeTracker {
         res[0] *= this->volume * this->tremolo_val;
         res[1] *=  this->volume * this->tremolo_val;
 
-        res[0] *= (1 - this->panning);//left
-        res[1] *= this->panning;//right
+        res[0] *= 2*(1 - this->panning);//left
+        res[1] *= 2*this->panning;//right
         this->readFx = false;
         this->time = t;
         return res;
@@ -439,6 +446,10 @@ namespace CodeTracker {
 
     float Track::getPanning() {
         return this->panning;
+    }
+
+    float Track::getClock() {
+        return this->clk;
     }
 
 }

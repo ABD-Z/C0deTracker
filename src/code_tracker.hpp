@@ -383,6 +383,9 @@ namespace CodeTracker {
         float* play_(double t, Channel* chan);
 
         float getPanning();
+        float getClock();
+
+
 
         /**
          * @return number of channels dedicated fo the track
@@ -539,8 +542,13 @@ namespace CodeTracker {
         float panning_slide_right = 0.f;
         float panning_slide_left = 0.f;
         double panning_slide_time = 0.0;
-        void update_fx(double t);
 
+        bool arpeggio = false;
+        double arpeggio_step = 0.0;
+        uint_fast8_t  arpeggio_index = 0;
+        uint_fast8_t arpeggio_val[6];
+
+        void update_fx(double t);
 
     };
 }

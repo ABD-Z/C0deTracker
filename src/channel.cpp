@@ -106,6 +106,16 @@ namespace CodeTracker {
         } else {
             this->vibrato_val = this->vibrato_depth * sin(TWOPI * this->vibrato_speed * (t - this->vibrato_time));
         }
+        if(this->arpeggio){
+            if (t - this->arpeggio_step >= 1./this->track->getClock()){
+                this->arpeggio_step += 1./this->track->getClock();
+                ++this->arpeggio_index;
+                if(this->arpeggio_index > 5){
+                    this->arpeggio_index = 0;
+                }
+            }
+        }
+
         //printf("volume %f", this->volume);
     }
 
@@ -155,6 +165,19 @@ namespace CodeTracker {
                 return true;
             case 0x18://set  panning
                 this->panning = float(fx_val) / float(0xFFFFFF);
+                return true;
+            case 0x19://arpeggio
+                this->arpeggio = true;
+                this->arpeggio_step = t;
+                this->arpeggio_val[0] = float(fx_val >> 4 * 5); printf("arpeggio\n0 : %x\n", this->arpeggio_val[0]);
+                this->arpeggio_val[1] = float( (fx_val >> 4 * 4) & 0xF); printf("1 : %x\n", this->arpeggio_val[1]);
+                this->arpeggio_val[2] = float( (fx_val >> 4 * 3) & 0xF); printf("2 : %x\n", this->arpeggio_val[2]);
+                this->arpeggio_val[3] = float( (fx_val >> 4 * 2) & 0xF); printf("3 : %x\n", this->arpeggio_val[3]);
+                this->arpeggio_val[4] = float( (fx_val >> 4 * 1) & 0xF); printf("4 : %x\n", this->arpeggio_val[4]);
+                this->arpeggio_val[5] = float(fx_val & 0xF); printf("5 : %x\n", this->arpeggio_val[5]);
+                if(this->arpeggio_val[0] == 0 && this->arpeggio_val[1] == 0 && this->arpeggio_val[2] == 0 && this->arpeggio_val[3] == 0 && this->arpeggio_val[4] == 0 && this->arpeggio_val[5] == 0){
+                    this->arpeggio = false;
+                }
                 return true;
             case 0x1D://slide right panning
                 this->panning_slide_right = float(fx_val) / float(0xFFFFFF);

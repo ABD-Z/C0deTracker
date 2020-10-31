@@ -68,27 +68,27 @@ namespace CodeTracker {
     }
 
     void Channel::update_fx(double t) {
-        this->volume -= (this->volume_slide_down / this->speed) * (t - this->volume_slide_time);
+        this->volume -= (this->volume_slide_down / this->track->getSpeed()) * (t - this->volume_slide_time);
         if (this->volume <= 0) {
             this->volume = 0.f;
             this->volume_slide_down = 0.f;
         }
-        this->volume += (this->volume_slide_up / this->speed) * (t - this->volume_slide_time);
+        this->volume += (this->volume_slide_up / this->track->getSpeed()) * (t - this->volume_slide_time);
         if (this->volume >= MASTER_VOLUME) {
             this->volume = MASTER_VOLUME;
             this->volume_slide_up = 0.f;
         }
 
-        this->pitch_slide_val -= (this->pitch_slide_down / this->speed) * (t - this->pitch_slide_time);
+        this->pitch_slide_val -= (this->pitch_slide_down / this->track->getSpeed()) * (t - this->pitch_slide_time);
 
-        this->pitch_slide_val += (this->pitch_slide_up / this->speed) * (t - this->pitch_slide_time);
+        this->pitch_slide_val += (this->pitch_slide_up / this->track->getSpeed()) * (t - this->pitch_slide_time);
 
-        this->panning += (this->panning_slide_right / this->speed) * (t - this->panning_slide_time);
+        this->panning += (this->panning_slide_right / this->track->getSpeed()) * (t - this->panning_slide_time);
         if (this->panning >= MASTER_VOLUME) {
             this->panning = MASTER_VOLUME;
             this->panning_slide_right = 0.f;
         }
-        this->panning -= (this->panning_slide_left / this->speed) * (t - this->panning_slide_time);
+        this->panning -= (this->panning_slide_left / this->track->getSpeed()) * (t - this->panning_slide_time);
         if (this->panning <= 0) {
             this->panning = 0;
             this->panning_slide_left = 0.f;
@@ -112,6 +112,33 @@ namespace CodeTracker {
                 ++this->arpeggio_index;
                 if(this->arpeggio_index > 5){
                     this->arpeggio_index = 0;
+                }
+            }
+        }
+
+        if(this->note_sliding){
+            if(this->note_slide_up_speed > 0){
+                if(t - this->note_slide_step >= this->track->getClock()/(this->note_slide_up_speed)){
+                    printf("note sliding up ");
+                    this->note_slide_step += this->track->getClock()/(this->note_slide_up_speed);
+                    ++this->note_slide_val;
+                    this->instruct_state.key.note += this->note_slide_val;
+                    if(this->note_slide_val >= this->number_of_semitones_slide){
+                        this->note_slide_val = this->number_of_semitones_slide;
+                        this->note_sliding = false;
+                    }
+                    printf("note slide val %d\n", this->note_slide_val);
+                }
+            }
+            if(this->note_slide_down_speed > 0){
+                if(t - this->note_slide_step >= this->track->getClock()/(this->note_slide_down_speed)){
+                    this->note_slide_step += this->track->getClock()/(this->note_slide_down_speed);
+                    --this->note_slide_val;
+                    this->instruct_state.key.note += this->note_slide_val;
+                    if(this->note_slide_val <= -this->number_of_semitones_slide){
+                        this->note_slide_val = -this->number_of_semitones_slide;
+                        this->note_sliding = false;
+                    }
                 }
             }
         }
@@ -177,6 +204,32 @@ namespace CodeTracker {
                 this->arpeggio_val[5] = float(fx_val & 0xF); printf("5 : %x\n", this->arpeggio_val[5]);
                 if(this->arpeggio_val[0] == 0 && this->arpeggio_val[1] == 0 && this->arpeggio_val[2] == 0 && this->arpeggio_val[3] == 0 && this->arpeggio_val[4] == 0 && this->arpeggio_val[5] == 0){
                     this->arpeggio = false;
+                }
+                return true;
+            case 0x1A:
+                this->portamento = fx_val != 0;
+                this->portamento_speed = fx_val/0x8FFFFF;
+                return true;
+            case 0x1B://note slide up
+                this->note_slide_down_speed = 0;
+                this->note_slide_val = 0;
+                this->note_sliding = true;
+                this->note_slide_step = t;
+                this->note_slide_up_speed = float((fx_val >> 4 * 3));
+                this->number_of_semitones_slide = float(fx_val & 0xFFF);
+                if(this->number_of_semitones_slide == 0){
+                    this->note_sliding = false;
+                }
+                return true;
+            case 0x1C://note slide down
+                this->note_slide_up_speed = 0;
+                this->note_slide_val = 0;
+                this->note_sliding = true;
+                this->note_slide_step = t;
+                this->note_slide_down_speed = float((fx_val >> 4 * 3));
+                this->number_of_semitones_slide = float(fx_val & 0xFFF);
+                if(this->number_of_semitones_slide == 0){
+                    this->note_sliding = false;
                 }
                 return true;
             case 0x1D://slide right panning

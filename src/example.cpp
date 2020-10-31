@@ -143,7 +143,7 @@ namespace ssf2_credit_theme{
         INPUT(patterns, 1 * FRAMES + 0, 8, MAIN2, 0.16f, Key(D_S,5));
         INPUT(patterns, 1 * FRAMES + 0, 10, MAIN2, 0.16f, Key(F,5));
         RELES(patterns, 1 * FRAMES + 0, 12);
-        INPUT(patterns, 1 * FRAMES + 0, 14, MAIN2, 0.16f, Key(F_S,5));
+        INPUT(patterns, 1 * FRAMES + 0, 14, MAIN2, 0.16f, Key(F_S,5), new uint_fast32_t* [fx_per_chan[1]]{ new uint_fast32_t(0x1B90100F)});
         RELES(patterns, 1 * FRAMES + 0, 16);
 
         INPUT(patterns, 1 * FRAMES + 0, 18, MAIN2, 0.16f, Key(F_S,5));

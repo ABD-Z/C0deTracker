@@ -317,9 +317,6 @@ namespace CodeTracker {
         res[0] = 0.f; res[1] = 0.f;
         this->update_fx(t);
 
-
-
-
         if (t - this->time_advance >= this->step) {
             if (this->stop) {
                 res[0] = 0;
@@ -334,37 +331,27 @@ namespace CodeTracker {
                 this->frame_counter = this->frametojump;
                 this->branch = false;
             }
-            // printf("row ++ \n");
         }
 
         if (this->row_counter >= this->rows) {
             this->row_counter = 0;
             ++this->frame_counter;
-            //printf("frame ++ \n");
         }
         if (this->frame_counter >= this->frames) {
             this->frame_counter = 0;
-            //printf("frame counter 0 \n");
         }
 
         float s = 0.f;
         for (int_fast8_t i = this->getNumberofChannels() - 1; i >= 0; --i) {
             if (chan[i].isEnable()) {
-                chan[i].update_fx(t);
+                if(chan[i].getTrack() != nullptr){
+                    chan[i].update_fx(t);
+                }
                 uint_fast8_t chan_number = chan[i].getNumber();
                 uint_fast8_t pattern_index = *this->pattern_indices[chan_number * this->frames + this->frame_counter];
                 Pattern *pat = this->track_patterns[chan_number * (this->frames) + pattern_index];
                 Instruction *current_instruction = pat->instructions[this->row_counter];
 
-                if (current_instruction->effects != nullptr && this->readFx) {
-                    for (int_fast8_t fx_indx = this->fx_per_chan[chan_number] - 1; fx_indx >= 0; --fx_indx) {
-                        if (current_instruction->effects[fx_indx] != nullptr) {
-                            if (!this->decode_fx(*current_instruction->effects[fx_indx], t)) {
-                                chan[i].decode_fx(*current_instruction->effects[fx_indx], t);
-                            }
-                        }
-                    }
-                }
 
                 if (current_instruction->instrument_index < this->instruments) {
                     if (current_instruction != chan[i].getLastInstructionAddress()) {
@@ -377,7 +364,9 @@ namespace CodeTracker {
                                 false);
                         chan[i].pitch_slide_val = 0;
                         chan[i].pitch_slide_time = t;
-
+                        chan[i].note_sliding = false;
+                        chan[i].note_slide_val = 0;
+                        chan[i].number_of_semitones_slide = 0;
                     }
                 } else {
                     if (chan[i].getLastInstructionAddress() != nullptr) {
@@ -402,6 +391,16 @@ namespace CodeTracker {
                                 ((0.f <= current_instruction->volume) ||
                                  (current_instruction->volume <= MASTER_VOLUME))) {
                                 chan[i].setVolumeInstructionState(current_instruction->volume);
+                            }
+                        }
+                    }
+                }
+
+                if (current_instruction->effects != nullptr && this->readFx) {
+                    for (int_fast8_t fx_indx = this->fx_per_chan[chan_number] - 1; fx_indx >= 0; --fx_indx) {
+                        if (current_instruction->effects[fx_indx] != nullptr) {
+                            if (!this->decode_fx(*current_instruction->effects[fx_indx], t)) {
+                                chan[i].decode_fx(*current_instruction->effects[fx_indx], t);
                             }
                         }
                     }
@@ -450,6 +449,10 @@ namespace CodeTracker {
 
     float Track::getClock() {
         return this->clk;
+    }
+
+    float Track::getSpeed() {
+        return this->speed;
     }
 
 }

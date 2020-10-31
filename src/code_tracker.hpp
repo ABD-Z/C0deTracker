@@ -384,6 +384,7 @@ namespace CodeTracker {
 
         float getPanning();
         float getClock();
+        float getSpeed();
 
 
 
@@ -526,6 +527,17 @@ namespace CodeTracker {
         float pitch_slide_down = 0.f;
         double pitch_slide_time = 0.0;
         double pitch_slide_val;
+
+        bool note_sliding = false;
+        float note_slide_up_speed = 0.f;
+        float note_slide_down_speed = 0.f;
+        int_fast32_t note_slide_val = 0;
+        float number_of_semitones_slide = 0.f;
+        double note_slide_step = 0;
+
+        bool portamento = false;
+        float portamento_speed = 0.f;
+
 
         float tremolo_speed = 0.0f;
         float tremolo_depth = 0.0f;

@@ -122,7 +122,7 @@ namespace CodeTracker {
                     printf("note sliding up ");
                     this->note_slide_step += this->track->getClock()/(this->note_slide_up_speed);
                     ++this->note_slide_val;
-                    this->instruct_state.key.note += this->note_slide_val;
+                    ++this->instruct_state.key.note;// += this->note_slide_val;
                     if(this->note_slide_val >= this->number_of_semitones_slide){
                         this->note_slide_val = this->number_of_semitones_slide;
                         this->note_sliding = false;
@@ -134,11 +134,30 @@ namespace CodeTracker {
                 if(t - this->note_slide_step >= this->track->getClock()/(this->note_slide_down_speed)){
                     this->note_slide_step += this->track->getClock()/(this->note_slide_down_speed);
                     --this->note_slide_val;
-                    this->instruct_state.key.note += this->note_slide_val;
+                    --this->instruct_state.key.note;
                     if(this->note_slide_val <= -this->number_of_semitones_slide){
                         this->note_slide_val = -this->number_of_semitones_slide;
                         this->note_sliding = false;
                     }
+                }
+            }
+        }
+
+        if(this->transpose_semitones > 0 && this->n_time_to_transpose > 0){
+            if(this->transpose_delay > 0x7F){//transpose up to this->transpose_semitones
+                if(t - (this->transpose_time_step) >=  double((this->transpose_delay - 0x7F)) / this->track->getClock() && this->transpose_semitone_counter < this->transpose_semitones) {
+                    //printf("transposing up\n");
+                    this->transpose_time_step +=  double((this->transpose_delay - 0x7F)) / this->track->getClock();
+                    ++this->transpose_semitone_counter;
+                    ++this->instruct_state.key.note;
+
+                }
+            }else{//transpose down
+                if(t - (this->transpose_time_step) >= double((this->transpose_delay) ) / this->track->getClock() && this->transpose_semitone_counter < this->transpose_semitones ){
+                    //printf("transposing down\n");
+                    this->transpose_time_step += double((this->transpose_delay)) / this->track->getClock();
+                    ++this->transpose_semitone_counter;
+                    --this->instruct_state.key.note;
                 }
             }
         }
@@ -207,6 +226,11 @@ namespace CodeTracker {
                 }
                 return true;
             case 0x1A:
+                this->transpose_delay = (fx_val >> 4 * 4);
+                this->transpose_semitones = (fx_val & 0xFF00) >> 4 * 2;
+                this->n_time_to_transpose = (fx_val & 0xFF);
+                printf("transpose delay %x , transpose semitones %x , ntime to transpose %x\n", this->transpose_delay, this->transpose_semitones, this->n_time_to_transpose);
+                this->transpose_time_step = t;
                 this->portamento = fx_val != 0;
                 this->portamento_speed = fx_val/0x8FFFFF;
                 return true;

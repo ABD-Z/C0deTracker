@@ -222,7 +222,7 @@ namespace CodeTracker {
                 this->panning_slide_time = t;
                 return true;
             default:
-                printf("unknown effect\n");
+                printf("unknown effect %x\n", fx_code);
                 return false;
         }
     }
@@ -314,6 +314,7 @@ namespace CodeTracker {
     float *Track::play_(double t, Channel *chan) {
         //t += this->time_offset;
         static float res[2];
+
         res[0] = 0.f; res[1] = 0.f;
         this->update_fx(t);
 
@@ -331,6 +332,7 @@ namespace CodeTracker {
                 this->frame_counter = this->frametojump;
                 this->branch = false;
             }
+
         }
 
         if (this->row_counter >= this->rows) {
@@ -342,7 +344,10 @@ namespace CodeTracker {
         }
 
         float s = 0.f;
+        float a = 0.f;
+        float f = 0.f;
         for (int_fast8_t i = this->getNumberofChannels() - 1; i >= 0; --i) {
+        //for (int_fast8_t i = 2; i >= 2; --i) {
             if (chan[i].isEnable()) {
                 if(chan[i].getTrack() != nullptr){
                     chan[i].update_fx(t);
@@ -366,12 +371,17 @@ namespace CodeTracker {
                         chan[i].pitch_slide_time = t;
                         chan[i].note_sliding = false;
                         chan[i].note_slide_val = 0;
-                        chan[i].number_of_semitones_slide = 0;
+                        chan[i].transpose_time_step = t;
+                        chan[i].transpose_semitone_counter = 0;
+                        if(chan[i].n_time_to_transpose > 0){
+                            --chan[i].n_time_to_transpose;
+                        }
+
                     }
                 } else {
                     if (chan[i].getLastInstructionAddress() != nullptr) {
                         if (current_instruction->instrument_index == Notes::RELEASE &&
-                            chan[i].getLastInstructionAddress()->instrument_index < this->instruments) {
+                            chan[i].getInstructionState()->instrument_index < this->instruments) {
                             if (!chan[i].isReleased()) {
                                 chan[i].setRelease(true);
                                 chan[i].setTimeRelease(t);
@@ -380,15 +390,15 @@ namespace CodeTracker {
                                         true);
                             }
                             if (current_instruction->volume != Notes::CONTINUE &&
-                                ((0.f <= current_instruction->volume) ||
+                                ((0.f <= current_instruction->volume) &&
                                  (current_instruction->volume <= MASTER_VOLUME))) {
                                 chan[i].setVolumeInstructionState(current_instruction->volume);
                             }
                         }
                         if (current_instruction->instrument_index == Notes::CONTINUE &&
-                            chan[i].getLastInstructionAddress()->instrument_index < this->instruments) {
+                            chan[i].getInstructionState()->instrument_index < this->instruments) {
                             if (current_instruction->volume != Notes::CONTINUE &&
-                                ((0.f <= current_instruction->volume) ||
+                                ((0.f <= current_instruction->volume) &&
                                  (current_instruction->volume <= MASTER_VOLUME))) {
                                 chan[i].setVolumeInstructionState(current_instruction->volume);
                             }
@@ -411,19 +421,24 @@ namespace CodeTracker {
                     arpeggio = chan[i].arpeggio_val[chan[i].arpeggio_index];
                 }
 
+                a =  chan[i].getVolume() * chan[i].tremolo_val * chan[i].getInstructionState()->volume;
+                f = this->pitch + this->vibrato_val + chan[i].pitch + chan[i].pitch_slide_val + chan[i].vibrato_val + arpeggio;
+                /*if(this->readFx){
+                    printf("chan %d volume %f = chanvol %f * chantremolo %f * instruction %f\n", i, a, chan[i].getVolume(), chan[i].tremolo_val, chan[i].getInstructionState()->volume );
+                }*/
+                //printf("chan %d volume %f = chanvol %f * chantremolo %f * instruction %f\n", i, a, chan[i].getVolume(), chan[i].tremolo_val, chan[i].getInstructionState()->volume );
+
                 if (chan[i].getLastInstructionAddress() != nullptr && chan[i].getTrack() != nullptr) {
                     if (!chan[i].isReleased()) {
-                        s = chan[i].getVolume() * chan[i].tremolo_val
-                             * this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
-                                chan[i].getInstructionState()->volume,
-                                chan[i].getInstructionState()->key.note + this->pitch + this->vibrato_val + chan[i].pitch + chan[i].pitch_slide_val + chan[i].vibrato_val + arpeggio,
+                        s = this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
+                                a,
+                                chan[i].getInstructionState()->key.note + f,
                                 chan[i].getInstructionState()->key.octave,
                                 t - chan[i].getTime());
                     } else {
-                        s = chan[i].getVolume() * chan[i].tremolo_val
-                             * this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
-                                chan[i].getInstructionState()->volume,
-                                chan[i].getInstructionState()->key.note + this->pitch + this->vibrato_val + chan[i].pitch + chan[i].pitch_slide_val + chan[i].vibrato_val + arpeggio,
+                        s = this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
+                                a,
+                                chan[i].getInstructionState()->key.note + f,
                                 chan[i].getInstructionState()->key.octave,
                                 t - chan[i].getTime(), t - chan[i].getTimeRelease());
                     }
@@ -433,11 +448,13 @@ namespace CodeTracker {
             }
         }
 
+
         res[0] *= this->volume * this->tremolo_val;
         res[1] *=  this->volume * this->tremolo_val;
 
-        res[0] *= 2*(1 - this->panning);//left
-        res[1] *= 2*this->panning;//right
+        res[0] *= 4*(1 - this->panning);//left
+        res[1] *= 4*this->panning;//right
+
         this->readFx = false;
         this->time = t;
         return res;

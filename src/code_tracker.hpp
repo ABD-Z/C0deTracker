@@ -562,6 +562,11 @@ namespace CodeTracker {
 
         void update_fx(double t);
 
+        uint_fast8_t transpose_delay = 0;
+        uint_fast8_t n_time_to_transpose = 0;
+        uint_fast8_t transpose_semitones = 0;
+        uint_fast8_t transpose_semitone_counter = 0;
+        double transpose_time_step = 0;
     };
 }
 

@@ -69,7 +69,7 @@ namespace ssf2_credit_theme{
         using namespace CodeTracker::Notes; using namespace CodeTracker;
 
         printf("WRITING PATTERN 0 CHAN 0\n");
-        INPUT(patterns, 0 * FRAMES + 0,  0, KICK, 0.5f, Key(A,1), new uint_fast32_t* [fx_per_chan[0]]{ new uint_fast32_t(0x041000AA), new uint_fast32_t(0x0500008F)});
+        INPUT(patterns, 0 * FRAMES + 0,  0, KICK, 0.5f, Key(A,1), new uint_fast32_t* [fx_per_chan[0]]{ new uint_fast32_t(0x041000AA), new uint_fast32_t(0x05000A0F)});
         INPUT(patterns, 0 * FRAMES + 0, 24, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 0, 32, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 0, 40, KICK, 0.5f, Key(A,1));
@@ -139,11 +139,11 @@ namespace ssf2_credit_theme{
 
         printf("WRITING PATTERN 0 CHAN 1\n");
         INPUT(patterns, 1 * FRAMES + 0, 4, MAIN2, 0.16f, Key(F,5), new uint_fast32_t* [fx_per_chan[1]]{ new uint_fast32_t(0x189FFFFF)});
-        RELES(patterns, 1 * FRAMES + 0, 6);
+        RELES(patterns, 1 * FRAMES + 0, 6, new uint_fast32_t* [fx_per_chan[1]]{ new uint_fast32_t(0x1A8207FF)});
         INPUT(patterns, 1 * FRAMES + 0, 8, MAIN2, 0.16f, Key(D_S,5));
         INPUT(patterns, 1 * FRAMES + 0, 10, MAIN2, 0.16f, Key(F,5));
         RELES(patterns, 1 * FRAMES + 0, 12);
-        INPUT(patterns, 1 * FRAMES + 0, 14, MAIN2, 0.16f, Key(F_S,5), new uint_fast32_t* [fx_per_chan[1]]{ new uint_fast32_t(0x1B90100F)});
+        INPUT(patterns, 1 * FRAMES + 0, 14, MAIN2, 0.16f, Key(F_S,5));
         RELES(patterns, 1 * FRAMES + 0, 16);
 
         INPUT(patterns, 1 * FRAMES + 0, 18, MAIN2, 0.16f, Key(F_S,5));
@@ -285,7 +285,7 @@ namespace ssf2_credit_theme{
 
         printf("WRITING PATTERN 3 CHAN 3\n");
         INVOL(patterns, 3 * FRAMES + 3, 0, 1.f);
-        RELES(patterns, 3 * FRAMES + 3, 1, new uint_fast32_t* [fx_per_chan[3]]{ new uint_fast32_t(0x00000000)});
+        RELES(patterns, 3 * FRAMES + 3, 1);
         INPUT(patterns, 3 * FRAMES + 3, 2, BASS, 1.f, Key(A_S,1));
         RELES(patterns, 3 * FRAMES + 3, 3);
         INPUT(patterns, 3 * FRAMES + 3, 4, BASS, 1.f, Key(A_S,1));

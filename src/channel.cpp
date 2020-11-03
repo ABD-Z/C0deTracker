@@ -162,6 +162,14 @@ namespace CodeTracker {
             }
         }
 
+        if(this->retrieg_number > 0 && this->n_time_to_retrieg > 0){
+            if(t - this->transpose_time_step >= double(this->retrieg_delay) / this->track->getClock() && this->retrieg_counter < this->retrieg_number){
+                this->transpose_time_step += double(this->retrieg_delay) / this->track->getClock();
+                this->setTime(t);
+                ++this->retrieg_counter;
+            }
+        }
+
         //printf("volume %f", this->volume);
     }
 
@@ -225,36 +233,21 @@ namespace CodeTracker {
                     this->arpeggio = false;
                 }
                 return true;
-            case 0x1A:
+            case 0x1A://transpose
                 this->transpose_delay = (fx_val >> 4 * 4);
                 this->transpose_semitones = (fx_val & 0xFF00) >> 4 * 2;
                 this->n_time_to_transpose = (fx_val & 0xFF);
                 printf("transpose delay %x , transpose semitones %x , ntime to transpose %x\n", this->transpose_delay, this->transpose_semitones, this->n_time_to_transpose);
                 this->transpose_time_step = t;
+                return true;
+            case 0x1B://portamento
                 this->portamento = fx_val != 0;
                 this->portamento_speed = fx_val/0x8FFFFF;
-                return true;
-            case 0x1B://note slide up
-                this->note_slide_down_speed = 0;
-                this->note_slide_val = 0;
-                this->note_sliding = true;
-                this->note_slide_step = t;
-                this->note_slide_up_speed = float((fx_val >> 4 * 3));
-                this->number_of_semitones_slide = float(fx_val & 0xFFF);
-                if(this->number_of_semitones_slide == 0){
-                    this->note_sliding = false;
-                }
-                return true;
-            case 0x1C://note slide down
-                this->note_slide_up_speed = 0;
-                this->note_slide_val = 0;
-                this->note_sliding = true;
-                this->note_slide_step = t;
-                this->note_slide_down_speed = float((fx_val >> 4 * 3));
-                this->number_of_semitones_slide = float(fx_val & 0xFFF);
-                if(this->number_of_semitones_slide == 0){
-                    this->note_sliding = false;
-                }
+            case 0x1C://retrieg
+                this->retrieg_delay = (fx_val >> 4 * 4);
+                this->retrieg_number = (fx_val & 0xFF00) >> 4 * 2;
+                this->n_time_to_retrieg = (fx_val & 0xFF);
+                this->retrieg_time_step = t;
                 return true;
             case 0x1D://slide right panning
                 this->panning_slide_right = float(fx_val) / float(0xFFFFFF);

@@ -376,6 +376,11 @@ namespace CodeTracker {
                         if(chan[i].n_time_to_transpose > 0){
                             --chan[i].n_time_to_transpose;
                         }
+                        if(chan[i].n_time_to_retrieg > 0){
+                            --chan[i].n_time_to_retrieg;
+                        }
+                        chan[i].retrieg_time_step = t;
+                        chan[i].retrieg_counter = 0;
 
                     }
                 } else {

@@ -77,7 +77,7 @@ namespace ssf2_credit_theme{
         INPUT(patterns, 0 * FRAMES + 0, 62, KICK, 0.5f, Key(A,1));
 
         printf("WRITING PATTERN 1 CHAN 0\n");
-        INPUT(patterns, 0 * FRAMES + 1, 8, KICK, 0.5f, Key(A,1));
+        INPUT(patterns, 0 * FRAMES + 1, 8, KICK, 0.5f, Key(A,1), new uint_fast32_t* [fx_per_chan[0]]{ new uint_fast32_t(0x1C040305)});
         INPUT(patterns, 0 * FRAMES + 1, 24, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 1, 32, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 1, 40, KICK, 0.5f, Key(A,1));

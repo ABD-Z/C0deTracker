@@ -567,6 +567,12 @@ namespace CodeTracker {
         uint_fast8_t transpose_semitones = 0;
         uint_fast8_t transpose_semitone_counter = 0;
         double transpose_time_step = 0;
+
+        uint_fast8_t retrieg_delay = 0;
+        uint_fast8_t retrieg_number = 0;
+        uint_fast8_t n_time_to_retrieg = 0;
+        double retrieg_time_step = 0;
+        uint_fast8_t retrieg_counter = 0;
     };
 }
 

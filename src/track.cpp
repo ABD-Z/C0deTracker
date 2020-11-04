@@ -373,14 +373,20 @@ namespace CodeTracker {
                         chan[i].note_slide_val = 0;
                         chan[i].transpose_time_step = t;
                         chan[i].transpose_semitone_counter = 0;
+                        chan[i].retrieg_time_step = t;
+                        chan[i].retrieg_counter = 0;
+                        chan[i].delrel_time_step = t;
+                        chan[i].release_counter = 0;
+                        chan[i].delay_counter = 0;
                         if(chan[i].n_time_to_transpose > 0){
                             --chan[i].n_time_to_transpose;
                         }
                         if(chan[i].n_time_to_retrieg > 0){
                             --chan[i].n_time_to_retrieg;
                         }
-                        chan[i].retrieg_time_step = t;
-                        chan[i].retrieg_counter = 0;
+                        if(chan[i].n_time_to_delrel){
+                            --chan[i].n_time_to_delrel;
+                        }
 
                     }
                 } else {
@@ -419,6 +425,12 @@ namespace CodeTracker {
                             }
                         }
                     }
+                }
+
+                //check if channel is released because of release effect
+                if(chan[i].isReleased()){
+                    this->instruments_bank[chan[i].getInstructionState()->instrument_index]->get_oscillator()->setRelease(
+                            true);
                 }
 
                 uint_fast8_t arpeggio = 0;

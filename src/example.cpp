@@ -12,8 +12,8 @@ namespace ssf2_credit_theme{
         instrubank = new CodeTracker::Instrument*[INSTRUMENTS];
         instrubank[KICK] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.1f, CodeTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f)), 1.f);
         instrubank[SNARE] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, .0025f, CodeTracker::ADSR(10000.f, 4.44f, 0.0f, 0.f)),0.78f);
-        instrubank[STRING] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::SAW, .08f, CodeTracker::ADSR(10.f, 0.88, 0.5, 0.0f)),.78f);
-        instrubank[BASS] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::TRIANGLE, 0.78f, 0.5f, CodeTracker::ADSR(666.0f, 0.3f, 0.2f, 17.75f)),1.f);
+        instrubank[STRING] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::SAW, 0.08f, CodeTracker::ADSR(10.f, 0.88, 0.5, 5.55f)),.78f);
+        instrubank[BASS] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::TRIANGLE, 0.55f, 0.5f, CodeTracker::ADSR(666.0f, 0.3f, 0.2f, 17.75f)),1.f);
         instrubank[MAIN2] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::SQUARE, .125f, 0.f, CodeTracker::ADSR(10.0f, 1.f, .075f, 10.f)),0.5f);
         return instrubank;
     }
@@ -77,7 +77,7 @@ namespace ssf2_credit_theme{
         INPUT(patterns, 0 * FRAMES + 0, 62, KICK, 0.5f, Key(A,1));
 
         printf("WRITING PATTERN 1 CHAN 0\n");
-        INPUT(patterns, 0 * FRAMES + 1, 8, KICK, 0.5f, Key(A,1), new uint_fast32_t* [fx_per_chan[0]]{ new uint_fast32_t(0x1C040305)});
+        INPUT(patterns, 0 * FRAMES + 1, 8, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 1, 24, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 1, 32, KICK, 0.5f, Key(A,1));
         INPUT(patterns, 0 * FRAMES + 1, 40, KICK, 0.5f, Key(A,1));
@@ -139,7 +139,7 @@ namespace ssf2_credit_theme{
 
         printf("WRITING PATTERN 0 CHAN 1\n");
         INPUT(patterns, 1 * FRAMES + 0, 4, MAIN2, 0.16f, Key(F,5), new uint_fast32_t* [fx_per_chan[1]]{ new uint_fast32_t(0x189FFFFF)});
-        RELES(patterns, 1 * FRAMES + 0, 6, new uint_fast32_t* [fx_per_chan[1]]{ new uint_fast32_t(0x1A8207FF)});
+        RELES(patterns, 1 * FRAMES + 0, 6/*, new uint_fast32_t* [fx_per_chan[1]]{ new uint_fast32_t(0x1A8207FF)}*/);
         INPUT(patterns, 1 * FRAMES + 0, 8, MAIN2, 0.16f, Key(D_S,5));
         INPUT(patterns, 1 * FRAMES + 0, 10, MAIN2, 0.16f, Key(F,5));
         RELES(patterns, 1 * FRAMES + 0, 12);
@@ -192,7 +192,7 @@ namespace ssf2_credit_theme{
         RELES(patterns, 1 * FRAMES + 1, 32 + 14 + 12);
 
         printf("WRITING PATTERN 0 CHAN 2\n");
-        INPUT(patterns, 2 * FRAMES + 0, 0, STRING, 0.15f, Key(G_S,4));
+        INPUT(patterns, 2 * FRAMES + 0, 0, STRING, 0.15f, Key(G_S,4), new uint_fast32_t* [fx_per_chan[2]]{ new uint_fast32_t(0x1F000705)});
         INPUT(patterns, 2 * FRAMES + 0, 32, STRING, 0.15f, Key(G_S,4));
         INPUT(patterns, 2 * FRAMES + 0, 62, STRING, 0.15f, Key(G_S,4));
 
@@ -352,7 +352,7 @@ namespace ssf2_credit_theme{
 
         printf("WRITING PATTERN 0 CHAN 4\n");
         INPUT(patterns, 4 * FRAMES + 0, 4, MAIN2, 0.1f, Key(G_S,5), new uint_fast32_t* [fx_per_chan[4]]{ new uint_fast32_t(0x18000000)});
-        RELES(patterns, 4 * FRAMES + 0, 6,  new uint_fast32_t* [fx_per_chan[4]]{ new uint_fast32_t(0x19102030)});
+        RELES(patterns, 4 * FRAMES + 0, 6/*,  new uint_fast32_t* [fx_per_chan[4]]{ new uint_fast32_t(0x19102030)}*/);
         INPUT(patterns, 4 * FRAMES + 0, 8, MAIN2, 0.1f, Key(G_S,5));
         INPUT(patterns, 4 * FRAMES + 0, 10, MAIN2, 0.1f, Key(G_S,5));
         RELES(patterns, 4 * FRAMES + 0, 12);

@@ -163,10 +163,32 @@ namespace CodeTracker {
         }
 
         if(this->retrieg_number > 0 && this->n_time_to_retrieg > 0){
-            if(t - this->transpose_time_step >= double(this->retrieg_delay) / this->track->getClock() && this->retrieg_counter < this->retrieg_number){
-                this->transpose_time_step += double(this->retrieg_delay) / this->track->getClock();
+            if(t - this->retrieg_time_step >= double(this->retrieg_delay) / this->track->getClock() && this->retrieg_counter < this->retrieg_number){
+                this->retrieg_time_step += double(this->retrieg_delay) / this->track->getClock();
                 this->setTime(t);
                 ++this->retrieg_counter;
+            }
+        }
+
+        if(this->delay_counter <= this->delay && this->delay > 0 && this->n_time_to_delrel > 0){
+            this->setTime(t);
+            if(t - this->delrel_time_step >= double(this->delay) / this->track->getClock()){
+                ++this->delay_counter;
+                this->delrel_time_step += double(this->delay) / this->track->getClock();
+            }
+        }else{
+            if(this->release > 0 && !this->isReleased()){
+                if(this->release_counter <= this->release && this->n_time_to_delrel > 0){
+                    if(t - this->delrel_time_step >= double(this->release) / this->track->getClock()){
+                        ++this->release_counter;
+                        this->delrel_time_step += double(this->release) / this->track->getClock();
+                        if(this->release_counter >= this->release){
+                            printf("fx released releasecounta %d\n", this->release_counter);
+                            this->setRelease(true);
+                            this->setTimeRelease(t);
+                        }
+                    }
+                }
             }
         }
 
@@ -258,6 +280,12 @@ namespace CodeTracker {
                 this->panning_slide_left = float(fx_val) / float(0xFFFFFF);
                 this->panning_slide_right = 0.0f;
                 this->panning_slide_time = t;
+                return true;
+            case 0x1F:
+                this->delay = (fx_val >> 4 * 4);
+                this->release = (fx_val & 0xFF00) >> 4 * 2;
+                this->n_time_to_delrel = (fx_val & 0xFF);
+                this->delrel_time_step = t;
                 return true;
             default:
                 printf("unknown effect\n");

@@ -573,6 +573,13 @@ namespace CodeTracker {
         uint_fast8_t n_time_to_retrieg = 0;
         double retrieg_time_step = 0;
         uint_fast8_t retrieg_counter = 0;
+
+        uint_fast8_t delay = 0;
+        uint_fast8_t release = 0;
+        uint_fast8_t n_time_to_delrel = 0;
+        double delrel_time_step = 0;
+        uint_fast8_t delay_counter = 0;
+        uint_fast8_t release_counter = 0;
     };
 }
 

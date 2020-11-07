@@ -89,12 +89,12 @@ namespace CodeTracker {
             if (chan->getLastInstructionAddress() != nullptr && chan->getTrack() != nullptr) {
                 if (!chan->isReleased()) {
                     return this->volume * chan->getVolume()
-                           * this->instruments_bank[chan->getLastInstructionAddress()->instrument_index]->play(
+                           * this->instruments_bank[chan->getLastInstructionAddress()->instrument_index]->play_key(
                             chan->getLastInstructionAddress()->volume, chan->getLastInstructionAddress()->key,
                             t - chan->getTime());
                 } else {
                     return this->volume * chan->getVolume()
-                           * this->instruments_bank[chan->getLastInstructionAddress()->instrument_index]->play(
+                           * this->instruments_bank[chan->getLastInstructionAddress()->instrument_index]->play_key(
                             chan->getLastInstructionAddress()->volume, chan->getLastInstructionAddress()->key,
                             t - chan->getTime(), t - chan->getTimeRelease());
                 }
@@ -157,7 +157,7 @@ namespace CodeTracker {
                 this->pitch_slide_up = float(fx_val) / float(0x00FFFFFF);
                 this->pitch_slide_down = 0.f;
                 this->pitch_slide_time = t;
-                printf("pitch slide up %f\n", this->pitch_slide_up);
+
                 return true;
             case 0x01://pitch slide down
                 this->pitch_slide_down = float(fx_val) / float(0x00FFFFFF);
@@ -171,7 +171,6 @@ namespace CodeTracker {
                 return true;
             case 0x03://set pitch
                 this->pitch = (float(fx_val) - float(0x800000)) / float(0x800000);
-                printf("pitch %f\n", this->pitch);
                 return true;
             case 0x04://set volume
                 this->volume = float(fx_val) / float(0x00FFFFFF);
@@ -312,7 +311,6 @@ namespace CodeTracker {
     }
 
     float *Track::play_(double t, Channel *chan) {
-        //t += this->time_offset;
         static float res[2];
 
         res[0] = 0.f; res[1] = 0.f;
@@ -325,6 +323,7 @@ namespace CodeTracker {
                 return res;
             }
             this->time_advance += this->step;
+            printf("porta pitch dif %f\n",chan[3].porta_pitch_dif);
             ++this->row_counter;
             this->readFx = true;
             if (this->branch) {
@@ -332,7 +331,6 @@ namespace CodeTracker {
                 this->frame_counter = this->frametojump;
                 this->branch = false;
             }
-
         }
 
         if (this->row_counter >= this->rows) {
@@ -343,9 +341,9 @@ namespace CodeTracker {
             this->frame_counter = 0;
         }
 
-        float s = 0.f;
-        float a = 0.f;
-        float f = 0.f;
+        float s = 0.f;//generated signal
+        float a = 0.f;//amplitude
+        float p = 0.f;//pitch
         for (int_fast8_t i = this->getNumberofChannels() - 1; i >= 0; --i) {
         //for (int_fast8_t i = 2; i >= 2; --i) {
             if (chan[i].isEnable()) {
@@ -364,13 +362,27 @@ namespace CodeTracker {
                         chan[i].setRelease(false);
                         chan[i].setTime(t);
                         chan[i].setTrack(this);
-                        chan[i].setInstructionState(current_instruction);
+                        if(chan[i].getInstructionState()->key.note == Notes::CONTINUE || chan[i].getInstructionState()->key.octave == Notes::CONTINUE){
+                            chan[i].setInstructionState(current_instruction);
+                        }else{
+                            if(!chan[i].portamento){
+                                chan[i].setInstructionState(current_instruction);
+                            }else{
+                                chan[i].porta_pitch_dif = Notes::key2pitch(current_instruction->key)  - (Notes::key2pitch(chan[i].instruct_state.key) - chan[i].porta_pitch_dif) ;
+                                //chan[i].portamento_time_step = t;
+                                printf("porta_pitch_dif %f\n", chan[i].porta_pitch_dif);
+
+                                //Key k = chan[i].instruct_state.key;
+                                chan[i].setInstructionState(current_instruction);
+                                //chan[i].instruct_state.key = k;
+                                //chan[i].porta_key = current_instruction->key;
+                            }
+                        }
+
                         this->instruments_bank[chan[i].getInstructionState()->instrument_index]->get_oscillator()->setRelease(
                                 false);
                         chan[i].pitch_slide_val = 0;
                         chan[i].pitch_slide_time = t;
-                        chan[i].note_sliding = false;
-                        chan[i].note_slide_val = 0;
                         chan[i].transpose_time_step = t;
                         chan[i].transpose_semitone_counter = 0;
                         chan[i].retrieg_time_step = t;
@@ -387,7 +399,6 @@ namespace CodeTracker {
                         if(chan[i].n_time_to_delrel){
                             --chan[i].n_time_to_delrel;
                         }
-
                     }
                 } else {
                     if (chan[i].getLastInstructionAddress() != nullptr) {
@@ -426,7 +437,6 @@ namespace CodeTracker {
                         }
                     }
                 }
-
                 //check if channel is released because of release effect
                 if(chan[i].isReleased()){
                     this->instruments_bank[chan[i].getInstructionState()->instrument_index]->get_oscillator()->setRelease(
@@ -439,7 +449,10 @@ namespace CodeTracker {
                 }
 
                 a =  chan[i].getVolume() * chan[i].tremolo_val * chan[i].getInstructionState()->volume;
-                f = this->pitch + this->vibrato_val + chan[i].pitch + chan[i].pitch_slide_val + chan[i].vibrato_val + arpeggio;
+                p = Notes::key2pitch(chan[i].getInstructionState()->key) + this->pitch + this->vibrato_val + chan[i].pitch + chan[i].pitch_slide_val + chan[i].vibrato_val + arpeggio - chan[i].porta_pitch_dif;
+                /*if(chan[i].portamento){
+                    p += chan[i].portamento_val;
+                }*/
                 /*if(this->readFx){
                     printf("chan %d volume %f = chanvol %f * chantremolo %f * instruction %f\n", i, a, chan[i].getVolume(), chan[i].tremolo_val, chan[i].getInstructionState()->volume );
                 }*/
@@ -447,17 +460,26 @@ namespace CodeTracker {
 
                 if (chan[i].getLastInstructionAddress() != nullptr && chan[i].getTrack() != nullptr) {
                     if (!chan[i].isReleased()) {
-                        s = this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
+                        /*s = this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
                                 a,
-                                chan[i].getInstructionState()->key.note + f,
+                                chan[i].getInstructionState()->key.note + p,
                                 chan[i].getInstructionState()->key.octave,
+                                t - chan[i].getTime());*/
+                        s = this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play_pitch(
+                                a,
+                                p,
                                 t - chan[i].getTime());
                     } else {
-                        s = this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
+                        /*s = this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
                                 a,
-                                chan[i].getInstructionState()->key.note + f,
+                                chan[i].getInstructionState()->key.note + p,
                                 chan[i].getInstructionState()->key.octave,
-                                t - chan[i].getTime(), t - chan[i].getTimeRelease());
+                                t - chan[i].getTime(), t - chan[i].getTimeRelease());*/
+                        s = this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play_pitch(
+                                a,
+                                p,
+                                t - chan[i].getTime(),
+                                t - chan[i].getTimeRelease());
                     }
                     res[0] += s * (1 - chan[i].panning);
                     res[1] += s * chan[i].panning;

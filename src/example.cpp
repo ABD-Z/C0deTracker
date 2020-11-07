@@ -192,7 +192,7 @@ namespace ssf2_credit_theme{
         RELES(patterns, 1 * FRAMES + 1, 32 + 14 + 12);
 
         printf("WRITING PATTERN 0 CHAN 2\n");
-        INPUT(patterns, 2 * FRAMES + 0, 0, STRING, 0.15f, Key(G_S,4), new uint_fast32_t* [fx_per_chan[2]]{ new uint_fast32_t(0x1F000705)});
+        INPUT(patterns, 2 * FRAMES + 0, 0, STRING, 0.15f, Key(G_S,4));
         INPUT(patterns, 2 * FRAMES + 0, 32, STRING, 0.15f, Key(G_S,4));
         INPUT(patterns, 2 * FRAMES + 0, 62, STRING, 0.15f, Key(G_S,4));
 
@@ -201,7 +201,9 @@ namespace ssf2_credit_theme{
         INPUT(patterns, 2 * FRAMES + 1, 46, STRING, 0.15f, Key(C,5));
 
         printf("WRITING PATTERN 0 CHAN 3\n");
-        INPUT(patterns, 3 * FRAMES + 0, 0, BASS, 1.f, Key(C_S,2));
+        INPUT(patterns, 3 * FRAMES + 0, 0, BASS, 1.f, Key(C_S,2)/*, new uint_fast32_t* [fx_per_chan[2]]{ new uint_fast32_t(0x1B0110A0)}*/);
+        //INPUT(patterns, 3 * FRAMES + 0, 4, BASS, 1.f, Key(E,2));
+        //INPUT(patterns, 3 * FRAMES + 0, 8, BASS, 1.f, Key(C,2));
         RELES(patterns, 3 * FRAMES + 0, 31);
         INPUT(patterns, 3 * FRAMES + 0, 32, BASS, 1.f, Key(B,1));
         RELES(patterns, 3 * FRAMES + 0, 61);

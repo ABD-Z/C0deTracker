@@ -80,8 +80,7 @@ namespace CodeTracker {
         }
 
         this->pitch_slide_val -= (this->pitch_slide_down / this->track->getSpeed()) * (t - this->pitch_slide_time);
-
-        this->pitch_slide_val += (this->pitch_slide_up / this->track->getSpeed()) * (t - this->pitch_slide_time);
+        this->pitch_slide_val += (this->pitch_slide_up   / this->track->getSpeed()) * (t - this->pitch_slide_time);
 
         this->panning += (this->panning_slide_right / this->track->getSpeed()) * (t - this->panning_slide_time);
         if (this->panning >= MASTER_VOLUME) {
@@ -116,33 +115,6 @@ namespace CodeTracker {
             }
         }
 
-        if(this->note_sliding){
-            if(this->note_slide_up_speed > 0){
-                if(t - this->note_slide_step >= this->track->getClock()/(this->note_slide_up_speed)){
-                    printf("note sliding up ");
-                    this->note_slide_step += this->track->getClock()/(this->note_slide_up_speed);
-                    ++this->note_slide_val;
-                    ++this->instruct_state.key.note;// += this->note_slide_val;
-                    if(this->note_slide_val >= this->number_of_semitones_slide){
-                        this->note_slide_val = this->number_of_semitones_slide;
-                        this->note_sliding = false;
-                    }
-                    printf("note slide val %d\n", this->note_slide_val);
-                }
-            }
-            if(this->note_slide_down_speed > 0){
-                if(t - this->note_slide_step >= this->track->getClock()/(this->note_slide_down_speed)){
-                    this->note_slide_step += this->track->getClock()/(this->note_slide_down_speed);
-                    --this->note_slide_val;
-                    --this->instruct_state.key.note;
-                    if(this->note_slide_val <= -this->number_of_semitones_slide){
-                        this->note_slide_val = -this->number_of_semitones_slide;
-                        this->note_sliding = false;
-                    }
-                }
-            }
-        }
-
         if(this->transpose_semitones > 0 && this->n_time_to_transpose > 0){
             if(this->transpose_delay > 0x7F){//transpose up to this->transpose_semitones
                 if(t - (this->transpose_time_step) >=  double((this->transpose_delay - 0x7F)) / this->track->getClock() && this->transpose_semitone_counter < this->transpose_semitones) {
@@ -172,16 +144,16 @@ namespace CodeTracker {
 
         if(this->delay_counter <= this->delay && this->delay > 0 && this->n_time_to_delrel > 0){
             this->setTime(t);
-            if(t - this->delrel_time_step >= double(this->delay) / this->track->getClock()){
+            if(t - this->delrel_time_step >= 1. / this->track->getClock()){
                 ++this->delay_counter;
-                this->delrel_time_step += double(this->delay) / this->track->getClock();
+                this->delrel_time_step += 1. / this->track->getClock();
             }
         }else{
             if(this->release > 0 && !this->isReleased()){
                 if(this->release_counter <= this->release && this->n_time_to_delrel > 0){
-                    if(t - this->delrel_time_step >= double(this->release) / this->track->getClock()){
+                    if(t - this->delrel_time_step >= 1. / this->track->getClock()){
                         ++this->release_counter;
-                        this->delrel_time_step += double(this->release) / this->track->getClock();
+                        this->delrel_time_step += 1. / this->track->getClock();
                         if(this->release_counter >= this->release){
                             printf("fx released releasecounta %d\n", this->release_counter);
                             this->setRelease(true);
@@ -191,8 +163,53 @@ namespace CodeTracker {
                 }
             }
         }
+        if(this->portamento) {
+            if (this->porta_pitch_dif < 0) {
+                /*this->portamento_val -= (this->portamento_speed   / this->track->getSpeed()) * (t - this->portamento_time);
+                if(this->portamento_val <= this->porta_pitch_dif){
+                    printf("end portamento down\n");
+                    printf("porta_pitch_dif < 0 %f\n", this->porta_pitch_dif);
+                    printf("portamento val %f\n", this->portamento_val);
+                    printf("portamento speed %f\n",this->portamento_speed);
+                    this->portamento_val = 0;
+                    this->porta_pitch_dif = 0;
+                    this->instruct_state.key = this->porta_key;
+                }*/
+                //printf("porta_pitch_dif %f\n", this->porta_pitch_dif);
+                if (t - this->portamento_time_step >= 1. / this->track->getClock()) {
+                    this->portamento_time_step += 1. / this->track->getClock();
+                    this->porta_pitch_dif += (this->portamento_speed * this->track->getSpeed());
+                }
 
-        //printf("volume %f", this->volume);
+                if (this->porta_pitch_dif > 0) {
+                    printf("end portamento down\n");
+                    printf("porta_pitch_dif < 0 %f\n", this->porta_pitch_dif);
+                    //printf("portamento speed %f\n",this->portamento_speed);
+                    this->porta_pitch_dif = 0;
+                }
+            } else {
+                if (this->porta_pitch_dif > 0) {
+                    /*this->portamento_val += (this->portamento_speed   / this->track->getSpeed()) * (t - this->portamento_time);
+                    if(this->portamento_val >= this->porta_pitch_dif){
+                        printf("end portamento up\n");
+                        printf("porta_pitch_dif < 0 %f\n", this->porta_pitch_dif);
+                        printf("portamento val %f\n", this->portamento_val);
+                        printf("portamento speed %f\n",this->portamento_speed);
+                        this->portamento_val = 0;
+                        this->porta_pitch_dif = 0;
+                        this->instruct_state.key = this->porta_key;
+                    }*/
+                    //printf("porta_pitch_dif %f\n", this->porta_pitch_dif);
+                    if (t - this->portamento_time_step >= 1. / this->track->getClock()) {
+                        this->portamento_time_step += 1. / this->track->getClock();
+                        this->porta_pitch_dif -= (this->portamento_speed * this->track->getSpeed());
+                    }
+                    if (this->porta_pitch_dif < 0) {
+                        this->porta_pitch_dif = 0;
+                    }
+                }
+            }
+        }
     }
 
     bool Channel::decode_fx(uint_fast32_t fx, double t) {
@@ -205,7 +222,6 @@ namespace CodeTracker {
                 this->pitch_slide_up = float(fx_val) / float(0x00FFFFFF);
                 this->pitch_slide_down = 0.f;
                 this->pitch_slide_time = t;
-                printf("pitch slide up %f\n", this->pitch_slide_up);
                 return true;
             case 0x11://pitch slide down
                 this->pitch_slide_down = float(fx_val) / float(0x00FFFFFF);
@@ -219,7 +235,6 @@ namespace CodeTracker {
                 return true;
             case 0x13://set pitch
                 this->pitch = (float(fx_val) - float(0x800000)) / float(0x800000);
-                printf("pitch %f\n", this->pitch);
                 return true;
             case 0x14://set volume
                 this->volume = float(fx_val) / float(0x00FFFFFF);
@@ -264,7 +279,11 @@ namespace CodeTracker {
                 return true;
             case 0x1B://portamento
                 this->portamento = fx_val != 0;
-                this->portamento_speed = fx_val/0x8FFFFF;
+                printf("fx_val %x\n", fx_val);
+                this->portamento_speed = float(fx_val)/float(0x800000);
+                printf("portamento speed %f\n", this->portamento_speed);
+                this->portamento_time_step = t;
+                return true;
             case 0x1C://retrieg
                 this->retrieg_delay = (fx_val >> 4 * 4);
                 this->retrieg_number = (fx_val & 0xFF00) >> 4 * 2;

@@ -100,11 +100,14 @@ namespace CodeTracker {
         enum KeysUtilities{C, C_S, D, D_S, E, F, F_S, G, G_S, A, A_S, B, PITCHES_PER_OCTAVE, OCTAVE_PITCH_OFFSET = 4, NOTE_PITCH_OFFSET = A, RELEASE = 244, CONTINUE};
 
         /**
-         * @param p pitch
-         * @return frequency of the pitch in float
+         * @param p pitch2freq
+         * @return frequency of the pitch2freq in float
          * @note Pitch 0 corresponds to 440 Hz.
          */
-        float pitch(float p);
+        float pitch2freq(float p);
+
+        float key2pitch(Key k);
+        float key2pitch(float note, float octave);
 
         /**
          * @brief This function gives the frequency of a given note from a given octave
@@ -112,7 +115,7 @@ namespace CodeTracker {
          * @see KeysUtilities
          * @param octave
          * @return frequency of the note and octave in float
-         * @note This function calls pitch(float p). A4 (440 Hz) corresponds to pitch 0.
+         * @note This function calls pitch(float p). A4 (440 Hz) corresponds to pitch2freq 0.
          */
         float key2freq(float note , float octave);
         /**
@@ -286,8 +289,8 @@ namespace CodeTracker {
          * @param t Time
          * @return The signal
          */
-        float play(float a, Key k, double t);
-        float play(float a, float note, float octave, float t);
+        float play_key(float a, Key k, double t);
+        float play(float a, float note, double octave, double t);
         /**
          * @brief Plays sounds at t time and rt release time with a given key and amplitude
          * @param a Amplitude
@@ -295,8 +298,11 @@ namespace CodeTracker {
          * @param t Time
          * @return The signal
          */
-        float play(float a, Key k, double t, double rt);
-        float play(float a, float note, float octave, float t, float rt);
+        float play_key(float a, Key k, double t, double rt);
+        float play(float a, float note, float octave, double t, double rt);
+
+        float play_pitch(float a, float p, double t);
+        float play_pitch(float a, float p, double t, double rt);
 
     private:
         float global_volume = 1.0f;
@@ -518,7 +524,7 @@ namespace CodeTracker {
         Instruction instruct_state{};
 
         bool decode_fx(uint_fast32_t fx, double t);
-        bool readFx = true;
+
         float volume_slide_up = 0.f;
         float volume_slide_down = 0.f;
         double volume_slide_time = 0.0;
@@ -528,16 +534,12 @@ namespace CodeTracker {
         double pitch_slide_time = 0.0;
         double pitch_slide_val;
 
-        bool note_sliding = false;
-        float note_slide_up_speed = 0.f;
-        float note_slide_down_speed = 0.f;
-        int_fast32_t note_slide_val = 0;
-        float number_of_semitones_slide = 0.f;
-        double note_slide_step = 0;
-
         bool portamento = false;
         float portamento_speed = 0.f;
-
+        float portamento_val = 0.f;
+        float porta_pitch_dif = 0.0f;
+        double portamento_time_step = 0;
+        Key porta_key{};
 
         float tremolo_speed = 0.0f;
         float tremolo_depth = 0.0f;

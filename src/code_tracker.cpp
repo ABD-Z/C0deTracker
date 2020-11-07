@@ -7,22 +7,28 @@ namespace  CodeTracker{
 
     Key::Key(float n, float o) { this->note = n; this->octave = o;}
 
-    Key::Key(){this->note = Notes::CONTINUE; this->octave = Notes::CONTINUE;};
+    Key::Key(){this->note = Notes::CONTINUE; this->octave = Notes::CONTINUE;}
 
     ADSR::ADSR(float A, float D, float S, float R) { this->attack = A; this->decay = D; this->sustain = S; this->release = R;}
 
 
     namespace Notes {
-        float pitch(float p){return pow(1.059460646483f, p) * 440.0f;}
+        float pitch2freq(float p){return pow(1.059460646483f, p) * 440.0f;}
+
+        float key2pitch(Key k){
+            return key2pitch(k.note, k.octave);
+        }
+        float key2pitch(float note, float octave){
+            return float(PITCHES_PER_OCTAVE
+                         * (octave - OCTAVE_PITCH_OFFSET)
+                         + (note - NOTE_PITCH_OFFSET));
+        }
 
         float key2freq(float note , float octave){
-            //A4 == 440 HZ = pitch 0
-            //-12 pitch == 3A == 220 HZ
+            //A4 == 440 HZ = pitch2freq 0
+            //-12 pitch2freq == 3A == 220 HZ
             //+12
-            return pitch(float(PITCHES_PER_OCTAVE
-                                  *(octave - OCTAVE_PITCH_OFFSET)
-                                  +(note - NOTE_PITCH_OFFSET)
-                                  ));
+            return pitch2freq(key2pitch(note, octave));
         }
 
         float key2freq(Key key){

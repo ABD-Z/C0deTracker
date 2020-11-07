@@ -15,22 +15,32 @@ namespace CodeTracker{
 
     Oscillator *Instrument::get_oscillator() const {return this->osc;}
 
-    float Instrument::play(float a, Key k, double t) {
+    float Instrument::play_key(float a, Key k, double t) {
         return this->global_volume * this->osc->oscillate(a, Notes::key2freq(k), t, this->osc->getDutycycle(),
                                                           this->osc->getPhase());
     }
-    float Instrument::play(float a, float note, float octave, float t) {
+    float Instrument::play(float a, float note, double octave, double t) {
         return this->global_volume * this->osc->oscillate(a, Notes::key2freq(note, octave), t, this->osc->getDutycycle(),
                                                           this->osc->getPhase());
     }
 
-    float Instrument::play(float a, Key k, double t, double rt) {
+    float Instrument::play_key(float a, Key k, double t, double rt) {
         return this->global_volume * this->osc->oscillate(a, Notes::key2freq(k), t, rt, this->osc->getDutycycle(),
                                                                  this->osc->getPhase());
     }
 
-    float Instrument::play(float a, float note, float octave, float t, float rt) {
+    float Instrument::play(float a, float note, float octave, double t, double rt) {
         return this->global_volume * this->osc->oscillate(a, Notes::key2freq(note, octave), t, rt, this->osc->getDutycycle(),
+                                                          this->osc->getPhase());
+    }
+
+    float Instrument::play_pitch(float a, float p, double t) {
+        return this->global_volume * this->osc->oscillate(a, Notes::pitch2freq(p), t, this->osc->getDutycycle(),
+                                                          this->osc->getPhase());
+    }
+
+    float Instrument::play_pitch(float a, float p, double t, double rt) {
+        return this->global_volume * this->osc->oscillate(a, Notes::pitch2freq(p), t, rt, this->osc->getDutycycle(),
                                                           this->osc->getPhase());
     }
 

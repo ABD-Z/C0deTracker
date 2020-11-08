@@ -30,13 +30,13 @@ namespace CodeTracker {
     }
 
     float Oscillator::square(float a, float f, double t, float dc, float FMfeed) {
-        double frac_ft = f * t - floor(f * t);
+        double frac_ft = f * t - floor(t/(1.f/f));
         return (frac_ft -dc < 0) ?  a * .5f + FMfeed : a * -.5f + FMfeed;
     }
 
     float Oscillator::triangle(float a, float f, double t, float dc, float FMfeed) {
         //t-T*floor(t/T)  <=> mod(t,T)
-        double frac_ft = f * t - floor(f * t);
+        double frac_ft = f * t - floor(t/(1.f/f));
         double s = (frac_ft - dc * .5 < 0) ? t + FMfeed : -t + FMfeed;
         double frac_fs = f*s - floor(f*s);
         return  float(double(a) * (std::fmax(1.f - 2*frac_fs/dc, -0.f) - 0.5f));
@@ -45,8 +45,11 @@ namespace CodeTracker {
     float Oscillator::saw(float a, float f, double t, float dc, float FMfeed) {
         double T = 1.f / f;
         //t-T*floor(t/T)  <=> mod(t,T)
-        double s = (t - T * floor(t / T) < dc * T) ? t + FMfeed : 0.f + FMfeed;
-        return  float(double(a) * ((s - T * floor(s / T)) / (dc * T) - 0.5f));
+        double frac_ft = f * t - floor( t / (1.f/f));
+        double s = (frac_ft - dc < 0) ? t + FMfeed : 0.f + FMfeed;
+        double frac_fs = f * s - floor( s / (1.f/f));
+        return  float(double(a) * ( frac_fs / (dc) - 0.5f));
+
     }
 
     float Oscillator::whitenoise(float a, float f, double t, float dc, float FMfeed) {

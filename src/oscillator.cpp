@@ -30,15 +30,17 @@ namespace CodeTracker {
     }
 
     float Oscillator::square(float a, float f, double t, float dc, float FMfeed) {
-        double frac_ft = f*t - floor(t *f);
+        double frac_ft = f * t - floor(f * t);
         return (frac_ft -dc < 0) ?  a * .5f + FMfeed : a * -.5f + FMfeed;
     }
 
     float Oscillator::triangle(float a, float f, double t, float dc, float FMfeed) {
         double T = 1.f / f;
         //t-T*floor(t/T)  <=> mod(t,T)
-        double s = (t - T * floor(t / T) < dc * T * .5) ? t + FMfeed : -t + FMfeed;
-        return  float(double(a) * (std::fmax(-(s - T * floor(s / T)) / (dc * T * 0.5f) + 1.f, -0.f) - 0.5f));
+        double frac_ft = f * t - floor(f * t);
+        double s = (frac_ft - dc * .5 < 0) ? t + FMfeed : -t + FMfeed;
+        double frac_fs = f*s - floor(f*s);
+        return  float(double(a) * (std::fmax(1.f - 2*frac_fs/dc, -0.f) - 0.5f));
     }
 
     float Oscillator::saw(float a, float f, double t, float dc, float FMfeed) {

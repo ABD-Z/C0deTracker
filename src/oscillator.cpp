@@ -35,7 +35,6 @@ namespace CodeTracker {
     }
 
     float Oscillator::triangle(float a, float f, double t, float dc, float FMfeed) {
-        double T = 1.f / f;
         //t-T*floor(t/T)  <=> mod(t,T)
         double frac_ft = f * t - floor(f * t);
         double s = (frac_ft - dc * .5 < 0) ? t + FMfeed : -t + FMfeed;

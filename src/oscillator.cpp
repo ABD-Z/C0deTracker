@@ -26,7 +26,7 @@ namespace CodeTracker {
     }
 
     float Oscillator::sinus(float a, float f, double t, float dc, float FMfeed) {
-        return a * sinf(TWOPI * f * t + FMfeed);
+        return a * 0.5 * sinf(TWOPI * f * t + FMfeed);
     }
 
     float Oscillator::square(float a, float f, double t, float dc, float FMfeed) {

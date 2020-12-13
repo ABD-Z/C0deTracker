@@ -11,7 +11,7 @@ namespace CodeTracker{
     Instrument::Instrument(Oscillator *osc) {this->osc = osc;}
     Instrument::Instrument(Oscillator* osc, float global_volume){this->osc = osc; this->global_volume = global_volume;}
 
-    Instrument::~Instrument() {printf("destroying instrument\n");delete this->osc;printf("destroying instrument end\n");}
+    Instrument::~Instrument() {delete this->osc;}
 
     Oscillator *Instrument::get_oscillator() const {return this->osc;}
 
@@ -42,6 +42,16 @@ namespace CodeTracker{
     float Instrument::play_pitch(float a, float p, double t, double rt) {
         return this->global_volume * this->osc->oscillate(a, Notes::pitch2freq(p), t, rt, this->osc->getDutycycle(),
                                                           this->osc->getPhase());
+    }
+
+    Instrument &Instrument::operator=(const Instrument &instru) {
+        this->global_volume = instru.global_volume;
+        this->osc = instru.osc->clone();
+        return *this;
+    }
+
+    Instrument *Instrument::clone() {
+        return new Instrument(this->osc->clone(), this->global_volume);
     }
 
 

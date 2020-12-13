@@ -143,7 +143,7 @@ namespace CodeTracker {
      * values in order to select the corresponding waveform function
      * @see CodeTracker::Oscillator
      */
-    enum Waveforms{SINUS, SQUARE, TRIANGLE, SAW, WHITENOISE, WAVETYPES};
+    enum Waveforms{SINUS, SQUARE, TRIANGLE, SAW, WHITENOISE, WHITENOISE2, WAVETYPES};
 
     /**
      * @brief Abstract class used to generate simple waveform such as SINUS, SQUARE, TRIANGLE, SAW and WHITENOISE over
@@ -172,6 +172,7 @@ namespace CodeTracker {
          * @param p phase
          */
         explicit Oscillator(uint_fast8_t wavetype, float dc, float p);
+        virtual Oscillator* clone() = 0;
         virtual ~Oscillator();
         void setWavetype(uint_fast8_t wavetype); uint_fast8_t getWavetype();
         void setDutycycle(float dc); float getDutycycle();
@@ -220,11 +221,14 @@ namespace CodeTracker {
         float triangle(float a, float f, double t, float dc, float FMfeed);
         float saw(float a, float f, double t, float dc, float FMfeed);
         float whitenoise(float a, float f, double t, float dc, float FMfeed);
+        float whitenoise2(float a, float f, float t, float dc, float FMfeed);
         //function table
         std::vector<std::function<float(Oscillator&, float, float, double, float, float)>> wavefunc_table =
-            {&Oscillator::sinus, &Oscillator::square, &Oscillator::triangle, &Oscillator::saw, &Oscillator::whitenoise};
+            {&Oscillator::sinus, &Oscillator::square, &Oscillator::triangle, &Oscillator::saw, &Oscillator::whitenoise, &Oscillator::whitenoise2};
 
         virtual float handleAmpEnvelope(double t, double rt) = 0;
+
+
     };
 
     /**
@@ -239,6 +243,7 @@ namespace CodeTracker {
         PSG(uint_fast8_t wavetype, ADSR amp_enveloppe);
         PSG(uint_fast8_t wavetype, float dc, ADSR amp_enveloppe);
         PSG(uint_fast8_t wavetype, float dc, float p, ADSR amp_enveloppe);
+        [[nodiscard]] PSG * clone() override;
         ~PSG() override;
         float oscillate(float a, float f, double t, float dc, float p) override;
         float oscillate(float a, float f, double t, double rt, float dc, float p) override;
@@ -277,6 +282,10 @@ namespace CodeTracker {
          * @brief Destructor
          */
         ~Instrument();
+
+        Instrument& operator=(const Instrument& instru);
+        Instrument* clone();
+
         /**
          * @brief Gets instrument core, which is the Oscillator
          * @return a pointer to Oscillator
@@ -522,6 +531,7 @@ namespace CodeTracker {
         bool released = false;
         double time_release = 0.0;
         Instruction instruct_state{};
+        Instrument* instrument = nullptr;
 
         bool decode_fx(uint_fast32_t fx, double t);
 
@@ -583,6 +593,40 @@ namespace CodeTracker {
         uint_fast8_t delay_counter = 0;
         uint_fast8_t release_counter = 0;
     };
+
+    class Editor{
+    public:
+        static void prepare(Pattern **p, uint_fast8_t frames, uint_fast8_t chanindx,  uint_fast8_t patternindx, uint_fast8_t instrumentnindx, float volume);
+        static void prepare(uint_fast8_t chanindx, uint_fast8_t patternindx, uint_fast8_t instrumentnindx, float volume);
+        static void prepare(uint_fast8_t chanindx, uint_fast8_t patternindx, float volume);
+        static void storePattern(Pattern **p);
+        static void storeChannelIndex(uint_fast8_t chanindx);
+        static void storePatternIndex(uint_fast8_t patternindx);
+        static void storeInstrumentIndex(uint_fast8_t instrumentnindx);
+        static void storeVolume(float volume);
+
+        static void enterInstruction(uint_fast8_t instruction_index, CodeTracker::Key key);
+        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, CodeTracker::Key key);
+        static void enterInstruction(uint_fast8_t instruction_index, CodeTracker::Key key, float volume);
+        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, CodeTracker::Key key, float volume);
+
+        static void enterInstruction(uint_fast8_t instruction_index, CodeTracker::Key key, uint_fast32_t** effects);
+        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, CodeTracker::Key key, uint_fast32_t** effects);
+        static void enterInstruction(uint_fast8_t instruction_index, CodeTracker::Key key, float volume, uint_fast32_t** effects);
+        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, CodeTracker::Key key, float volume, uint_fast32_t** effects);
+
+        static void enterInstruction(uint_fast8_t instruction_index, uint_fast32_t** effects);
+
+        static void release(uint_fast8_t instruction_index);
+        static void release(uint_fast8_t instruction_index, uint_fast32_t** effects);
+
+    private:
+        static Pattern **pattern;
+        static uint_fast8_t chan_index, pattern_index, instrument_index, frames;
+        static float volume;
+    };
+
+
 }
 
 #endif //CODETRACKER_CODE_TRACKER_HPP

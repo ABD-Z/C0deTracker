@@ -155,7 +155,6 @@ namespace CodeTracker {
                         ++this->release_counter;
                         this->delrel_time_step += 1. / this->track->getClock();
                         if(this->release_counter >= this->release){
-                            printf("fx released releasecounta %d\n", this->release_counter);
                             this->setRelease(true);
                             this->setTimeRelease(t);
                         }
@@ -175,16 +174,12 @@ namespace CodeTracker {
                     this->porta_pitch_dif = 0;
                     this->instruct_state.key = this->porta_key;
                 }*/
-                //printf("porta_pitch_dif %f\n", this->porta_pitch_dif);
                 if (t - this->portamento_time_step >= 1. / this->track->getClock()) {
                     this->portamento_time_step += 1. / this->track->getClock();
                     this->porta_pitch_dif += (this->portamento_speed * this->track->getSpeed());
                 }
 
                 if (this->porta_pitch_dif > 0) {
-                    printf("end portamento down\n");
-                    printf("porta_pitch_dif < 0 %f\n", this->porta_pitch_dif);
-                    //printf("portamento speed %f\n",this->portamento_speed);
                     this->porta_pitch_dif = 0;
                 }
             } else {
@@ -199,7 +194,6 @@ namespace CodeTracker {
                         this->porta_pitch_dif = 0;
                         this->instruct_state.key = this->porta_key;
                     }*/
-                    //printf("porta_pitch_dif %f\n", this->porta_pitch_dif);
                     if (t - this->portamento_time_step >= 1. / this->track->getClock()) {
                         this->portamento_time_step += 1. / this->track->getClock();
                         this->porta_pitch_dif -= (this->portamento_speed * this->track->getSpeed());
@@ -215,8 +209,7 @@ namespace CodeTracker {
     bool Channel::decode_fx(uint_fast32_t fx, double t) {
         uint_fast8_t fx_code = fx >> 4 * 6;
         uint_fast32_t fx_val = fx & 0x00FFFFFF;
-        printf("pitch %f\n", this->pitch);
-        printf("%.3f FX CODE : %x ; FX VAL : %x\n", t, fx_code, fx_val);
+        //printf("%.3f FX CODE : %x ; FX VAL : %x\n", t, fx_code, fx_val);
         switch (fx_code) {
             case 0x10://pitch slide up
                 this->pitch_slide_up = float(fx_val) / float(0x00FFFFFF);
@@ -274,14 +267,11 @@ namespace CodeTracker {
                 this->transpose_delay = (fx_val >> 4 * 4);
                 this->transpose_semitones = (fx_val & 0xFF00) >> 4 * 2;
                 this->n_time_to_transpose = (fx_val & 0xFF);
-                printf("transpose delay %x , transpose semitones %x , ntime to transpose %x\n", this->transpose_delay, this->transpose_semitones, this->n_time_to_transpose);
                 this->transpose_time_step = t;
                 return true;
             case 0x1B://portamento
                 this->portamento = fx_val != 0;
-                printf("fx_val %x\n", fx_val);
                 this->portamento_speed = float(fx_val)/float(0x800000);
-                printf("portamento speed %f\n", this->portamento_speed);
                 this->portamento_time_step = t;
                 return true;
             case 0x1C://retrieg
@@ -307,7 +297,6 @@ namespace CodeTracker {
                 this->delrel_time_step = t;
                 return true;
             default:
-                printf("unknown effect\n");
                 return false;
         }
     }

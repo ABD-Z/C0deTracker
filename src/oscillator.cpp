@@ -26,7 +26,9 @@ namespace CodeTracker {
     }
 
     float Oscillator::sinus(float a, float f, double t, float dc, float FMfeed) {
-        return a * 0.5 * sinf(TWOPI * f * t + FMfeed);
+        double frac_ft = f * t - floor(t/(1.f/f));
+        return (frac_ft - dc < 0) ? a * 0.5 * sinf(TWOPI * f * t + FMfeed) : - a * 0.5 *(sinf(TWOPI * f * t + FMfeed));
+        //return a * 0.5 * sinf(TWOPI * f * t + FMfeed);
     }
 
     float Oscillator::square(float a, float f, double t, float dc, float FMfeed) {
@@ -53,14 +55,15 @@ namespace CodeTracker {
     }
 
     float Oscillator::whitenoise(float a, float f, double t, float dc, float FMfeed) {
-        float s = this->sinus(a, f, t, 0.f, FMfeed)/dc;
+        float s = this->sinus(a, f, t, 0.f, FMfeed)/(dc*0.5);
+        //s = this->sinus(a, f, t/(dc), 0.f, FMfeed);
         return  a * (s - floor(s) - 0.5f);
     }
 
-    /*float Oscillator::whitenoise2(float a, float f, float t, float dc, float FMfeed) {
+    float Oscillator::whitenoise2(float a, float f, float t, float dc, float FMfeed) {
         float s = this->sinus(a, f, t/dc, 0.f, FMfeed);
         return  a * (s - floor(s) - 0.5f);
-    }*/
+    }
 
 
 

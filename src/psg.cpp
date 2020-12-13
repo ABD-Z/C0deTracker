@@ -51,6 +51,9 @@ namespace CodeTracker {
         return this->release;
     }
 
+    PSG * PSG::clone() {
+        return new PSG(Oscillator::getWavetype(), Oscillator::getDutycycle(), Oscillator::getPhase(), this->amp_envelope);
+    }
 
 
 

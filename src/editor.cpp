@@ -11,6 +11,7 @@ namespace CodeTracker {
     uint_fast8_t Editor::instrument_index = 0;
     uint_fast8_t Editor::frames = 0;
     Pattern **Editor::pattern = nullptr;
+    uint_fast8_t  ** Editor::pattern_indices = nullptr;
 
     void Editor::prepare(CodeTracker::Pattern **p, uint_fast8_t frames, uint_fast8_t chanindx, uint_fast8_t patternindx,
                          uint_fast8_t instrumentnindx, float volume) {
@@ -35,6 +36,10 @@ namespace CodeTracker {
 
     void Editor::storePattern(Pattern **p) {
         Editor::pattern = p;
+    }
+
+    void Editor::storePatternIndices(uint_fast8_t **pi) {
+        Editor::pattern_indices = pi;
     }
 
     void Editor::storeChannelIndex(uint_fast8_t chanindx) {
@@ -122,5 +127,7 @@ namespace CodeTracker {
         }
     }
 
-
+    void Editor::enterPatternIndice(uint_fast8_t channel, uint_fast8_t frame, uint_fast8_t pattern_indice) {
+        *Editor::pattern_indices[channel * Editor::frames + frame] = pattern_indice;
+    }
 }

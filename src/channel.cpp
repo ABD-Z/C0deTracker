@@ -18,9 +18,6 @@ namespace CodeTracker {
     float Channel::getPitch() const {return this->pitch;}
     void Channel::setPitch(float pitch) {this->pitch = pitch;}
 
-    float Channel::getSpeed() const {return this->speed;}
-    void Channel::setSpeed(float speed) {this->speed = speed;}
-
     Instruction* Channel::getLastInstructionAddress() const {return this->last_instruct_address;}
     void Channel::setLastInstructionAddress(Instruction *lastInstructionAddress) { this->last_instruct_address = lastInstructionAddress;}
 
@@ -34,6 +31,10 @@ namespace CodeTracker {
 
     Channel::Channel() {
         this->number = Channel::chancount++;
+    }
+
+    Channel::~Channel() {
+        delete this->instrument;
     }
 
     double Channel::getTimeRelease() const {
@@ -245,7 +246,7 @@ namespace CodeTracker {
             case 0x17://tremolo
                 this->tremolo_speed = float(fx_val >> 4 * 3) / float(0x100);
                 this->tremolo_depth = float(fx_val & 0xFFF) / float(0xFFF);
-                this->tremolo_time = t; //printf("tremolo speed %f\n", this->tremolo_speed);
+                this->tremolo_time = t;
                 return true;
             case 0x18://set  panning
                 this->panning = float(fx_val) / float(0xFFFFFF);
@@ -300,4 +301,6 @@ namespace CodeTracker {
                 return false;
         }
     }
+
+
 }

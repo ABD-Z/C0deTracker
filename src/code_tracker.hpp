@@ -4,7 +4,7 @@
 
 /* CodeTracker - Copyright (c) Abdulmajid, Olivier NASSER
  * CodeTracker header file containing everything you need yo create your music :
- * Key, ADSR, Oscillator classes, Instrument, Pattern, Track and Channel.
+ * Keys, ADSR, Oscillator classes, Instrument, Pattern, Track and Channel.
  * See the example.hpp for more details about how to use CodeTracker.
  *
  * This software is provided 'as-is', without any express or implied warranty.
@@ -17,8 +17,7 @@
  *
  * 1. The origin of this software must not be misrepresented; you must not claim
  * that you wrote the original software. If you use this software in a product,
- * an acknowledgment in the product documentation would be appreciated but is
- * not required.
+ * an acknowledgment in the product documentation would be appreciated
  *
  * 2. Altered source versions must be plainly marked as such, and must not be
  * misrepresented as being the original software.
@@ -106,7 +105,19 @@ namespace CodeTracker {
          */
         float pitch2freq(float p);
 
+        /**
+         * @brief converts a key in float
+         * @param k Key (note)
+         * @return pitch of the key in float
+         */
         float key2pitch(Key k);
+
+        /**
+         * @brief converts a key (note and octave separatly) in float
+         * @param note
+         * @param octave
+         * @return pitch in float
+         */
         float key2pitch(float note, float octave);
 
         /**
@@ -172,11 +183,46 @@ namespace CodeTracker {
          * @param p phase
          */
         explicit Oscillator(uint_fast8_t wavetype, float dc, float p);
+        /**
+         * @brief copy oscillator. Used for cloning instruments in channel
+         * @return Oscillator allocated dynamically
+         */
         virtual Oscillator* clone() = 0;
         virtual ~Oscillator();
-        void setWavetype(uint_fast8_t wavetype); uint_fast8_t getWavetype();
-        void setDutycycle(float dc); float getDutycycle();
-        void setPhase(float p); float getPhase();
+
+        /**
+         * @brief set the wavetype of the oscillator to generate the corresponding waveform
+         * @param wavetype 0, 1, 2, 3, 4, 5 => SINUS, SQUARE, TRIANGLE, SAW, WHITENOISE, WHITENOISE2
+         * @see Waveforms
+         */
+        void setWavetype(uint_fast8_t wavetype);
+
+        /**
+         * @brief return the value of the corresponding wavetype
+         */
+        uint_fast8_t getWavetype();
+
+        /**
+         * @brief set the duty cycle of the waveform
+         * @param dc duty cycle of the waveform
+         */
+        void setDutycycle(float dc);
+        /**
+         *
+         * @return get the duty cycle of the waveform
+         */
+        float getDutycycle();
+
+        /**
+         * @brief Set the phase of the waveform. The value set is multiplied by 1/frequency (percentage of waveform period)
+         * @param p  phase of the waveform.
+         */
+        void setPhase(float p);
+        /**
+         *
+         * @return the phase in float
+         */
+        float getPhase();
         /**
          * @brief Generates corresponding waveform selected.
          * @param a Amplitude
@@ -283,7 +329,10 @@ namespace CodeTracker {
          */
         ~Instrument();
 
-        Instrument& operator=(const Instrument& instru);
+        /**
+         * @brief copy Instrument. Used in channel
+         * @return Instrument allocated dynamically
+         */
         Instrument* clone();
 
         /**
@@ -299,18 +348,50 @@ namespace CodeTracker {
          * @return The signal
          */
         float play_key(float a, Key k, double t);
+        /**
+         * @brief Plays sounds at t time with a given note and octave and amplitude
+         * @param a Amplitude
+         * @param note Note
+         * @param octave Octave
+         * @param t Time
+         * @return The signal
+         */
         float play(float a, float note, double octave, double t);
         /**
-         * @brief Plays sounds at t time and rt release time with a given key and amplitude
+         * @brief Plays sounds when released at t time and rt release time with a given key and amplitude
          * @param a Amplitude
          * @param k Structure Key (note, octave)
          * @param t Time
          * @return The signal
          */
         float play_key(float a, Key k, double t, double rt);
+        /**
+         * @brief Plays sounds when released at t time and rt release time with a given note and octave and amplitude
+         * @param a Amplitude
+         * @param note Note
+         * @param octave Octave
+         * @param t Time
+         * @param rt Release Time
+         * @return The Signal
+         */
         float play(float a, float note, float octave, double t, double rt);
 
+        /**
+         * @brief Plays sounds at t time with a given pitch and amplitude
+         * @param a Amplitude
+         * @param p Pitch
+         * @param t Time
+         * @return The Signal
+         */
         float play_pitch(float a, float p, double t);
+
+        /**
+         * @brief Plays sounds when released at t and rt release time with a given pitch and amplitude
+         * @param a Amplitude
+         * @param p Pitch
+         * @param t Time
+         * @return The Signal
+         */
         float play_pitch(float a, float p, double t, double rt);
 
     private:
@@ -325,7 +406,7 @@ namespace CodeTracker {
      * @see Pattern
      */
     struct Instruction{
-        uint_fast8_t instrument_index{}; Key key; float volume{}; uint_fast32_t** effects{};//efect tab
+        uint_fast8_t instrument_index{}; Key key; float volume{}; uint_fast32_t** effects{};//effect tab
         /**
          * @brief Default constructor to create empty instruction
          */
@@ -347,13 +428,16 @@ namespace CodeTracker {
     struct Pattern{
         Instruction** instructions; /**<Array of Instruction pointers*/
         uint_fast8_t rows; /**< Size of the row*/
+        uint_fast8_t n_fx;
         /**
          * @brief Pattern initializer
          * @param rows size of the patterns
+         * @param number_of_fx max fx supported in this pattern of a corresponding channel
          */
-        explicit Pattern(uint_fast8_t rows);
+        Pattern(uint_fast8_t rows, uint_fast8_t number_of_fx);
+
         /**
-         * @brief Delete instructions dynamic allocation.
+         * @brief Delete instructions dynamic allocation
          */
         ~Pattern();
     };
@@ -385,30 +469,39 @@ namespace CodeTracker {
          * @brief free everything related to the track, patterns, patterns indices, instruments
          */
         ~Track();
+
         /**
-         * @brief main function called to play sound from a single channel from the track
-         * @param t time
-         * @param chan pointer to a Channel
-         * @return the music at time t from the specific channel
+         * @brief main function called at each time to calculate the corresponding sample of the track
+         * @param double t time in second
+         * @param Channel* chan pointers to the channels allocated dynamically by the user
+         * @param uint_fast8_t size_of_chans number of channels created by the user, otherwise the size of the array chan
+         * @return pointer to array of float for left and right speaker
          */
-        float play_single_channel(double t, Channel* chan);
+        float* play_(double t, Channel* chan, uint_fast8_t size_of_chans);
 
-        float play(double t, Channel* chan);
-
-        float* play_(double t, Channel* chan);
-
+        /**
+         * @return global panning if the track
+         * @brief 0.5 is centered ; 0 sound is only on left ; 1 only on right
+         */
         float getPanning();
+
+        /**
+         * @return value of the clock
+         */
         float getClock();
+
+        /**
+         * @return the speed of the track which could be modified by effect 0x09xxxyyy
+         */
         float getSpeed();
-
-
 
         /**
          * @return number of channels dedicated fo the track
          */
         uint_fast8_t getNumberofChannels();
         /**
-         * @return duration of the track
+         * @return duration of the track.
+         * @note It is very approximative, especially when the track jumps frames and changes speed during the song processing
          */
         float getDuration();
 
@@ -447,11 +540,7 @@ namespace CodeTracker {
         float vibrato_depth = 0.0f;
         float vibrato_val = 0.0f;
         double vibrato_time = 0.0;
-
-        double time_offset = 0.0;
-
         float panning = 0.5f;
-
         bool branch = false;
         uint_fast8_t frametojump = 0;
         uint_fast8_t rowtojump = 0;
@@ -473,7 +562,7 @@ namespace CodeTracker {
     class Channel{
     public:
         /**
-         * @brief create a channel. Each channel created ha it is own number
+         * @brief create a channel. Each channel created has it is own number
          */
         Channel();
         /**
@@ -481,6 +570,9 @@ namespace CodeTracker {
          * @param number the number of the channel
          */
         explicit Channel(uint_fast8_t number);
+
+        ~Channel();
+
         /**
          * @return number of the channel
          */
@@ -497,9 +589,29 @@ namespace CodeTracker {
          * @brief disable channel sound processing
          */
         void disable();
-        [[nodiscard]] float getSpeed() const; void setSpeed(float speed);
-        [[nodiscard]] float getPitch() const; void setPitch(float pitch);
-        [[nodiscard]] float getVolume() const; void setVolume(float volume);
+
+        /**
+         * @return the pitch of the channel
+         */
+        [[nodiscard]] float getPitch() const;
+
+        /**
+         * @brief set the pitch of the channel
+         * @param pitch to set
+         */
+        void setPitch(float pitch);
+
+        /**
+         * @return get the volume of the channel
+         */
+        [[nodiscard]] float getVolume() const;
+
+        /**
+         * @brief set the volume of the channel
+         * @param volume to set
+         */
+        void setVolume(float volume);
+
         /**
          * @return get the pointer to the last non empty instruction (from the track)
          */
@@ -509,15 +621,71 @@ namespace CodeTracker {
          * @param lastInstruction pointer to the instruction in pattern
          */
         void setLastInstructionAddress(Instruction *lastInstructionAddress);
-        [[nodiscard]] Track *getTrack() const; void setTrack(Track *track);
-        [[nodiscard]] double getTime() const; void setTime(double time);
-        [[nodiscard]] double getTimeRelease() const; void setTimeRelease(double time);
-        [[nodiscard]] bool isReleased() const; void setRelease(bool r);
 
+        /**
+         *
+         * @return address of the track currently working with the channel
+         */
+        [[nodiscard]] Track *getTrack() const;
+        /**
+         * @brief store the address of the track
+         * @param track currently used to generates sound
+         */
+        void setTrack(Track *track);
+
+        /**
+         *
+         * @return time when the channel encounter a new
+         */
+        [[nodiscard]] double getTime() const;
+
+        /**
+         * @brief set time when channel encounter a new note
+         * @param time
+         */
+        void setTime(double time);
+
+        /**
+         *
+         * @return time when release is triggered
+         */
+        [[nodiscard]] double getTimeRelease() const;
+
+        /**
+         * @brief set the time when release is triggered
+         * @param time
+         */
+        void setTimeRelease(double time);
+        /**
+         *
+         * @return a boolean to know if the channel is released or not.
+         */
+        [[nodiscard]] bool isReleased() const;
+
+        /**
+         * @brief set release state to boolean r
+         * @param r a boolean (true release)
+         */
+        void setRelease(bool r);
+
+        /**
+         * @return the instruction state copied of the channel (which could be modified without dynamically in exe)
+         */
         [[nodiscard]] const Instruction *getInstructionState() const;
+
+        /**
+         * @brief copy the current instruction in Channel
+         * @param instruc pointer to Instruction from patterns song
+         */
         void setInstructionState(Instruction* instruc);
+
+        /**
+         * @brief modify the volume of the copied instruction in Channel
+         * @param a volume in float
+         */
         void setVolumeInstructionState(float a);
-        friend float* Track::play_(double , CodeTracker::Channel*);
+
+        friend float* Track::play_(double , CodeTracker::Channel*, uint_fast8_t size_of_chans);//function play_ of Track friend of Channel in order to avoid creating a huge amount of getters for each attributes
     private:
         static uint_fast8_t chancount;
         Instruction* last_instruct_address = nullptr;
@@ -542,14 +710,13 @@ namespace CodeTracker {
         float pitch_slide_up = 0.f;
         float pitch_slide_down = 0.f;
         double pitch_slide_time = 0.0;
-        double pitch_slide_val;
+        double pitch_slide_val =0.0;
 
         bool portamento = false;
         float portamento_speed = 0.f;
         float portamento_val = 0.f;
         float porta_pitch_dif = 0.0f;
         double portamento_time_step = 0;
-        Key porta_key{};
 
         float tremolo_speed = 0.0f;
         float tremolo_depth = 0.0f;
@@ -570,7 +737,7 @@ namespace CodeTracker {
         bool arpeggio = false;
         double arpeggio_step = 0.0;
         uint_fast8_t  arpeggio_index = 0;
-        uint_fast8_t arpeggio_val[6];
+        uint_fast8_t arpeggio_val[6]{};
 
         void update_fx(double t);
 
@@ -594,12 +761,19 @@ namespace CodeTracker {
         uint_fast8_t release_counter = 0;
     };
 
+
+    /**
+     * @brief Editor class is used to ease the user while writing his song.
+     * @note The user can create macros as shortcuts to the Editor's commands
+     * @see example.cpp
+     */
     class Editor{
     public:
         static void prepare(Pattern **p, uint_fast8_t frames, uint_fast8_t chanindx,  uint_fast8_t patternindx, uint_fast8_t instrumentnindx, float volume);
         static void prepare(uint_fast8_t chanindx, uint_fast8_t patternindx, uint_fast8_t instrumentnindx, float volume);
         static void prepare(uint_fast8_t chanindx, uint_fast8_t patternindx, float volume);
         static void storePattern(Pattern **p);
+        static void storePatternIndices(uint_fast8_t** pi);
         static void storeChannelIndex(uint_fast8_t chanindx);
         static void storePatternIndex(uint_fast8_t patternindx);
         static void storeInstrumentIndex(uint_fast8_t instrumentnindx);
@@ -620,8 +794,11 @@ namespace CodeTracker {
         static void release(uint_fast8_t instruction_index);
         static void release(uint_fast8_t instruction_index, uint_fast32_t** effects);
 
+        static void enterPatternIndice(uint_fast8_t channel, uint_fast8_t frame, uint_fast8_t pattern_indice);
+
     private:
         static Pattern **pattern;
+        static uint_fast8_t** pattern_indices;
         static uint_fast8_t chan_index, pattern_index, instrument_index, frames;
         static float volume;
     };

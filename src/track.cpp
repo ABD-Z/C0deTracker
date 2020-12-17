@@ -29,7 +29,7 @@ namespace CodeTracker {
     Track::~Track() {
         for (uint8_t i = 0; i < this->channels * this->frames; ++i) { delete this->pattern_indices[i]; }
         delete[] this->pattern_indices;
-        for (uint8_t i = 0; i < this->channels * this->frames; ++i) { delete this->track_patterns[i]; }
+        for (uint8_t i = 0; i < this->channels * this->frames; ++i) {delete this->track_patterns[i];}
         delete[] this->track_patterns;
         for (uint8_t i = 0; i < this->instruments; ++i) { delete this->instruments_bank[i]; }
         delete[] this->instruments_bank;
@@ -43,67 +43,6 @@ namespace CodeTracker {
     float Track::getDuration() {
         return this->duration;
     }
-
-    float Track::play_single_channel(double t, Channel *chan) {
-        if (chan->getNumber() > this->channels) { return 0.0f; }
-        if (chan->isEnable()) {
-            double time_in_track = fmod(t, double(this->duration));
-            uint_fast8_t row_index = floor(time_in_track / this->step);
-            uint_fast8_t pattern_index = floor(row_index / this->rows);
-            row_index = row_index % this->rows;
-            uint_fast8_t chan_number = chan->getNumber();
-            pattern_index = *this->pattern_indices[chan_number * this->frames + pattern_index];
-            Pattern *pat = this->track_patterns[chan_number * (this->frames) + pattern_index];
-            Instruction *current_instruction = pat->instructions[row_index];
-            if (current_instruction->instrument_index < this->instruments) {
-                if (current_instruction != chan->getLastInstructionAddress()) {
-                    chan->setLastInstructionAddress(current_instruction);
-                    this->instruments_bank[current_instruction->instrument_index]->get_oscillator()->setRelease(false);
-                    chan->setRelease(false);
-                    chan->setTime(t);
-                    chan->setTrack(this);
-                }
-            } else {
-                if (current_instruction->instrument_index == Notes::RELEASE &&
-                    chan->getLastInstructionAddress()->instrument_index < this->instruments) {
-                    if (!chan->isReleased()) {
-                        chan->setRelease(true);
-                        chan->setTimeRelease(t);
-                        chan->setTrack(this);
-                        this->instruments_bank[chan->getLastInstructionAddress()->instrument_index]->get_oscillator()->setRelease(
-                                true);
-                    }
-                    if (current_instruction->volume != Notes::CONTINUE &&
-                        ((0.f <= current_instruction->volume) || (current_instruction->volume <= MASTER_VOLUME))) {
-                        chan->setVolumeInstructionState(current_instruction->volume);
-                    }
-                }
-                if (current_instruction->instrument_index == Notes::CONTINUE &&
-                    chan->getLastInstructionAddress()->instrument_index < this->instruments) {
-                    if (current_instruction->volume != Notes::CONTINUE &&
-                        ((0.f <= current_instruction->volume) || (current_instruction->volume <= MASTER_VOLUME))) {
-                        chan->setVolumeInstructionState(current_instruction->volume);
-                    }
-                }
-            }
-            if (chan->getLastInstructionAddress() != nullptr && chan->getTrack() != nullptr) {
-                if (!chan->isReleased()) {
-                    return this->volume * chan->getVolume()
-                           * this->instruments_bank[chan->getLastInstructionAddress()->instrument_index]->play_key(
-                            chan->getLastInstructionAddress()->volume, chan->getLastInstructionAddress()->key,
-                            t - chan->getTime());
-                } else {
-                    return this->volume * chan->getVolume()
-                           * this->instruments_bank[chan->getLastInstructionAddress()->instrument_index]->play_key(
-                            chan->getLastInstructionAddress()->volume, chan->getLastInstructionAddress()->key,
-                            t - chan->getTime(), t - chan->getTimeRelease());
-                }
-            }
-
-        }
-        return 0.0f;
-    }
-
 
     void Track::update_fx(double t) {
         this->volume -= (this->volume_slide_down / this->speed) * (t - this->volume_slide_time);
@@ -225,91 +164,7 @@ namespace CodeTracker {
         }
     }
 
-    float Track::play(double t, Channel *chan) {
-        t += this->time_offset;
-        this->update_fx(t);
-        double time_in_track = fmod(t, double(this->duration));
-        uint_fast8_t row_index = floor(time_in_track / this->step);
-        uint_fast8_t index = floor(row_index / this->rows);
-        row_index = row_index % this->rows;
-
-        float s = 0.f;
-        for (int_fast8_t i = this->getNumberofChannels() - 1; i >= 0; --i) {
-            if (chan[i].isEnable()) {
-                uint_fast8_t chan_number = chan[i].getNumber();
-                uint_fast8_t pattern_index = *this->pattern_indices[chan_number * this->frames + index];
-                Pattern *pat = this->track_patterns[chan_number * (this->frames) + pattern_index];
-                Instruction *current_instruction = pat->instructions[row_index];
-                if (current_instruction->effects != nullptr) {
-                    for (int_fast8_t fx_indx = this->fx_per_chan[chan_number] - 1; fx_indx >= 0; --fx_indx) {
-                        if (current_instruction->effects[fx_indx] != nullptr) {
-                            //printf("CHAN %d EFFECT %d : %x\n", chan_number, fx_indx,
-                            //*current_instruction->effects[fx_indx]);
-                            this->decode_fx(*current_instruction->effects[fx_indx], t);
-                        }
-                    }
-                }
-                if (current_instruction->instrument_index < this->instruments) {
-                    if (current_instruction != chan[i].getLastInstructionAddress()) {
-                        chan[i].setLastInstructionAddress(current_instruction);
-                        chan[i].setRelease(false);
-                        chan[i].setTime(t);
-                        chan[i].setTrack(this);
-                        chan[i].setInstructionState(current_instruction);
-                        this->instruments_bank[chan[i].getInstructionState()->instrument_index]->get_oscillator()->setRelease(
-                                false);
-                    }
-                } else {
-                    if (chan[i].getLastInstructionAddress() != nullptr) {
-                        if (current_instruction->instrument_index == Notes::RELEASE &&
-                            chan[i].getLastInstructionAddress()->instrument_index < this->instruments) {
-                            if (!chan[i].isReleased()) {
-                                chan[i].setRelease(true);
-                                chan[i].setTimeRelease(t);
-                                chan[i].setTrack(this);
-                                this->instruments_bank[chan[i].getInstructionState()->instrument_index]->get_oscillator()->setRelease(
-                                        true);
-                            }
-                            if (current_instruction->volume != Notes::CONTINUE &&
-                                ((0.f <= current_instruction->volume) ||
-                                 (current_instruction->volume <= MASTER_VOLUME))) {
-                                chan[i].setVolumeInstructionState(current_instruction->volume);
-                            }
-                        }
-                        if (current_instruction->instrument_index == Notes::CONTINUE &&
-                            chan[i].getLastInstructionAddress()->instrument_index < this->instruments) {
-                            if (current_instruction->volume != Notes::CONTINUE &&
-                                ((0.f <= current_instruction->volume) ||
-                                 (current_instruction->volume <= MASTER_VOLUME))) {
-                                chan[i].setVolumeInstructionState(current_instruction->volume);
-                            }
-                        }
-                    }
-                }
-
-                if (chan[i].getLastInstructionAddress() != nullptr && chan[i].getTrack() != nullptr) {
-                    if (!chan[i].isReleased()) {
-                        s += chan[i].getVolume()
-                             * this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
-                                chan[i].getInstructionState()->volume,
-                                (chan[i].getInstructionState()->key.note + this->pitch) + this->vibrato_val,
-                                chan[i].getInstructionState()->key.octave,
-                                t - chan[i].getTime());
-                    } else {
-                        s += chan[i].getVolume()
-                             * this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play(
-                                chan[i].getInstructionState()->volume,
-                                (chan[i].getInstructionState()->key.note + this->pitch) + this->vibrato_val,
-                                chan[i].getInstructionState()->key.octave,
-                                t - chan[i].getTime(), t - chan[i].getTimeRelease());
-                    }
-                }
-            }
-        }
-        return this->volume * this->tremolo_val * s;
-    }
-
-    float *Track::play_(double t, Channel *chan) {
+    float *Track::play_(double t, Channel *chan, uint_fast8_t size_of_chans) {
         static float res[2];
 
         res[0] = 0.f; res[1] = 0.f;
@@ -343,8 +198,14 @@ namespace CodeTracker {
         float s = 0.f;//generated signal
         float a = 0.f;//amplitude
         float p = 0.f;//pitch
-        for (int_fast8_t i = this->getNumberofChannels() - 1; i >= 0; --i) {
-        //for (int_fast8_t i = 2; i >= 2; --i) {
+        uint_fast8_t n_of_chans = 0;
+        if(size_of_chans < this->getNumberofChannels()){
+            n_of_chans = size_of_chans;
+
+        } else{
+            n_of_chans = this->getNumberofChannels();
+        }
+        for (int_fast8_t i = n_of_chans - 1; i >= 0; --i) {
             if (chan[i].isEnable()) {
                 if(chan[i].getTrack() != nullptr){
                     chan[i].update_fx(t);
@@ -363,24 +224,21 @@ namespace CodeTracker {
                         chan[i].setTrack(this);
                         if(chan[i].getInstructionState()->key.note == Notes::CONTINUE || chan[i].getInstructionState()->key.octave == Notes::CONTINUE){
                             if(chan[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
-                                if(chan[i].instrument != nullptr)
-                                    chan[i].instrument->~Instrument();
+                                delete chan[i].instrument;
                                 chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
                             }
                             chan[i].setInstructionState(current_instruction);
                         }else{
                             if(!chan[i].portamento){
                                 if(chan[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
-                                    if(chan[i].instrument != nullptr)
-                                        chan[i].instrument->~Instrument();
+                                    delete chan[i].instrument;
                                     chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
                                 }
                                 chan[i].setInstructionState(current_instruction);
                             }else{
                                 chan[i].porta_pitch_dif = Notes::key2pitch(current_instruction->key)  - (Notes::key2pitch(chan[i].instruct_state.key) - chan[i].porta_pitch_dif);
                                 if(chan[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
-                                    if(chan[i].instrument != nullptr)
-                                        chan[i].instrument->~Instrument();
+                                    delete chan[i].instrument;
                                     chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
                                 }
                                 chan[i].setInstructionState(current_instruction);
@@ -463,17 +321,8 @@ namespace CodeTracker {
 
                 if (chan[i].getLastInstructionAddress() != nullptr && chan[i].getTrack() != nullptr) {
                     if (!chan[i].isReleased()) {
-                        /*s = this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play_pitch(
-                                a,
-                                p,
-                                t - chan[i].getTime());*/
                         s = chan[i].instrument->play_pitch(a, p, t - chan[i].getTime());
                     } else {
-                        /*s = this->instruments_bank[chan[i].getInstructionState()->instrument_index]->play_pitch(
-                                a,
-                                p,
-                                t - chan[i].getTime(),
-                                t - chan[i].getTimeRelease());*/
                         s = chan[i].instrument->play_pitch(a, p, t - chan[i].getTime(), t - chan[i].getTimeRelease());
                     }
                     res[0] += s * (1 - chan[i].panning);

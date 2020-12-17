@@ -10,11 +10,11 @@ namespace ssf2_credit_theme{
         //*******************************************INSTRUMENTS BANK*************************************************//
         CodeTracker::Instrument** instrubank;
         instrubank = new CodeTracker::Instrument*[INSTRUMENTS];
-        instrubank[COWBELL] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.0105f, CodeTracker::ADSR(10000.f, 3.86f, 0.00f, 0.f)),0.3f);
-        instrubank[CRASH] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.0038f, CodeTracker::ADSR(10000.f, 1.86f, 0.00f, 0.f)),0.25f);
-        instrubank[TRIANGLE] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE2, .0025f, CodeTracker::ADSR(100000.f, 2.66f, 0.00f, 2.f)),0.1f);
-        instrubank[WOOD] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE2, 0.1f, CodeTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f)), .4f);
-        instrubank[HITHAT] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.00377f, CodeTracker::ADSR(1000.f, 33.3f, 0.0f, 0.f)), .4f);
+        instrubank[COWBELL] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.0105f, CodeTracker::ADSR(10000.f, 3.86f, 0.00f, 0.f)),0.2455f);
+        instrubank[CRASH] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.0055, CodeTracker::ADSR(10000.f, 1.86f, 0.00f, 0.f)),0.32);
+        instrubank[TRIANGLE] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE2, .0025f, CodeTracker::ADSR(100000.f, 2.66f, 0.00f, 2.f)),0.22f);
+        instrubank[WOOD] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE2, 0.1f, CodeTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f)), .6f);
+        instrubank[HITHAT] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.00377f, CodeTracker::ADSR(1000.f, 33.3f, 0.0f, 0.f)), .56f);
         instrubank[KICK] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.1f, CodeTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f)), 0.666f);
         instrubank[SNARE] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.0025f, CodeTracker::ADSR(100000.f, 9.66f, 0.05f, 1.f)),1.f);
         instrubank[STRING] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::SAW, 0.08f, CodeTracker::ADSR(10.f, 0.88, 0.5, 6.0f)),.78f);
@@ -28,7 +28,7 @@ namespace ssf2_credit_theme{
         printf("PATTERNS OF %d INITIALIZING\n", CHANNELS * FRAMES);
         auto** patterns = new CodeTracker::Pattern*[CHANNELS * FRAMES];
         for(uint_fast8_t i = 0; i < CHANNELS * FRAMES; ++i){
-            patterns[i] = new CodeTracker::Pattern(ROWS);
+            patterns[i] = new CodeTracker::Pattern(ROWS, fx_per_chan[i/FRAMES]);
         }
 
         using namespace CodeTracker::Notes; using namespace CodeTracker;
@@ -44,7 +44,7 @@ namespace ssf2_credit_theme{
 
         printf("WRITING PATTERN 0 CHAN 0\n");
         PREP(patterns, FRAMES, 0, 0, KICK, 0.7f);
-        I(0, Key(A, 1), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x041000AA), new uint_fast32_t(0x05000A0F)});
+        I(0, Key(A, 1));
         I(24, Key(A, 1));
         I(32, Key(A, 1));
         I(40, Key(A, 1));
@@ -1338,14 +1338,19 @@ namespace ssf2_credit_theme{
         printf("WRITING PATTERN 0 CHAN 7\n");
         VOLUME(0.55);
         I(0, k(C_S,3));
+        VOLUME(0.35);
         I(12, k(A_S,2));
         I(20, k(A_S,2));
         I(28, k(A_S,2));
+        VOLUME(0.55);
         I(32, k(C_S,3));
+        VOLUME(0.35);
         I(44, k(A_S,2));
         I(52, k(A_S,2));
         I(60, k(A_S,2));
+        VOLUME(0.55);
         I(62, k(C_S,3));
+        VOLUME(0.35);
 
         PTRN_INDX(1);
         printf("WRITING PATTERN 1 CHAN 7\n");
@@ -1353,8 +1358,11 @@ namespace ssf2_credit_theme{
         I(12, k(A_S, 2));
         I(20, k(A_S, 2));
         I(28, k(A_S, 2));
+        VOLUME(0.55);
         I(32, k(C_S,3));
+        VOLUME(0.35);
         I(44, k(A_S,2));
+        VOLUME(0.55);
         I(46, k(C_S, 3));
         INSTR_INDX(COWBELL);
         VOLUME(0.55);
@@ -1425,9 +1433,11 @@ namespace ssf2_credit_theme{
         I(32, k(A,2)); I(34, k(A,2)); I(36, k(A,2)); I(38, k(A,2)); I(40, k(A,2)); I(42, k(A,2)); I(44, k(A,2)); I(46, k(A,2));
         I(48, k(A,2)); I(50, k(A,2)); I(52, k(A,2)); I(54, k(A,2));
         INSTR_INDX(CRASH);
+        VOLUME(0.35);
         I(56, k(A_S,2));
         I(58, k(A_S,2));
         I(60, k(A_S,2));
+        VOLUME(0.55);
         I(62, k(C_S,3));
 
         printf("WRITING PATTERN 8 CHAN 7\n");
@@ -1435,6 +1445,7 @@ namespace ssf2_credit_theme{
         INSTR_INDX(CRASH);
         VOLUME(0.55);
         I(0, k(C_S,3));
+        VOLUME(0.35);
         I(6, k(A_S,2));
         I(10, k(A_S,2));
         I(14, k(A_S,2));
@@ -1448,6 +1459,7 @@ namespace ssf2_credit_theme{
         I(42, k(A_S,2));
         I(46, k(A_S,2));
         I(48, k(A_S,2));
+        VOLUME(0.55);
         I(50, k(C_S,3));
         I(56, k(C_S,3));
 
@@ -1466,6 +1478,7 @@ namespace ssf2_credit_theme{
         INSTR_INDX(CRASH);
         VOLUME(0.55);
         I(0, k(C_S,3));
+        VOLUME(0.35);
         I(6, k(A_S,2));
         I(10, k(A_S,2));
         I(14, k(A_S,2));
@@ -1479,6 +1492,7 @@ namespace ssf2_credit_theme{
         I(42, k(A_S,2));
         I(46, k(A_S,2));
         I(48, k(A_S,2));
+        VOLUME(0.55);
         I(50, k(C_S,3));
         I(54, k(C_S,3));
 
@@ -1526,13 +1540,13 @@ namespace ssf2_credit_theme{
         INSTR_INDX(CRASH);
         VOLUME(0.55);
         I(16, k(C_S,3));
+        VOLUME(0.33);
         I(32, k(A_S,2));
         I(36, k(A_S,2));
+        VOLUME(0.55);
         I(46, k(C_S,3));
         INSTR_INDX(COWBELL);
         I(0,k(C_S,3)); I(4,k(C_S,3)); I(8,k(C_S,3)); I(12,k(C_S,3));
-
-
 
 
 
@@ -1545,45 +1559,23 @@ namespace ssf2_credit_theme{
         auto** patterns_indices = new uint8_t*[CHANNELS * FRAMES];
         for(uint_fast8_t i = 0; i < CHANNELS; ++i){
             for(uint_fast8_t j = 0; j < FRAMES; ++j){
-                patterns_indices[i * FRAMES + j] = new uint8_t(j);
+                patterns_indices[i * FRAMES + j] = new uint_fast8_t(j);
             }
         }
-        //printf("END OF PATTERN INDICES INIT\n");
-        *patterns_indices[0 * FRAMES + 5] = 4;
-        *patterns_indices[0 * FRAMES + 6] = 4;
-        *patterns_indices[0 * FRAMES + 7] = 5;
-        *patterns_indices[0 * FRAMES + 13] = 12;
 
-        *patterns_indices[1 * FRAMES + 2] = 0;
-        *patterns_indices[1 * FRAMES + 3] = 1;
-        *patterns_indices[1 * FRAMES + 6] = 4;
-        *patterns_indices[1 * FRAMES + 7] = 5;
-        *patterns_indices[1 * FRAMES + 11] = 4;
-        *patterns_indices[1 * FRAMES + 12] = 5;
+        using namespace CodeTracker;
+#define EPI Editor::enterPatternIndice
 
-        *patterns_indices[2 * FRAMES + 2] = 0;
-        *patterns_indices[2 * FRAMES + 3] = 1;
+        Editor::storePatternIndices(patterns_indices);
 
-        *patterns_indices[3 * FRAMES + 6] = 4;
-        *patterns_indices[3 * FRAMES + 7] = 5;
-
-        *patterns_indices[4 * FRAMES + 2] = 0;
-        *patterns_indices[4 * FRAMES + 3] = 1;
-        *patterns_indices[4 * FRAMES + 6] = 4;
-        *patterns_indices[4 * FRAMES + 7] = 5;
-        *patterns_indices[4 * FRAMES + 11] = 4;
-        *patterns_indices[4 * FRAMES + 12] = 5;
-
-        *patterns_indices[5 * FRAMES + 2] = 0;
-        *patterns_indices[5 * FRAMES + 3] = 1;
-
-        *patterns_indices[6 * FRAMES + 1] = 0;
-        *patterns_indices[6 * FRAMES + 2] = 0;
-        *patterns_indices[6 * FRAMES + 3] = 0;
-        *patterns_indices[6 * FRAMES + 9] = 8;
-
-        *patterns_indices[7 * FRAMES + 6] = 5;
-        //*patterns_indices[7 * FRAMES + 7] = 5;
+        EPI(0,5,4); EPI(0,6,4); EPI(0,7,5); EPI(0,13,12);
+        EPI(1,2,0); EPI(1,3,1); EPI(1,6,4); EPI(1,7,5); EPI(1,11,4); EPI(1,12,5);
+        EPI(2,2,0); EPI(2,3,1);
+        EPI(3,6,4); EPI(3,7,5);
+        EPI(4,2,0); EPI(4,3,1); EPI(4,6,4); EPI(4,7,5); EPI(4,11,4); EPI(4,12,5);
+        EPI(5,2,0); EPI(5,3,0);
+        EPI(6,1,0); EPI(6,2,0); EPI(6,3,0); EPI(6,9,8);
+        EPI(7,6,5);
 
 
         return patterns_indices;

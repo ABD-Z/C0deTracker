@@ -44,12 +44,6 @@ namespace CodeTracker{
                                                           this->osc->getPhase());
     }
 
-    Instrument &Instrument::operator=(const Instrument &instru) {
-        this->global_volume = instru.global_volume;
-        this->osc = instru.osc->clone();
-        return *this;
-    }
-
     Instrument *Instrument::clone() {
         return new Instrument(this->osc->clone(), this->global_volume);
     }

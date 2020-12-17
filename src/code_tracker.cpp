@@ -56,16 +56,26 @@ namespace  CodeTracker{
 
     Instruction::~Instruction() {delete[] this->effects;}
 
-    Pattern::Pattern(uint_fast8_t rows) {
+    Pattern::Pattern(uint_fast8_t rows, uint_fast8_t number_of_fx) {
         this->instructions = new Instruction* [rows];
         for(uint_fast8_t i = 0; i < rows; ++i){
             this->instructions[i] = new Instruction();
         }
         this->rows = rows;
+        this->n_fx = number_of_fx;
     }
 
     Pattern::~Pattern() {
         for(uint_fast8_t i = 0; i < this->rows; ++i){
+            for(uint_fast8_t j = 0; j < this->n_fx; ++j){
+                if(this->instructions[i]->effects != nullptr){
+                    if(this->instructions[i]->effects[j] == nullptr){
+                        break;
+                    }else{
+                        delete this->instructions[i]->effects[j];
+                    }
+                }
+            }
             delete this->instructions[i];
         }
         delete[] this->instructions;

@@ -1,7 +1,7 @@
 //
 // Created by Abdulmajid, Olivier NASSER on 26/08/2020.
 //
-#include "code_tracker.hpp"
+#include "../include/code_tracker.hpp"
 
 namespace CodeTracker {
     PSG::PSG(uint_fast8_t wavetype) : Oscillator(wavetype) {}

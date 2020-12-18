@@ -1,0 +1,42 @@
+Track effects :
+-00 xx xx xx : slide up Track pitch xx xx xx / FF FF FF FF each tick
+-01 xx xx xx : slide down Track pitch xx xx xx / FF FF FF FF each tick
+-02 xxx yyy  : sine vibrato (pitch) to Track. xxx speed, yyy depth.
+-03 xx xx xx : change global Track pitch. 03 80 00 00 = +- 0 semitones ; 03 00 00 00 = -1 semitones ; 03 8F FF FF = +1 semitones
+-04 xx xx xx : set Track volume percentage (xx xx xx / FF FF FF).
+-05 xx xx xx : slide up Track volume xx xx xx / FF FF FF every tick. Stop at max volume FF FF FF.
+-06 xx xx xx : slide down Track volume xx xx xx / FF FF FF every tick. Stop at min volume 00 00 00.
+-07 xxx  yyy : sine tremolo (volume) to Track. xxx speed, yyy depth
+-08 xxx xxx  : set global Track panning. xxx xxx / FF FF FF (0.5 centered, 1 only right, 0 only left);
+-09 xxx yyy  : change speed of the Track (xxx + yyy/FFF).
+-0A xxx yyy  : jump at frame xxx and row yyy.
+-OB --- ---  : stop song, it prevents from looping.
+-0C xx yy zz : switch/swap instruments/instruments bank.
+	       -xx : mode : - 0F 00 -- -- : cancel all switch/swap
+			    - 0F 01 yy zz : swap instrument yy and zz within the same bank
+			    - 0F 02 yy zz : make yy links to zz instrument
+			    - 0F 03 yy zz : switch bank yy and zz (if there is many instrument bank)
+-0D xx xx xx : Track panning slide right. xx xx xx / FF FF FF each tick.
+-0E xx xx xx : Track panning slide left. xx xx xx / FF FF FF each tick.
+-0F xxx yyy  : Simple track reverb. xxx is delay in ms. yyy is decay (attenuation).
+
+Channel effects :
+-10 xx xx xx : Pitch slide up.
+-11 xx xx xx : Pitch slide down.
+-12 xxx yyy  : Vibrato
+-13 xx xx xx : fine pitch
+-14 xx xx xx : set volume percentage (xx xx xx / FF FF FF).
+-15 xx xx xx : volume slide up
+-16 xx xx xx : volume slide down
+-17 xxx yyy  : Tremolo
+-18 xxx yyy  : panning xxx left, yyy right
+-19 uvw xyz  : Arpeggio. Base note +u, +v, +w, +x, +y, +z each tick.
+-1A xx yy zz : Delayed Transpose. yy number of semitones to transpose. zz : number of new note to continue this effect (put 00 to interrupt the effect). xx delay in ticks :
+                -if x = 00 - 7F, delay x ticks, transpose downwards.
+                -if x = 80 - FF, delay x - 8 ticks, transpose upwards.
+-1B xx xx xx : Portamento. Automatically slide to new frequency with xx xx xx/8F FF FF pitch at each tick.
+-1C xx yy zz : Retrieg xx ticks to retriggers the note, yy number of retriegers, zz repeat effect
+-1D xx xx xx : panning slide from right to left
+-1E xx xx xx : panning slide from left right
+-1F xx yy zz  : note delay after xx tick and release after yy cut, zz repeat of the effect. if yy = 0 -> no release.
+-20 xxx yyy : reverb.

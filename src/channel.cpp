@@ -2,7 +2,7 @@
 // Created by Abdulmajid, Olivier NASSER on 21/10/2020.
 //
 
-#include "code_tracker.hpp"
+#include "../include/code_tracker.hpp"
 
 namespace CodeTracker {
     Channel::Channel(uint_fast8_t number) {this->number = number;}

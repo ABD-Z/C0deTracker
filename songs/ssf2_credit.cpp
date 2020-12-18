@@ -2,7 +2,7 @@
 // Created by Abdulmajid, Olivier NASSER on 30/08/2020.
 //
 
-#include "example.hpp"
+#include "examples.hpp"
 namespace ssf2_credit_theme{
 
     CodeTracker::Instrument** gen_instrubank(){

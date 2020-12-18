@@ -3,7 +3,7 @@
 .gitignore
 cmake-build-debug
 CMakeLists.txt
-main.cpp
+examples_of_how_to_use_CODETRACKER/SFML/main.cpp
 logo
 Doxyfile
 /doc/

@@ -2,7 +2,7 @@
 // Created by Abdulmajid, Olivier NASSER on 21/10/2020.
 //
 
-#include "code_tracker.hpp"
+#include "../include/code_tracker.hpp"
 
 namespace CodeTracker {
     Track::Track(float clk, float basetime, float speed, uint_fast8_t rows, uint_fast8_t frames, uint_fast8_t channels,

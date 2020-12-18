@@ -2,9 +2,9 @@
 // Created by Abdulmajid, Olivier NASSER on 30/08/2020.
 //
 
-#ifndef CODETRACKER_EXAMPLE_HPP
-#define CODETRACKER_EXAMPLE_HPP
-#include "code_tracker.hpp"
+#ifndef CODETRACKER_EXAMPLES_HPP
+#define CODETRACKER_EXAMPLES_HPP
+#include "../include/code_tracker.hpp"
 
 
 namespace ssf2_credit_theme{
@@ -18,13 +18,13 @@ namespace ssf2_credit_theme{
     const uint_fast8_t INSTRUMENTS = 11;
     enum instrument_name{KICK, SNARE, STRING, BASS, MAIN2, MAIN, TRIANGLE, WOOD, HITHAT, CRASH, COWBELL};
 
-    CodeTracker::Track* init_track();
-
     CodeTracker::Instrument** gen_instrubank();
     uint_fast8_t**  gen_track_patterns_indices();
     CodeTracker::Pattern** gen_patterns();
 
+    CodeTracker::Track* init_track();
+
 
 }
 
-#endif //CODETRACKER_EXAMPLE_HPP
+#endif //CODETRACKER_EXAMPLES_HPP

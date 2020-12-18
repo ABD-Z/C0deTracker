@@ -4,6 +4,15 @@
 
 #include "../include/code_tracker.hpp"
 
+/**
+ * @file instrument.cpp
+ * @brief Instrument class code
+ * @see code_tracker.hpp
+ * @author Abdulmajid, Olivier NASSER
+ * @version 0.1
+ * @date 27/08/2020
+ */
+
 namespace CodeTracker{
 
     Instrument::Instrument() = default;

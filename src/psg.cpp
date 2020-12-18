@@ -1,6 +1,17 @@
 //
 // Created by Abdulmajid, Olivier NASSER on 26/08/2020.
 //
+
+/**
+ * @file psg.cpp
+ * @brief PSG (Pulse Sound Generator) class code
+ * @see code_tracker.hpp
+ * @author Abdulmajid, Olivier NASSER
+ * @version 0.1
+ * @date 26/08/2020
+ */
+
+
 #include "../include/code_tracker.hpp"
 
 namespace CodeTracker {

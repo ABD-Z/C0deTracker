@@ -2,6 +2,16 @@
 // Created by Abdulmajid, Olivier NASSER on 25/08/2020.
 //
 
+
+/**
+ * @file oscillator.cpp
+ * @brief Oscillator class code (SINUS, SQUARE, TRIANGLE and WHITENOISE)
+ * @see code_tracker.hpp
+ * @author Abdulmajid, Olivier NASSER
+ * @version 0.1
+ * @date 25/08/2020
+ */
+
 #include "../include/code_tracker.hpp"
 
 namespace CodeTracker {

@@ -3,6 +3,15 @@
 //
 #include "../include/code_tracker.hpp"
 
+/**
+ * @file editor.cpp
+ * @brief Editor class code used to ease the coding of a song
+ * @see code_tracker.hpp
+ * @author Abdulmajid, Olivier NASSER
+ * @version 0.1
+ * @date 24/11/2020
+ */
+
 namespace CodeTracker {
 
     float Editor::volume = 0;

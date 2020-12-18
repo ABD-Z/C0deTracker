@@ -288,7 +288,7 @@ namespace CodeTracker {
         PSG(uint_fast8_t wavetype, ADSR amp_enveloppe);
         PSG(uint_fast8_t wavetype, float dc, ADSR amp_enveloppe);
         PSG(uint_fast8_t wavetype, float dc, float p, ADSR amp_enveloppe);
-        [[nodiscard]] PSG * clone() override;
+        PSG * clone() override;
         ~PSG() override;
         float oscillate(float a, float f, double t, float dc, float p) override;
         float oscillate(float a, float f, double t, double rt, float dc, float p) override;
@@ -338,7 +338,7 @@ namespace CodeTracker {
          * @brief Gets instrument core, which is the Oscillator
          * @return a pointer to Oscillator
          */
-        [[nodiscard]] Oscillator* get_oscillator() const;
+        Oscillator* get_oscillator() const;
         /**
          * @brief Plays sounds at t time with a given key and amplitude
          * @param a Amplitude
@@ -575,11 +575,11 @@ namespace CodeTracker {
         /**
          * @return number of the channel
          */
-        [[nodiscard]] uint_fast8_t getNumber() const;
+        uint_fast8_t getNumber() const;
         /**
          * @return if the channel is enabled to play_single_channel sound
          */
-        [[nodiscard]] bool isEnable() const;
+        bool isEnable() const;
         /**
          * @brief enable channel sound processing
          */
@@ -592,7 +592,7 @@ namespace CodeTracker {
         /**
          * @return the pitch of the channel
          */
-        [[nodiscard]] float getPitch() const;
+        float getPitch() const;
 
         /**
          * @brief set the pitch of the channel
@@ -603,7 +603,7 @@ namespace CodeTracker {
         /**
          * @return get the volume of the channel
          */
-        [[nodiscard]] float getVolume() const;
+        float getVolume() const;
 
         /**
          * @brief set the volume of the channel
@@ -614,7 +614,7 @@ namespace CodeTracker {
         /**
          * @return get the pointer to the last non empty instruction (from the track)
          */
-        [[nodiscard]] Instruction *getLastInstructionAddress() const;
+        Instruction *getLastInstructionAddress() const;
         /**
          * @brief store the pointer to the last non empty instruction
          * @param lastInstruction pointer to the instruction in pattern
@@ -625,7 +625,7 @@ namespace CodeTracker {
          *
          * @return address of the track currently working with the channel
          */
-        [[nodiscard]] Track *getTrack() const;
+        Track *getTrack() const;
         /**
          * @brief store the address of the track
          * @param track currently used to generates sound
@@ -636,7 +636,7 @@ namespace CodeTracker {
          *
          * @return time when the channel encounter a new
          */
-        [[nodiscard]] double getTime() const;
+        double getTime() const;
 
         /**
          * @brief set time when channel encounter a new note
@@ -648,7 +648,7 @@ namespace CodeTracker {
          *
          * @return time when release is triggered
          */
-        [[nodiscard]] double getTimeRelease() const;
+        double getTimeRelease() const;
 
         /**
          * @brief set the time when release is triggered
@@ -659,7 +659,7 @@ namespace CodeTracker {
          *
          * @return a boolean to know if the channel is released or not.
          */
-        [[nodiscard]] bool isReleased() const;
+        bool isReleased() const;
 
         /**
          * @brief set release state to boolean r
@@ -670,7 +670,7 @@ namespace CodeTracker {
         /**
          * @return the instruction state copied of the channel (which could be modified without dynamically in exe)
          */
-        [[nodiscard]] const Instruction *getInstructionState() const;
+        const Instruction *getInstructionState() const;
 
         /**
          * @brief copy the current instruction in Channel

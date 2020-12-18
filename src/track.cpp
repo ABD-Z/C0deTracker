@@ -4,6 +4,15 @@
 
 #include "../include/code_tracker.hpp"
 
+/**
+ * @file track.cpp
+ * @brief Track class code
+ * @see code_tracker.hpp
+ * @author Abdulmajid, Olivier NASSER
+ * @version 0.1
+ * @date 21/10/2020
+ */
+
 namespace CodeTracker {
     Track::Track(float clk, float basetime, float speed, uint_fast8_t rows, uint_fast8_t frames, uint_fast8_t channels,
                  Instrument **instruments_bank, uint_fast8_t numb_of_instruments, Pattern **track_patterns,

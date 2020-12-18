@@ -3,6 +3,15 @@
 //
 #include "../include/code_tracker.hpp"
 
+/**
+ * @file code_tracker.cpp
+ * @brief This file contains basic stuff for CodeTracker
+ * @see Key , ADSR , Notes , Instruction , Pattern
+ * @author Abdulmajid, Olivier NASSER
+ * @version 0.1
+ * @date 24/08/2020
+ */
+
 namespace  CodeTracker{
 
     Key::Key(float n, float o) { this->note = n; this->octave = o;}

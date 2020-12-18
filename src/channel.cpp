@@ -2,6 +2,15 @@
 // Created by Abdulmajid, Olivier NASSER on 21/10/2020.
 //
 
+/**
+ * @file channel.cpp
+ * @brief Channel class code
+ * @see code_tracker.hpp
+ * @author Abdulmajid, Olivier NASSER
+ * @version 0.1
+ * @date 21/10/2020
+ */
+
 #include "../include/code_tracker.hpp"
 
 namespace CodeTracker {

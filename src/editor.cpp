@@ -1,7 +1,7 @@
 //
 // Created by Abdulmajid, Olivier NASSER on 24/11/2020.
 //
-#include "../include/code_tracker.hpp"
+#include "../include/c0de_tracker.hpp"
 
 /**
  * @file editor.cpp
@@ -12,7 +12,7 @@
  * @date 24/11/2020
  */
 
-namespace CodeTracker {
+namespace C0deTracker {
 
     float Editor::volume = 0;
     uint_fast8_t Editor::chan_index = 0;
@@ -22,7 +22,7 @@ namespace CodeTracker {
     Pattern **Editor::pattern = nullptr;
     uint_fast8_t  ** Editor::pattern_indices = nullptr;
 
-    void Editor::prepare(CodeTracker::Pattern **p, uint_fast8_t frames, uint_fast8_t chanindx, uint_fast8_t patternindx,
+    void Editor::prepare(C0deTracker::Pattern **p, uint_fast8_t frames, uint_fast8_t chanindx, uint_fast8_t patternindx,
                          uint_fast8_t instrumentnindx, float volume) {
         Editor::frames = frames;
         Editor::pattern = p;
@@ -68,20 +68,20 @@ namespace CodeTracker {
         Editor::volume = volume;
     }
 
-    void Editor::enterInstruction(uint_fast8_t instruction_index, CodeTracker::Key key) {
+    void Editor::enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key) {
         Editor::enterInstruction(instruction_index, Editor::instrument_index, key, Editor::volume);
     }
 
-    void Editor::enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, CodeTracker::Key key) {
+    void Editor::enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key) {
         Editor::enterInstruction(instruction_index, instrument_index, key, Editor::volume);
     }
 
-    void Editor::enterInstruction(uint_fast8_t instruction_index, CodeTracker::Key key, float volume) {
+    void Editor::enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume) {
         Editor::enterInstruction(instruction_index, Editor::instrument_index, key, volume);
     }
 
     void Editor::enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index,
-                                  CodeTracker::Key key, float volume) {
+                                  C0deTracker::Key key, float volume) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
             Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = instrument_index;
             Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
@@ -90,23 +90,23 @@ namespace CodeTracker {
     }
 
 
-    void Editor::enterInstruction(uint_fast8_t instruction_index, CodeTracker::Key key, uint_fast32_t **effects) {
+    void Editor::enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, uint_fast32_t **effects) {
         Editor::enterInstruction(instruction_index, Editor::instrument_index, key, Editor::volume, effects);
     }
 
-    void Editor::enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, CodeTracker::Key key,
+    void Editor::enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key,
                                   uint_fast32_t **effects) {
         Editor::enterInstruction(instruction_index, instrument_index, key, Editor::volume, effects);
     }
 
-    void Editor::enterInstruction(uint_fast8_t instruction_index, CodeTracker::Key key, float volume,
+    void Editor::enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume,
                                   uint_fast32_t **effects) {
         Editor::enterInstruction(instruction_index, Editor::instrument_index, key, volume, effects);
 
     }
 
     void Editor::enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index,
-                                  CodeTracker::Key key, float volume, uint_fast32_t **effects) {
+                                  C0deTracker::Key key, float volume, uint_fast32_t **effects) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
             Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = instrument_index;
             Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
@@ -117,13 +117,13 @@ namespace CodeTracker {
 
     void Editor::release(uint_fast8_t instruction_index) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = CodeTracker::Notes::RELEASE;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = C0deTracker::Notes::RELEASE;
         }
     }
 
     void Editor::release(uint_fast8_t instruction_index, uint_fast32_t **effects) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = CodeTracker::Notes::RELEASE;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = C0deTracker::Notes::RELEASE;
             Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects = effects;
 
         }

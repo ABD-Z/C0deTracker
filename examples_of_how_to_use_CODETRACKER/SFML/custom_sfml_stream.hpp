@@ -4,7 +4,7 @@
 #include <SFML/Audio.hpp>
 #include <SFML/System/Lock.hpp>
 #include <SFML/System/Mutex.hpp>
-#include "../../include/code_tracker.hpp"
+#include "../../include/c0de_tracker.hpp"
 
 #ifndef CODETRACKER_CUSTOM_SFML_STREAM_HPP
 #define CODETRACKER_CUSTOM_SFML_STREAM_HPP
@@ -15,11 +15,11 @@
 class CodeTrackerStream : public sf::SoundStream {
 public:
     double time = 0;
-    bool init(CodeTracker::Track *t, CodeTracker::Channel *c,  uint_fast8_t  size_of_c);
+    bool init(C0deTracker::Track *t, C0deTracker::Channel *c, uint_fast8_t  size_of_c);
 
 private:
-    CodeTracker::Track *track = nullptr;
-    CodeTracker::Channel *chans = nullptr;
+    C0deTracker::Track *track = nullptr;
+    C0deTracker::Channel *chans = nullptr;
     uint_fast8_t  size_of_chans = 0;
     sf::Mutex mutex;
     std::vector <sf::Int16> samples;

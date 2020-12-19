@@ -11,9 +11,9 @@
  * @date 21/10/2020
  */
 
-#include "../include/code_tracker.hpp"
+#include "../include/c0de_tracker.hpp"
 
-namespace CodeTracker {
+namespace C0deTracker {
     Channel::Channel(uint_fast8_t number) {this->number = number;}
     uint_fast8_t Channel::getNumber() const {return number;}
 

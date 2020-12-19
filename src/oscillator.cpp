@@ -12,9 +12,9 @@
  * @date 25/08/2020
  */
 
-#include "../include/code_tracker.hpp"
+#include "../include/c0de_tracker.hpp"
 
-namespace CodeTracker {
+namespace C0deTracker {
 
     Oscillator::Oscillator(uint_fast8_t wavetype){ this->wavetype = wavetype;}
     Oscillator::Oscillator(uint_fast8_t wavetype, float dc) {this->wavetype = wavetype; this->dutycycle = dc;}

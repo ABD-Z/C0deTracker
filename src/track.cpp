@@ -2,7 +2,7 @@
 // Created by Abdulmajid, Olivier NASSER on 21/10/2020.
 //
 
-#include "../include/code_tracker.hpp"
+#include "../include/c0de_tracker.hpp"
 
 /**
  * @file track.cpp
@@ -13,7 +13,7 @@
  * @date 21/10/2020
  */
 
-namespace CodeTracker {
+namespace C0deTracker {
     Track::Track(float clk, float basetime, float speed, uint_fast8_t rows, uint_fast8_t frames, uint_fast8_t channels,
                  Instrument **instruments_bank, uint_fast8_t numb_of_instruments, Pattern **track_patterns,
                  uint_fast8_t **pattern_indices,

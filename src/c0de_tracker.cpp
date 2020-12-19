@@ -1,18 +1,18 @@
 //
 // Created by Abdulmajid, Olivier NASSER on 24/08/2020.
 //
-#include "../include/code_tracker.hpp"
+#include "../include/c0de_tracker.hpp"
 
 /**
  * @file code_tracker.cpp
- * @brief This file contains basic stuff for CodeTracker
+ * @brief This file contains basic stuff for C0deTracker
  * @see Key , ADSR , Notes , Instruction , Pattern
  * @author Abdulmajid, Olivier NASSER
  * @version 0.1
  * @date 24/08/2020
  */
 
-namespace  CodeTracker{
+namespace  C0deTracker{
 
     Key::Key(float n, float o) { this->note = n; this->octave = o;}
 

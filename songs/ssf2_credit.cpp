@@ -5,33 +5,33 @@
 #include "examples.hpp"
 namespace ssf2_credit_theme{
 
-    CodeTracker::Instrument** gen_instrubank(){
+    C0deTracker::Instrument** gen_instrubank(){
         printf("BANK OF %d INSTRUMENTS INITIALIZING\n", INSTRUMENTS);
         //*******************************************INSTRUMENTS BANK*************************************************//
-        CodeTracker::Instrument** instrubank;
-        instrubank = new CodeTracker::Instrument*[INSTRUMENTS];
-        instrubank[COWBELL] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.0105f, CodeTracker::ADSR(10000.f, 3.86f, 0.00f, 0.f)),0.2455f);
-        instrubank[CRASH] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.0055, CodeTracker::ADSR(10000.f, 1.86f, 0.00f, 0.f)),0.32);
-        instrubank[TRIANGLE] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE2, .0025f, CodeTracker::ADSR(100000.f, 2.66f, 0.00f, 2.f)),0.22f);
-        instrubank[WOOD] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE2, 0.1f, CodeTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f)), .6f);
-        instrubank[HITHAT] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.00377f, CodeTracker::ADSR(1000.f, 33.3f, 0.0f, 0.f)), .56f);
-        instrubank[KICK] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.1f, CodeTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f)), 0.666f);
-        instrubank[SNARE] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::WHITENOISE, 0.0025f, CodeTracker::ADSR(100000.f, 9.66f, 0.05f, 1.f)),1.f);
-        instrubank[STRING] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::SAW, 0.08f, CodeTracker::ADSR(10.f, 0.88, 0.5, 6.0f)),.78f);
-        instrubank[BASS] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::TRIANGLE, 0.55f, 0.5f, CodeTracker::ADSR(666.0f, 0.3f, 0.2f, 17.75f)),1.f);
-        instrubank[MAIN2] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::SINUS, .125f, 0.f, CodeTracker::ADSR(10.0f, .6f, .099f, 6.f)),0.5f);
-        instrubank[MAIN] = new CodeTracker::Instrument(new CodeTracker::PSG(CodeTracker::SQUARE, .166f, 0.f, CodeTracker::ADSR(24.f, 6.f, .15f, 6.f)),0.8f);
+        C0deTracker::Instrument** instrubank;
+        instrubank = new C0deTracker::Instrument*[INSTRUMENTS];
+        instrubank[COWBELL] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.0105f, C0deTracker::ADSR(10000.f, 3.86f, 0.00f, 0.f)), 0.2455f);
+        instrubank[CRASH] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.0055, C0deTracker::ADSR(10000.f, 1.86f, 0.00f, 0.f)), 0.32);
+        instrubank[TRIANGLE] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE2, .0025f, C0deTracker::ADSR(100000.f, 2.66f, 0.00f, 2.f)), 0.22f);
+        instrubank[WOOD] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE2, 0.1f, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f)), .6f);
+        instrubank[HITHAT] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.00377f, C0deTracker::ADSR(1000.f, 33.3f, 0.0f, 0.f)), .56f);
+        instrubank[KICK] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.1f, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f)), 0.666f);
+        instrubank[SNARE] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.0025f, C0deTracker::ADSR(100000.f, 9.66f, 0.05f, 1.f)), 1.f);
+        instrubank[STRING] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SAW, 0.08f, C0deTracker::ADSR(10.f, 0.88, 0.5, 6.0f)), .78f);
+        instrubank[BASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE, 0.55f, 0.5f, C0deTracker::ADSR(666.0f, 0.3f, 0.2f, 17.75f)), 1.f);
+        instrubank[MAIN2] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SINUS, .125f, 0.f, C0deTracker::ADSR(10.0f, .6f, .099f, 6.f)), 0.5f);
+        instrubank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .166f, 0.f, C0deTracker::ADSR(24.f, 6.f, .15f, 6.f)), 0.8f);
         return instrubank;
     }
 
-    CodeTracker::Pattern** gen_patterns(){
+    C0deTracker::Pattern** gen_patterns(){
         printf("PATTERNS OF %d INITIALIZING\n", CHANNELS * FRAMES);
-        auto** patterns = new CodeTracker::Pattern*[CHANNELS * FRAMES];
+        auto** patterns = new C0deTracker::Pattern*[CHANNELS * FRAMES];
         for(uint_fast8_t i = 0; i < CHANNELS * FRAMES; ++i){
-            patterns[i] = new CodeTracker::Pattern(ROWS, fx_per_chan[i/FRAMES]);
+            patterns[i] = new C0deTracker::Pattern(ROWS, fx_per_chan[i / FRAMES]);
         }
 
-        using namespace CodeTracker::Notes; using namespace CodeTracker;
+        using namespace C0deTracker::Notes; using namespace C0deTracker;
 #define PREP Editor::prepare
 #define PTRN Editor::storePattern
 #define PTRN_INDX Editor::storePatternIndex
@@ -1563,7 +1563,7 @@ namespace ssf2_credit_theme{
             }
         }
 
-        using namespace CodeTracker;
+        using namespace C0deTracker;
 #define EPI Editor::enterPatternIndice
 
         Editor::storePatternIndices(patterns_indices);
@@ -1582,14 +1582,14 @@ namespace ssf2_credit_theme{
     }
 
 
-    CodeTracker::Track* init_track(){
+    C0deTracker::Track* init_track(){
         printf("INITIALIZING TRACK\n");
         //*******************************************INSTRUMENTS BANK*************************************************//
-        CodeTracker::Instrument** instrubank = gen_instrubank();
-        CodeTracker::Pattern** patterns = gen_patterns();
+        C0deTracker::Instrument** instrubank = gen_instrubank();
+        C0deTracker::Pattern** patterns = gen_patterns();
         uint_fast8_t** indices = gen_track_patterns_indices();
 
-        return new CodeTracker::Track(CLOCK, BASETIME, SPEED, ROWS, FRAMES, CHANNELS, instrubank, INSTRUMENTS, patterns, indices, fx_per_chan);
+        return new C0deTracker::Track(CLOCK, BASETIME, SPEED, ROWS, FRAMES, CHANNELS, instrubank, INSTRUMENTS, patterns, indices, fx_per_chan);
     }
 
 

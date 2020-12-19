@@ -2,10 +2,10 @@
 // Created by Abdulmajid, Olivier NASSER on 23/08/2020.
 //
 
-/* CodeTracker - Copyright (c) Abdulmajid, Olivier NASSER
- * CodeTracker header file containing everything you need yo create your music :
+/* C0deTracker - Copyright (c) Abdulmajid, Olivier NASSER
+ * C0deTracker header file containing everything you need yo create your music :
  * Keys, ADSR, Oscillator classes, Instrument, Pattern, Track and Channel.
- * See the example.hpp for more details about how to use CodeTracker.
+ * See the example.hpp for more details about how to use C0deTracker.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -27,20 +27,20 @@
 
 /**
  * @file code_tracker.hpp
- * @brief CodeTracker header. Include it in your project to use all functionalities.
+ * @brief C0deTracker header. Include it in your project to use all functionalities.
  * @author Abdulmajid, Olivier NASSER
  * @version 0.1
  * @date 23/08/2020
  */
 
-#ifndef CODETRACKER_CODE_TRACKER_HPP
-#define CODETRACKER_CODE_TRACKER_HPP
+#ifndef CODETRACKER_C0DE_TRACKER_HPP
+#define CODETRACKER_C0DE_TRACKER_HPP
 
 #include <cmath>
 #include <functional>
 
 
-namespace CodeTracker {
+namespace C0deTracker {
 #define TWOPI 6.283185307
 #define MASTER_VOLUME 1.f
 
@@ -141,7 +141,7 @@ namespace CodeTracker {
      * @brief ADSR structure contains attack, decay, sustain and release components (all in float) used to manipulates waveform's
      * envelope (mainly for amplitude).
      *
-     * @see CodeTracker::Oscillator
+     * @see C0deTracker::Oscillator
      */
     struct ADSR{
         ADSR(float A, float D, float S, float R);
@@ -151,7 +151,7 @@ namespace CodeTracker {
     /**
      * @brief This enumeration stores the primitive waveforms values. You should provide to your Oscillator one of these
      * values in order to select the corresponding waveform function
-     * @see CodeTracker::Oscillator
+     * @see C0deTracker::Oscillator
      */
     enum Waveforms{SINUS, SQUARE, TRIANGLE, SAW, WHITENOISE, WHITENOISE2, WAVETYPES};
 
@@ -160,7 +160,7 @@ namespace CodeTracker {
      * time. Oscillator handles basic stuff : amplitude (a), frequency (f), phase (p), duty cycle (dc), and even frequency
      * modulation feed (FMfeed) for FM synth support.
      * @note This class should not be instantiated. PSG class is one of its specialization.
-     * @see CodeTracker::PSG, CodeTracker::Waveforms
+     * @see C0deTracker::PSG, C0deTracker::Waveforms
      */
     class Oscillator{
     public :
@@ -246,7 +246,7 @@ namespace CodeTracker {
         /**
          * @brief Get pointer to structure holding ADSR values for envelope
          * @return pointer to ADSR struct
-         * @see CodeTracker::ADSR
+         * @see C0deTracker::ADSR
          */
         virtual ADSR* getAmpEnvelope() = 0;
         /**
@@ -684,7 +684,7 @@ namespace CodeTracker {
          */
         void setVolumeInstructionState(float a);
 
-        friend float* Track::play_(double , CodeTracker::Channel*, uint_fast8_t size_of_chans);//function play_ of Track friend of Channel in order to avoid creating a huge amount of getters for each attributes
+        friend float* Track::play_(double , C0deTracker::Channel*, uint_fast8_t size_of_chans);//function play_ of Track friend of Channel in order to avoid creating a huge amount of getters for each attributes
     private:
         static uint_fast8_t chancount;
         Instruction* last_instruct_address = nullptr;
@@ -778,15 +778,15 @@ namespace CodeTracker {
         static void storeInstrumentIndex(uint_fast8_t instrumentnindx);
         static void storeVolume(float volume);
 
-        static void enterInstruction(uint_fast8_t instruction_index, CodeTracker::Key key);
-        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, CodeTracker::Key key);
-        static void enterInstruction(uint_fast8_t instruction_index, CodeTracker::Key key, float volume);
-        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, CodeTracker::Key key, float volume);
+        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key);
+        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key);
+        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume);
+        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, float volume);
 
-        static void enterInstruction(uint_fast8_t instruction_index, CodeTracker::Key key, uint_fast32_t** effects);
-        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, CodeTracker::Key key, uint_fast32_t** effects);
-        static void enterInstruction(uint_fast8_t instruction_index, CodeTracker::Key key, float volume, uint_fast32_t** effects);
-        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, CodeTracker::Key key, float volume, uint_fast32_t** effects);
+        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, uint_fast32_t** effects);
+        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, uint_fast32_t** effects);
+        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume, uint_fast32_t** effects);
+        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, float volume, uint_fast32_t** effects);
 
         static void enterInstruction(uint_fast8_t instruction_index, uint_fast32_t** effects);
 
@@ -805,4 +805,4 @@ namespace CodeTracker {
 
 }
 
-#endif //CODETRACKER_CODE_TRACKER_HPP
+#endif //CODETRACKER_C0DE_TRACKER_HPP

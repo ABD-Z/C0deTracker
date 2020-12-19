@@ -5,7 +5,7 @@
 #include <iostream>
 #include <chrono>
 
-bool CodeTrackerStream::init(CodeTracker::Track *t, CodeTracker::Channel *c, uint_fast8_t  size_of_c) {
+bool CodeTrackerStream::init(C0deTracker::Track *t, C0deTracker::Channel *c, uint_fast8_t  size_of_c) {
     printf("SAMPLE RATE = %f Hz\nBUFFER LENGTH = %f second\n", SAMPLE_RATE, BUFFER_LENGTH_S);
     this->track = t; this->chans = c; this->size_of_chans = size_of_c;
     // Initialize the stream -- important!

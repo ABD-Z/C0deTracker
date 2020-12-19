@@ -2,7 +2,7 @@
 // Created by Abdulmajid, Olivier NASSER on 27/08/2020.
 //
 
-#include "../include/code_tracker.hpp"
+#include "../include/c0de_tracker.hpp"
 
 /**
  * @file instrument.cpp
@@ -13,7 +13,7 @@
  * @date 27/08/2020
  */
 
-namespace CodeTracker{
+namespace C0deTracker{
 
     Instrument::Instrument() = default;
 

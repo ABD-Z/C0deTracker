@@ -1,8 +1,8 @@
-![CodeTracker logo](codetracker.png)
+![C0deTracker logo](codetracker.png)
 
 
 
-CodeTracker is a sound and music sequencer which allows you to create your instrument and compose your music in your C++ code! The aim of CodeTracker is to replace sound files, in games for example, by hard coded music played in real time. 
+C0deTracker is a sound and music sequencer which allows you to create your instrument and compose your music in your C++ code! The aim of C0deTracker is to replace sound files, in games for example, by hard coded music played in real time. 
 
 You can see the example.hpp file in songs folder to learn how to compose your music.
 
@@ -30,9 +30,9 @@ You can see the example.hpp file in songs folder to learn how to compose your mu
 
 
 
-### How to generate sound with CodeTracker?
+### How to generate sound with C0deTracker?
 
-Well, CodeTracker itself doesn't generate sound, it is note an audio API as we might think. All CodeTracker does is to read the instructions of a track, typed by the user, at time T and generate the corresponding sample of T. Those generated samples could be used with an audio API in order to hear the music. In my case, I used SFML (Standard Fast Multimedia Library) for that.
+Well, C0deTracker itself doesn't generate sound, it is note an audio API as we might think. All C0deTracker does is to read the instructions of a track, typed by the user, at time T and generate the corresponding sample of T. Those generated samples could be used with an audio API in order to hear the music. In my case, I used SFML (Simple Fast Multimedia Library) for that.
 
 
 

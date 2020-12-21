@@ -2,8 +2,6 @@
 // Created by Abdulmajid, Olivier NASSER on 20/09/2020.
 //
 #include "custom_sfml_stream.hpp"
-#include <iostream>
-#include <chrono>
 
 bool CodeTrackerStream::init(C0deTracker::Track *t, C0deTracker::Channel *c, uint_fast8_t  size_of_c) {
     printf("SAMPLE RATE = %f Hz\nBUFFER LENGTH = %f second\n", SAMPLE_RATE, BUFFER_LENGTH_S);
@@ -21,11 +19,9 @@ bool CodeTrackerStream::onGetData(sf::SoundStream::Chunk &data) {
     std::chrono::time_point t1 = std::chrono::system_clock::now();
     for(int i = 0; i < SAMPLE_RATE * BUFFER_LENGTH_S * PANNING; ++++i){
         sound =  track->play_( this->time + (double(i)/2) / SAMPLE_RATE, this->chans, this->size_of_chans);
-        //this->samples[i] = (s) * BITS_16*0.5;
         this->smpls[i] = sound[0] * BITS_16*0.5;
         this->smpls[i+1] = sound[1] * BITS_16*0.5;
     }
-
     data.samples = this->smpls;
     data.sampleCount = SAMPLE_RATE * BUFFER_LENGTH_S * PANNING;
     this->time += BUFFER_LENGTH_S;

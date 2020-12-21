@@ -5,6 +5,8 @@
 #include <SFML/System/Lock.hpp>
 #include <SFML/System/Mutex.hpp>
 #include "../../include/c0de_tracker.hpp"
+#include <iostream>
+#include <chrono>
 
 #ifndef CODETRACKER_CUSTOM_SFML_STREAM_HPP
 #define CODETRACKER_CUSTOM_SFML_STREAM_HPP

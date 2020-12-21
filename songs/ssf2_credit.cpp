@@ -41,6 +41,7 @@ namespace ssf2_credit_theme{
 #define I Editor::enterInstruction
 #define R Editor::release
 #define k Key
+#define ui32 uint_fast32_t
 
         printf("WRITING PATTERN 0 CHAN 0\n");
         PREP(patterns, FRAMES, 0, 0, KICK, 0.7f);
@@ -60,7 +61,8 @@ namespace ssf2_credit_theme{
         I(46, Key(A, 1));
 
         I(50, Key(A, 1));
-        I(52, SNARE, Key(G_S, 2), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x1F0005FF)});
+        //I(52, SNARE, Key(G_S, 2), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x1F0005FF)});
+        I(52, SNARE, Key(G_S, 2), ui32(0x1F0005FF));
         I(56, Key(A, 1));
         I(58, SNARE, Key(G_S, 2));
         I(60, SNARE, Key(G_S, 3));
@@ -68,7 +70,8 @@ namespace ssf2_credit_theme{
         printf("WRITING PATTERN 2 CHAN 0\n");
         PTRN_INDX(2);
         I(0, Key(A, 1));
-        I(4, SNARE, Key(G_S, 2), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x1F0005FF)});
+        //I(4, SNARE, Key(G_S, 2), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x1F0005FF)});
+        I(4, SNARE, Key(G_S, 2), ui32(0x1F0005FF));
         I(8, Key(A, 1));
         I(12, SNARE, Key(G_S, 2));
         I(16, Key(A, 1));
@@ -281,7 +284,8 @@ namespace ssf2_credit_theme{
         PTRN_INDX(0);
         INSTR_INDX(MAIN2);
         VOLUME(0.16f);
-        I(4, Key(F, 5), new uint_fast32_t* [fx_per_chan[1]]{new uint_fast32_t(0x189FFFFF)});
+        //I(4, Key(F, 5), new uint_fast32_t* [fx_per_chan[1]]{new uint_fast32_t(0x189FFFFF)});
+        I(4, Key(F, 5), ui32(0x189FFFFF));
         R(6);
         I(8, Key(D_S, 5));
         I(10, Key(F, 5));
@@ -414,7 +418,8 @@ namespace ssf2_credit_theme{
         PTRN_INDX(0);
         INSTR_INDX(STRING);
         VOLUME(0.133f);
-        I(0, k(G_S, 4), new uint_fast32_t* [fx_per_chan[2]]{new uint_fast32_t(0x13841111), new uint_fast32_t(0x18AA1111)});
+        //I(0, k(G_S, 4), new uint_fast32_t* [fx_per_chan[2]]{new uint_fast32_t(0x13841111), new uint_fast32_t(0x18AA1111)});
+        I(0, k(G_S, 4), {0x13841111, 0x18AA1111});
         I(32, k(G_S, 4));
         R(60);
         I(62, k(G_S, 4));
@@ -969,7 +974,7 @@ namespace ssf2_credit_theme{
         PTRN_INDX(0);
         INSTR_INDX(MAIN2);
         VOLUME(0.133f);
-        I(4, k(G_S, 5), new uint_fast32_t* [fx_per_chan[4]]{new uint_fast32_t(0x18200000)});
+        I(4, k(G_S, 5),  uint_fast32_t(0x18200000));
         R(6);
         I(8, k(G_S, 5));
         I(10, k(G_S, 5));
@@ -1115,7 +1120,8 @@ namespace ssf2_credit_theme{
         PTRN_INDX(4);
         INSTR_INDX(MAIN);
         VOLUME(0.24f);
-        I(4, k(F,5), new uint_fast32_t* [fx_per_chan[5]]{new uint_fast32_t(0x137AFFFF), new uint_fast32_t(0x12AFF004)});
+        //I(4, k(F,5), new uint_fast32_t* [fx_per_chan[5]]{new uint_fast32_t(0x137AFFFF), new uint_fast32_t(0x12AFF004)});
+        I(4, k(F,5), {(0x137AFFFF), (0x12AFF004)});
         I(8, k(F,5));
         I(12, k(C_S,5));
         I(14, k(D_S,5));
@@ -1174,7 +1180,7 @@ namespace ssf2_credit_theme{
         I(32 + 10, k(C, 5));
         I(32 + 12, k(C_S, 5));
         I(32 + 14, k(D_S, 5));
-        I(61, new uint_fast32_t* [fx_per_chan[5]]{new uint_fast32_t(0x0A008000)}); // JUMP TO frame 8
+        I(61, uint_fast32_t(0x0A008000)); // JUMP TO frame 8
 
         printf("WRITING PATTERN 8 CHAN 5\n");
         PTRN_INDX(8);
@@ -1216,7 +1222,7 @@ namespace ssf2_credit_theme{
         printf("WRITING PATTERN 10 CHAN 5\n");
         PTRN_INDX(10);
         R(0);
-        I(5, new uint_fast32_t* [fx_per_chan[5]]{new uint_fast32_t(0x0A00B004)}); // JUMP TO frame B row 4
+        I(5, uint_fast32_t(0x0A00B004)); // JUMP TO frame B row 4
 
         printf("WRITING PATTERN 11 CHAN 5\n");
         PTRN_INDX(11);
@@ -1295,14 +1301,14 @@ namespace ssf2_credit_theme{
         I(42,k(C_S,5));
         I(44,k(C,5));
         I(46,k(C_S,5));
-        I(51, new uint_fast32_t* [fx_per_chan[5]]{new uint_fast32_t(0x0A002004)});
+        I(51, uint_fast32_t(0x0A002004));
 
         printf("WRITING PATTERN 0 CHAN 6\n");
         CHAN_INDX(6);
         PTRN_INDX(0);
         INSTR_INDX(TRIANGLE);
         VOLUME(0.3f);
-        I(0, k(A,2), new uint_fast32_t* [fx_per_chan[6]]{new uint_fast32_t(0x183FFFFF)});
+        I(0, k(A,2), uint_fast32_t(0x183FFFFF));
         I(6, k(A,2));
         I(12, k(A,2));
 
@@ -1465,15 +1471,15 @@ namespace ssf2_credit_theme{
 
         INSTR_INDX(HITHAT);
         VOLUME(0.66);
-        I(26+2, k(D,4), new uint_fast32_t* [fx_per_chan[7]]{new uint_fast32_t(0x1C030301)});
+        I(26+2, k(D,4), uint_fast32_t(0x1C030301));
         I(28+2, k(D,4));
-        I(58+2, k(D,4), new uint_fast32_t* [fx_per_chan[7]]{new uint_fast32_t(0x1C030301)});
+        I(58+2, k(D,4), uint_fast32_t(0x1C030301));
         I(60+2, k(D,4));
 
         printf("WRITING PATTERN 9 CHAN 7\n");
         PTRN_INDX(9);
         INSTR_INDX(HITHAT);
-        I(26+2, k(D,4), new uint_fast32_t* [fx_per_chan[7]]{new uint_fast32_t(0x1C030301)});
+        I(26+2, k(D,4),  uint_fast32_t(0x1C030301));
         I(28+2, k(D,4));
         INSTR_INDX(CRASH);
         VOLUME(0.55);

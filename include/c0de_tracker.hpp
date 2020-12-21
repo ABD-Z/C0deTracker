@@ -38,6 +38,9 @@
 
 #include <cmath>
 #include <functional>
+#include <vector>
+#include <cstdio>
+#include <cstdint>
 
 
 namespace C0deTracker {
@@ -54,6 +57,7 @@ namespace C0deTracker {
     struct Pattern;
     class Track;
     class Channel;
+    class Editor;
 
 
 
@@ -784,14 +788,39 @@ namespace C0deTracker {
         static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, float volume);
 
         static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, uint_fast32_t** effects);
+        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, std::vector<uint_fast32_t> effects);
+        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, uint_fast32_t effect);
+
         static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, uint_fast32_t** effects);
+        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, std::vector<uint_fast32_t> effects);
+        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, uint_fast32_t effect);
+
         static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume, uint_fast32_t** effects);
+        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume, std::vector<uint_fast32_t> effects);
+        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume, uint_fast32_t effect);
+
         static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, float volume, uint_fast32_t** effects);
+        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, float volume, std::vector<uint_fast32_t> effects);
+        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, float volume, uint_fast32_t effect);
+
+        static void enterInstruction(uint_fast8_t instruction_index, float volume);
 
         static void enterInstruction(uint_fast8_t instruction_index, uint_fast32_t** effects);
+        static void enterInstruction(uint_fast8_t instruction_index, float volume, uint_fast32_t** effects);
+        static void enterInstruction(uint_fast8_t instruction_index, std::vector<uint_fast32_t> effects);
+        static void enterInstruction(uint_fast8_t instruction_index, float volume, std::vector<uint_fast32_t> effects);
+        static void enterInstruction(uint_fast8_t instruction_index, uint_fast32_t effect);
+        static void enterInstruction(uint_fast8_t instruction_index, float volume, uint_fast32_t effect);
 
         static void release(uint_fast8_t instruction_index);
+        static void release(uint_fast8_t instruction_index, float volume);
         static void release(uint_fast8_t instruction_index, uint_fast32_t** effects);
+        static void release(uint_fast8_t instruction_index, float volume, uint_fast32_t** effects);
+        static void release(uint_fast8_t instruction_index, std::vector<uint_fast32_t> effects);
+        static void release(uint_fast8_t instruction_index, float volume, std::vector<uint_fast32_t> effects);
+        static void release(uint_fast8_t instruction_index, uint_fast32_t effect);
+        static void release(uint_fast8_t instruction_index, float volume, uint_fast32_t effect);
+
 
         static void enterPatternIndice(uint_fast8_t channel, uint_fast8_t frame, uint_fast8_t pattern_indice);
 

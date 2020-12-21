@@ -143,13 +143,6 @@ namespace C0deTracker {
             Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
             Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->key = key;
             Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects = effects;
-            for(int i = 0; i < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx; ++i){
-                printf("Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx %d\n", Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx);
-                printf("i %d\n", i);
-                if(Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects[i] ==
-                   nullptr){break;}
-                std::cout << std::hex <<  *Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects[i] << std::endl;
-            }
         }
     }
 
@@ -168,14 +161,6 @@ namespace C0deTracker {
             for(int i = 0; i < size; ++i){
                 Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects[i] = new uint_fast32_t(effects[i]);
             }
-
-            for(int i = 0; i < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx; ++i){
-                printf("Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx %d\n", Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx);
-                printf("i %d\n", i);
-                if(Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects[i] ==
-                   nullptr){break;}
-                std::cout << std::hex <<  *Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects[i] << std::endl;
-            }
         }
     }
 
@@ -188,15 +173,6 @@ namespace C0deTracker {
             uint_fast8_t size = Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx;
             Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects =
                         new uint_fast32_t*[size]{new uint_fast32_t(effect)};
-
-
-            for(int i = 0; i < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx; ++i){
-                printf("Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx %d\n", Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx);
-                printf("i %d\n", i);
-                if(Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects[i] ==
-                        nullptr){break;}
-                std::cout << std::hex <<  *Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects[i] << std::endl;
-            }
         }
     }
 

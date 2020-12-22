@@ -22,14 +22,31 @@ namespace C0deTracker {
     uint_fast8_t Editor::pattern_index = 0;
     uint_fast8_t Editor::instrument_index = 0;
     uint_fast8_t Editor::frames = 0;
+    uint_fast8_t Editor::rows = 0;
+    uint_fast8_t Editor::channels = 0;
+    const uint_fast8_t *Editor::fx_per_chan = nullptr;
     Pattern **Editor::pattern = nullptr;
     uint_fast8_t  ** Editor::pattern_indices = nullptr;
 
-    void Editor::prepare(C0deTracker::Pattern **p, uint_fast8_t frames, uint_fast8_t chanindx, uint_fast8_t patternindx,
+    void Editor::loadTrackProperties(uint_fast8_t number_of_rows, uint_fast8_t number_of_frames,
+                                     uint_fast8_t number_of_channels, const uint_fast8_t *effects_per_chan) {
+        Editor::rows = number_of_rows; Editor::frames = number_of_frames;
+        Editor::channels = number_of_channels; Editor::fx_per_chan = effects_per_chan;
+    }
+
+    Pattern** Editor::loadEmptyPattern() {
+        auto **p = new C0deTracker::Pattern*[Editor::channels * Editor::frames];
+        for(uint_fast8_t i = 0; i < Editor::channels * Editor::frames; ++i){
+            p[i] = new C0deTracker::Pattern(Editor::rows, Editor::fx_per_chan[i / Editor::frames]);
+        }
+        return p;
+    }
+
+    void Editor::prepare(C0deTracker::Pattern **p, uint_fast8_t chanindx, uint_fast8_t patternindx,
                          uint_fast8_t instrumentnindx, float volume) {
-        Editor::frames = frames;
         Editor::pattern = p;
         Editor::pattern_index = patternindx;
+        Editor::chan_index = chanindx;
         Editor::instrument_index = instrumentnindx;
         Editor::volume = volume;
     }
@@ -297,8 +314,21 @@ namespace C0deTracker {
         }
     }
 
+    uint_fast8_t** Editor::loadEmptyPatternsIndices() {
+        auto** pi = new uint8_t*[Editor::channels * Editor::frames];
+        for(uint_fast8_t i = 0; i < Editor::channels; ++i){
+            for(uint_fast8_t j = 0; j < Editor::frames; ++j){
+                pi[i * Editor::frames + j] = new uint_fast8_t(j);
+            }
+        }
+        return pi;
+    }
+
     void Editor::enterPatternIndice(uint_fast8_t channel, uint_fast8_t frame, uint_fast8_t pattern_indice) {
         *Editor::pattern_indices[channel * Editor::frames + frame] = pattern_indice;
     }
+
+
+
 
 }

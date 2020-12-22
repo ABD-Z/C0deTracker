@@ -26,12 +26,10 @@ namespace ssf2_credit_theme{
 
     C0deTracker::Pattern** gen_patterns(){
         printf("PATTERNS OF %d INITIALIZING\n", CHANNELS * FRAMES);
-        auto** patterns = new C0deTracker::Pattern*[CHANNELS * FRAMES];
-        for(uint_fast8_t i = 0; i < CHANNELS * FRAMES; ++i){
-            patterns[i] = new C0deTracker::Pattern(ROWS, fx_per_chan[i / FRAMES]);
-        }
+
 
         using namespace C0deTracker::Notes; using namespace C0deTracker;
+#define LDTP Editor::loadTrackProperties
 #define PREP Editor::prepare
 #define PTRN Editor::storePattern
 #define PTRN_INDX Editor::storePatternIndex
@@ -43,8 +41,11 @@ namespace ssf2_credit_theme{
 #define k Key
 #define ui32 uint_fast32_t
 
+        LDTP(ROWS, FRAMES, CHANNELS, fx_per_chan);
+        auto** patterns = Editor::loadEmptyPattern();
+
         printf("WRITING PATTERN 0 CHAN 0\n");
-        PREP(patterns, FRAMES, 0, 0, KICK, 0.7f);
+        PREP(patterns, 0, 0, KICK, 0.7f);
         I(0, Key(A, 1));
         I(24, Key(A, 1));
         I(32, Key(A, 1));
@@ -1554,22 +1555,15 @@ namespace ssf2_credit_theme{
         INSTR_INDX(COWBELL);
         I(0,k(C_S,3)); I(4,k(C_S,3)); I(8,k(C_S,3)); I(12,k(C_S,3));
 
-
-
-
         return patterns;
     }
 
     uint_fast8_t**  gen_track_patterns_indices(){
         printf("PATTERN INDICES TAB OF LENGTH %d INITIALIZING\n", CHANNELS*FRAMES);
-        auto** patterns_indices = new uint8_t*[CHANNELS * FRAMES];
-        for(uint_fast8_t i = 0; i < CHANNELS; ++i){
-            for(uint_fast8_t j = 0; j < FRAMES; ++j){
-                patterns_indices[i * FRAMES + j] = new uint_fast8_t(j);
-            }
-        }
+
 
         using namespace C0deTracker;
+        auto** patterns_indices = Editor::loadEmptyPatternsIndices();
 #define EPI Editor::enterPatternIndice
 
         Editor::storePatternIndices(patterns_indices);

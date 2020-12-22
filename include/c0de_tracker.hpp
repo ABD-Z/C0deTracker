@@ -772,11 +772,12 @@ namespace C0deTracker {
      */
     class Editor{
     public:
-        static void prepare(Pattern **p, uint_fast8_t frames, uint_fast8_t chanindx,  uint_fast8_t patternindx, uint_fast8_t instrumentnindx, float volume);
+        static void loadTrackProperties(uint_fast8_t number_of_rows, uint_fast8_t number_of_frames, uint_fast8_t number_of_channels, const uint_fast8_t *effects_per_chan);
+        static Pattern** loadEmptyPattern();
+        static void prepare(Pattern **p, uint_fast8_t chanindx,  uint_fast8_t patternindx, uint_fast8_t instrumentnindx, float volume);
         static void prepare(uint_fast8_t chanindx, uint_fast8_t patternindx, uint_fast8_t instrumentnindx, float volume);
         static void prepare(uint_fast8_t chanindx, uint_fast8_t patternindx, float volume);
         static void storePattern(Pattern **p);
-        static void storePatternIndices(uint_fast8_t** pi);
         static void storeChannelIndex(uint_fast8_t chanindx);
         static void storePatternIndex(uint_fast8_t patternindx);
         static void storeInstrumentIndex(uint_fast8_t instrumentnindx);
@@ -821,7 +822,8 @@ namespace C0deTracker {
         static void release(uint_fast8_t instruction_index, uint_fast32_t effect);
         static void release(uint_fast8_t instruction_index, float volume, uint_fast32_t effect);
 
-
+        static void storePatternIndices(uint_fast8_t** pi);
+        static uint_fast8_t** loadEmptyPatternsIndices();
         static void enterPatternIndice(uint_fast8_t channel, uint_fast8_t frame, uint_fast8_t pattern_indice);
 
     private:
@@ -829,6 +831,9 @@ namespace C0deTracker {
         static uint_fast8_t** pattern_indices;
         static uint_fast8_t chan_index, pattern_index, instrument_index, frames;
         static float volume;
+        static uint_fast8_t rows;
+        static uint_fast8_t channels;
+        static const uint_fast8_t *fx_per_chan;
     };
 
 

@@ -18,10 +18,6 @@ namespace ssf2_credit_theme{
     const uint_fast8_t INSTRUMENTS = 11;
     enum instrument_name{KICK, SNARE, STRING, BASS, MAIN2, MAIN, TRIANGLE, WOOD, HITHAT, CRASH, COWBELL};
 
-    C0deTracker::Instrument** gen_instrubank();
-    uint_fast8_t**  gen_track_patterns_indices();
-    C0deTracker::Pattern** gen_patterns();
-
     C0deTracker::Track* init_track();
 
 

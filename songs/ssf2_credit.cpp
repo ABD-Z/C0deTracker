@@ -19,7 +19,7 @@ namespace ssf2_credit_theme{
         instrubank[SNARE] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.0025f, C0deTracker::ADSR(100000.f, 9.66f, 0.05f, 1.f)), 1.f);
         instrubank[STRING] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SAW, 0.08f, C0deTracker::ADSR(10.f, 0.88, 0.5, 6.0f)), .78f);
         instrubank[BASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE, 0.55f, 0.5f, C0deTracker::ADSR(666.0f, 0.3f, 0.2f, 17.75f)), 1.f);
-        instrubank[MAIN2] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SINUS, .125f, 0.f, C0deTracker::ADSR(10.0f, .6f, .099f, 6.f)), 0.5f);
+        instrubank[MAIN2] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SINUS, .125f, 0.f, C0deTracker::ADSR(10.0f, .6f, .12f, 6.f)), 0.5f);
         instrubank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .166f, 0.f, C0deTracker::ADSR(24.f, 6.f, .15f, 6.f)), 0.8f);
         return instrubank;
     }
@@ -31,7 +31,7 @@ namespace ssf2_credit_theme{
         using namespace C0deTracker::Notes; using namespace C0deTracker;
 #define LDTP Editor::loadTrackProperties
 #define PREP Editor::prepare
-#define PTRN Editor::storePattern
+#define PTRN Editor::storePatterns
 #define PTRN_INDX Editor::storePatternIndex
 #define CHAN_INDX Editor::storeChannelIndex
 #define INSTR_INDX Editor::storeInstrumentIndex
@@ -42,7 +42,7 @@ namespace ssf2_credit_theme{
 #define ui32 uint_fast32_t
 
         LDTP(ROWS, FRAMES, CHANNELS, fx_per_chan);
-        auto** patterns = Editor::loadEmptyPattern();
+        auto** patterns = Editor::loadEmptyPatterns();
 
         printf("WRITING PATTERN 0 CHAN 0\n");
         PREP(patterns, 0, 0, KICK, 0.7f);
@@ -1566,7 +1566,7 @@ namespace ssf2_credit_theme{
         auto** patterns_indices = Editor::loadEmptyPatternsIndices();
 #define EPI Editor::enterPatternIndice
 
-        Editor::storePatternIndices(patterns_indices);
+        Editor::storePatternsIndices(patterns_indices);
 
         EPI(0,5,4); EPI(0,6,4); EPI(0,7,5); EPI(0,13,12);
         EPI(1,2,0); EPI(1,3,1); EPI(1,6,4); EPI(1,7,5); EPI(1,11,4); EPI(1,12,5);

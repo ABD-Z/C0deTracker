@@ -48,10 +48,10 @@ namespace C0deTracker {
 
     float Oscillator::triangle(float a, float f, double t, float dc, float FMfeed) {
         //t-T*floor(t/T)  <=> mod(t,T)
-        double frac_ft = f * t - floor(t/(1.f/f));
+        double frac_ft = f * t - floor(t*f);
         double s = (frac_ft - dc * .5 < 0) ? t + FMfeed : -t + FMfeed;
         double frac_fs = f*s - floor(f*s);
-        return  float(double(a) * (std::fmax(1.f - 2*frac_fs/dc, -0.f) - 0.5f));
+        return  float(double(a) * (std::fmax(1. - 2*frac_fs/dc, -0.) - 0.5));
     }
 
     float Oscillator::saw(float a, float f, double t, float dc, float FMfeed) {
@@ -60,19 +60,19 @@ namespace C0deTracker {
         double frac_ft = f * t - floor( t / (1.f/f));
         double s = (frac_ft - dc < 0) ? t + FMfeed : 0.f + FMfeed;
         double frac_fs = f * s - floor( s / (1.f/f));
-        return  float(double(a) * ( frac_fs / (dc) - 0.5f));
+        return  float(double(a) * ( frac_fs / (dc) - 0.5));
 
     }
 
     float Oscillator::whitenoise(float a, float f, double t, float dc, float FMfeed) {
         float s = this->sinus(a, f, t, 0.f, FMfeed)/(dc*0.5);
         //s = this->sinus(a, f, t/(dc), 0.f, FMfeed);
-        return  a * (s - floor(s) - 0.5f);
+        return  a * (s - floor(s) - 0.5);
     }
 
     float Oscillator::whitenoise2(float a, float f, float t, float dc, float FMfeed) {
         float s = this->sinus(a, f, t/dc, 0.f, FMfeed);
-        return  a * (s - floor(s) - 0.5f);
+        return  a * (s - floor(s) - 0.5);
     }
 
 

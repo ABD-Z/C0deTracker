@@ -6,7 +6,6 @@
 #define CODETRACKER_EXAMPLES_HPP
 #include "../include/c0de_tracker.hpp"
 
-
 namespace ssf2_credit_theme{
     const uint_fast8_t ROWS = 64;
     const uint_fast8_t FRAMES = 15;
@@ -19,8 +18,6 @@ namespace ssf2_credit_theme{
     enum instrument_name{KICK, SNARE, STRING, BASS, MAIN2, MAIN, TRIANGLE, WOOD, HITHAT, CRASH, COWBELL};
 
     C0deTracker::Track* init_track();
-
-
 }
 
 #endif //CODETRACKER_EXAMPLES_HPP

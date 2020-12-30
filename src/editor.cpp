@@ -34,7 +34,7 @@ namespace C0deTracker {
         Editor::channels = number_of_channels; Editor::fx_per_chan = effects_per_chan;
     }
 
-    Pattern** Editor::loadEmptyPattern() {
+    Pattern** Editor::loadEmptyPatterns() {
         auto **p = new C0deTracker::Pattern*[Editor::channels * Editor::frames];
         for(uint_fast8_t i = 0; i < Editor::channels * Editor::frames; ++i){
             p[i] = new C0deTracker::Pattern(Editor::rows, Editor::fx_per_chan[i / Editor::frames]);
@@ -63,11 +63,11 @@ namespace C0deTracker {
         Editor::volume = volume;
     }
 
-    void Editor::storePattern(Pattern **p) {
+    void Editor::storePatterns(Pattern **p) {
         Editor::pattern = p;
     }
 
-    void Editor::storePatternIndices(uint_fast8_t **pi) {
+    void Editor::storePatternsIndices(uint_fast8_t **pi) {
         Editor::pattern_indices = pi;
     }
 

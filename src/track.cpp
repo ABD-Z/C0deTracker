@@ -173,7 +173,7 @@ namespace C0deTracker {
         }
     }
 
-    float *Track::play_(double t, Channel *chan, uint_fast8_t size_of_chans) {
+    float *Track::play(double t, Channel *chan, uint_fast8_t size_of_chans) {
         static float res[2];
 
         res[0] = 0.f; res[1] = 0.f;

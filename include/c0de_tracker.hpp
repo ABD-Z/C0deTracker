@@ -480,7 +480,7 @@ namespace C0deTracker {
          * @param uint_fast8_t size_of_chans number of channels created by the user, otherwise the size of the array chan
          * @return pointer to array of float for left and right speaker
          */
-        float* play_(double t, Channel* chan, uint_fast8_t size_of_chans);
+        float* play(double t, Channel* chan, uint_fast8_t size_of_chans);
 
         /**
          * @return global panning if the track
@@ -688,7 +688,7 @@ namespace C0deTracker {
          */
         void setVolumeInstructionState(float a);
 
-        friend float* Track::play_(double , C0deTracker::Channel*, uint_fast8_t size_of_chans);//function play_ of Track friend of Channel in order to avoid creating a huge amount of getters for each attributes
+        friend float* Track::play(double t, C0deTracker::Channel *chan, uint_fast8_t size_of_chans);//function play of Track friend of Channel in order to avoid creating a huge amount of getters for each attributes
     private:
         static uint_fast8_t chancount;
         Instruction* last_instruct_address = nullptr;
@@ -773,11 +773,11 @@ namespace C0deTracker {
     class Editor{
     public:
         static void loadTrackProperties(uint_fast8_t number_of_rows, uint_fast8_t number_of_frames, uint_fast8_t number_of_channels, const uint_fast8_t *effects_per_chan);
-        static Pattern** loadEmptyPattern();
+        static Pattern** loadEmptyPatterns();
         static void prepare(Pattern **p, uint_fast8_t chanindx,  uint_fast8_t patternindx, uint_fast8_t instrumentnindx, float volume);
         static void prepare(uint_fast8_t chanindx, uint_fast8_t patternindx, uint_fast8_t instrumentnindx, float volume);
         static void prepare(uint_fast8_t chanindx, uint_fast8_t patternindx, float volume);
-        static void storePattern(Pattern **p);
+        static void storePatterns(Pattern **p);
         static void storeChannelIndex(uint_fast8_t chanindx);
         static void storePatternIndex(uint_fast8_t patternindx);
         static void storeInstrumentIndex(uint_fast8_t instrumentnindx);
@@ -822,7 +822,7 @@ namespace C0deTracker {
         static void release(uint_fast8_t instruction_index, uint_fast32_t effect);
         static void release(uint_fast8_t instruction_index, float volume, uint_fast32_t effect);
 
-        static void storePatternIndices(uint_fast8_t** pi);
+        static void storePatternsIndices(uint_fast8_t** pi);
         static uint_fast8_t** loadEmptyPatternsIndices();
         static void enterPatternIndice(uint_fast8_t channel, uint_fast8_t frame, uint_fast8_t pattern_indice);
 

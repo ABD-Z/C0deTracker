@@ -14,7 +14,7 @@
 #define BUFFER_LENGTH_S 0.5
 #define PANNING 2
 #define BITS_16 0xFFFF
-class CodeTrackerStream : public sf::SoundStream {
+class C0deTrackerStream : public sf::SoundStream {
 public:
     double time = 0;
     bool init(C0deTracker::Track *t, C0deTracker::Channel *c, uint_fast8_t  size_of_c);

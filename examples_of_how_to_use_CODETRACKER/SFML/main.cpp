@@ -7,15 +7,15 @@
 
 
 int main() {
-#define SONG ssf2_credit_theme
+#define SONG frere_jacques
     std::chrono::time_point t1 = std::chrono::system_clock::now();
 
     C0deTracker::Channel* chans;//declare a pointer of channels
     uint_fast8_t  size_of_chans = SONG::CHANNELS; //get the number of channel needed of the song
     chans = new C0deTracker::Channel[size_of_chans];//allocate channels
-    //chans[0].disable();
-   //chans[1].disable();
-   //chans[2].disable();
+     //chans[0].disable();
+     //chans[1].disable();
+     //chans[2].disable();
    // chans[3].disable();
     //chans[4].disable();
     //chans[5].disable();

@@ -20,4 +20,18 @@ namespace ssf2_credit_theme{
     C0deTracker::Track* init_track();
 }
 
+namespace  frere_jacques{
+    const uint_fast8_t ROWS = 16;
+    const uint_fast8_t FRAMES = 10;
+    const uint_fast8_t CHANNELS = 4;
+    const uint_fast8_t fx_per_chan[CHANNELS] = {1,1,1,1};
+    const float CLOCK = 60.f;
+    const float SPEED = 4.f;
+    const float BASETIME = 2.f;
+    const uint_fast8_t INSTRUMENTS = 2;
+    enum instrument_name{MAIN, BASS};
+
+    C0deTracker::Track* init_track();
+}
+
 #endif //CODETRACKER_EXAMPLES_HPP

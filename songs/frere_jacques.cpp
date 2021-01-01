@@ -6,8 +6,8 @@
 namespace frere_jacques{
     C0deTracker::Track* init_track(){
         auto** instruments_bank = new C0deTracker::Instrument*[INSTRUMENTS];
-        instruments_bank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE, 1.f, 0.5f, C0deTracker::ADSR(4.8f,1.f,0.0f,6.66f)), 0.666f);
-        instruments_bank[BASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SINUS, .5f, 0.f, C0deTracker::ADSR(1000.0f, 2.f, 0.2f, 6.66f)), 1.f);
+        instruments_bank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE,1.f, 0.5f, C0deTracker::ADSR(4.66f,2.f,0.5f,4.f)), 0.6f);
+        instruments_bank[BASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SINUS, .5f, 0.f, C0deTracker::ADSR(1000.0f, 2.f, 0.2f, 5.33f)), 1.f);
 
         using C0deTracker::Editor;
         using C0deTracker::Key;
@@ -76,7 +76,14 @@ namespace frere_jacques{
         R(7);
         I(8, K(D, 4));
         R(15);
-        P(0, 7, 6);
+        //P(0, 7, 6);
+
+        PATRN(7);
+        I(0, K(D, 4));
+        R(3);
+        I(4, K(A,3));
+        R(7);
+        I(8, K(D, 4));
         PATRN(8);
         R(0);
 
@@ -143,10 +150,6 @@ namespace frere_jacques{
         P(2, 7, 6);
         PATRN(8);
         R(0);
-
-
-
-
 
         return new C0deTracker::Track(CLOCK, BASETIME, SPEED, ROWS, FRAMES, CHANNELS, instruments_bank, INSTRUMENTS, patterns, pattern_indices, fx_per_chan);
     }

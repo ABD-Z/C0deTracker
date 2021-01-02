@@ -5,9 +5,8 @@
 #include "../../songs/examples.hpp"//include your song
 #include "../../songs/tutorial.hpp"//include your song
 
-
 int main() {
-#define SONG frere_jacques
+#define SONG fzero_intro
     std::chrono::time_point t1 = std::chrono::system_clock::now();
 
     C0deTracker::Channel* chans;//declare a pointer of channels
@@ -35,6 +34,7 @@ int main() {
     cts.play();
 
     while(cts.getStatus() == sf::SoundSource::Status::Playing){
+
         std::this_thread::sleep_for(std::chrono::seconds (10));//sleep to reduce CPU usage
     }
     /************************************************************/

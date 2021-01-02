@@ -34,4 +34,18 @@ namespace  frere_jacques{
     C0deTracker::Track* init_track();
 }
 
+namespace  fzero_intro{
+    const uint_fast8_t ROWS = 16;
+    const uint_fast8_t FRAMES = 8;
+    const uint_fast8_t CHANNELS = 7;
+    const uint_fast8_t fx_per_chan[CHANNELS] = {1,1,1,1,1,1,1};
+    const float CLOCK = 60.f;
+    const float SPEED = 5.f;
+    const float BASETIME = 1.1f;
+    const uint_fast8_t INSTRUMENTS = 5;
+    enum instrument_name{TRUMPET, SNARE, BASS, BRASS, MAIN};
+
+    C0deTracker::Track* init_track();
+}
+
 #endif //CODETRACKER_EXAMPLES_HPP

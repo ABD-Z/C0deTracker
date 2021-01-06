@@ -15,7 +15,7 @@ int main() {
      //chans[0].disable();
      //chans[1].disable();
      //chans[2].disable();
-   // chans[3].disable();
+    //chans[3].disable();
     //chans[4].disable();
     //chans[5].disable();
     //chans[6].disable();
@@ -34,7 +34,6 @@ int main() {
     cts.play();
 
     while(cts.getStatus() == sf::SoundSource::Status::Playing){
-
         std::this_thread::sleep_for(std::chrono::seconds (10));//sleep to reduce CPU usage
     }
     /************************************************************/
@@ -44,7 +43,7 @@ int main() {
     std::vector<sf::Int16> samples;
     std::cout << "Begin sampling" << std::endl;
 
-    float duration_in_sec = 15.f;
+    float duration_in_sec = 30.f;
     float number_of_samples = SAMPLE_RATE * duration_in_sec * PANNING;
     samples.reserve(number_of_samples);
 
@@ -55,7 +54,7 @@ int main() {
     }
 
     buffer.loadFromSamples(&samples[0], samples.size(), PANNING, SAMPLE_RATE);
-    buffer.saveToFile("tuto.wav");
+    buffer.saveToFile("fzero.wav");
     std::cout << "End sampling" << std::endl;
 
 

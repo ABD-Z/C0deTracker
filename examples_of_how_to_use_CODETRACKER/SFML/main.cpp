@@ -6,7 +6,7 @@
 #include "../../songs/tutorial.hpp"//include your song
 
 int main() {
-#define SONG fzero_intro
+#define SONG smb1_overworld
     std::chrono::time_point t1 = std::chrono::system_clock::now();
 
     C0deTracker::Channel* chans;//declare a pointer of channels
@@ -29,13 +29,13 @@ int main() {
     std::cout << "Time for track creation = " << deltaT << " ms" << std::endl;
 
     //Method to play sound in real time with the custom stream
-    C0deTrackerStream cts;
+    /*C0deTrackerStream cts;
     cts.init(track, chans, size_of_chans);
     cts.play();
 
     while(cts.getStatus() == sf::SoundSource::Status::Playing){
         std::this_thread::sleep_for(std::chrono::seconds (10));//sleep to reduce CPU usage
-    }
+    }*/
     /************************************************************/
 
     //Method to save in a file the song. Comment previous method to save song in file.
@@ -43,7 +43,7 @@ int main() {
     std::vector<sf::Int16> samples;
     std::cout << "Begin sampling" << std::endl;
 
-    float duration_in_sec = 30.f;
+    float duration_in_sec = 90.f;
     float number_of_samples = SAMPLE_RATE * duration_in_sec * PANNING;
     samples.reserve(number_of_samples);
 
@@ -54,7 +54,7 @@ int main() {
     }
 
     buffer.loadFromSamples(&samples[0], samples.size(), PANNING, SAMPLE_RATE);
-    buffer.saveToFile("fzero.wav");
+    buffer.saveToFile("smb1_overworld.wav");
     std::cout << "End sampling" << std::endl;
 
 

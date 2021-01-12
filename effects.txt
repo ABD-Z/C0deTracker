@@ -38,5 +38,5 @@ Channel effects :
 -1C xx yy zz : Retrieg xx ticks to retriggers the note, yy number of retriegers, zz repeat effect
 -1D xx xx xx : panning slide from right to left
 -1E xx xx xx : panning slide from left right
--1F xx yy zz  : note delay after xx tick and release after yy cut, zz repeat of the effect. if yy = 0 -> no release.
+-1F xx yy zz  : note delay after xx tick and release after yy tick, zz repeat of the effect. if yy = 0 -> no release.
 -20 xxx yyy : reverb.

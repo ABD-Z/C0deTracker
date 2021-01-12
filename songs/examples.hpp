@@ -48,4 +48,19 @@ namespace  fzero_intro{
     C0deTracker::Track* init_track();
 }
 
+namespace  smb1_overworld{
+    const uint_fast8_t ROWS = 64;
+    const uint_fast8_t FRAMES = 10;
+    const uint_fast8_t CHANNELS = 5;
+    const uint_fast8_t fx_per_chan[CHANNELS] = {1,1,1,1,1};
+    const float CLOCK = 60.f;
+    const float SPEED = 9.f;
+    const float BASETIME = 1.f;
+    const uint_fast8_t INSTRUMENTS = 5;
+    enum instrument_name{BASS, MAIN, DRUMS, SNARE};
+
+    C0deTracker::Track* init_track();
+}
+
+
 #endif //CODETRACKER_EXAMPLES_HPP

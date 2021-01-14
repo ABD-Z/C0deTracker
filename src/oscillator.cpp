@@ -32,7 +32,22 @@ namespace C0deTracker {
     float Oscillator::getPhase() {return this->phase;}
 
     float Oscillator::oscillate(float a, float f, double t, float dc, float p) {
-        return this->wavefunc_table[this->wavetype](*this, a, f, t - p*1./f, dc, 0.f);
+        switch(this->wavetype){
+            case SINUS:
+                return Oscillator::sinus(a, f, t - p*1./f, dc, 0.f);
+            case SQUARE:
+                return Oscillator::square(a, f, t - p*1./f, dc, 0.f);
+            case TRIANGLE:
+                return Oscillator::triangle(a, f, t - p*1./f, dc, 0.f);
+            case SAW:
+                return Oscillator::saw(a, f, t - p*1./f, dc, 0.f);
+            case WHITENOISE:
+                return Oscillator::whitenoise(a, f, t - p*1./f, dc, 0.f);
+            case WHITENOISE2:
+                return Oscillator::whitenoise2(a, f, t - p*1./f, dc, 0.f);
+            default:
+                return 0;
+        }
     }
 
     float Oscillator::sinus(float a, float f, double t, float dc, float FMfeed) {
@@ -65,13 +80,13 @@ namespace C0deTracker {
     }
 
     float Oscillator::whitenoise(float a, float f, double t, float dc, float FMfeed) {
-        float s = this->sinus(a, f, t, 0.f, FMfeed)/(dc*0.5);
+        float s = Oscillator::sinus(a, f, t, 0.f, FMfeed)/(dc*0.5);
         //s = this->sinus(a, f, t/(dc), 0.f, FMfeed);
         return  a * (s - floor(s) - 0.5);
     }
 
-    float Oscillator::whitenoise2(float a, float f, float t, float dc, float FMfeed) {
-        float s = this->sinus(a, f, t/dc, 0.f, FMfeed);
+    float Oscillator::whitenoise2(float a, float f, double t, float dc, float FMfeed) {
+        float s = Oscillator::sinus(a, f, t/dc, 0.f, FMfeed);
         return  a * (s - floor(s) - 0.5);
     }
 

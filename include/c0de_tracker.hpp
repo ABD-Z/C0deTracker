@@ -37,10 +37,9 @@
 #define CODETRACKER_C0DE_TRACKER_HPP
 
 #include <cmath>
-#include <functional>
-#include <vector>
 #include <cstdio>
 #include <cstdint>
+#include <vector>
 
 
 namespace C0deTracker {
@@ -265,15 +264,12 @@ namespace C0deTracker {
         virtual bool isReleased() = 0;
     private:
         uint_fast8_t wavetype = SINUS; float dutycycle = 0.5f; float phase = 0.0f;
-        float sinus(float a, float f, double t, float dc, float FMfeed);
-        float square(float a, float f, double t, float dc, float FMfeed);
-        float triangle(float a, float f, double t, float dc, float FMfeed);
-        float saw(float a, float f, double t, float dc, float FMfeed);
-        float whitenoise(float a, float f, double t, float dc, float FMfeed);
-        float whitenoise2(float a, float f, float t, float dc, float FMfeed);
-        //function table
-        std::vector<std::function<float(Oscillator&, float, float, double, float, float)>> wavefunc_table =
-            {&Oscillator::sinus, &Oscillator::square, &Oscillator::triangle, &Oscillator::saw, &Oscillator::whitenoise, &Oscillator::whitenoise2};
+        static float sinus(float a, float f, double t, float dc, float FMfeed);
+        static float square(float a, float f, double t, float dc, float FMfeed);
+        static float triangle(float a, float f, double t, float dc, float FMfeed);
+        static float saw(float a, float f, double t, float dc, float FMfeed);
+        static float whitenoise(float a, float f, double t, float dc, float FMfeed);
+        static float whitenoise2(float a, float f, double t, float dc, float FMfeed);
 
         virtual float handleAmpEnvelope(double t, double rt) = 0;
 

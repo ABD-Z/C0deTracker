@@ -6,10 +6,10 @@
 namespace smb1_overworld {
     C0deTracker::Track *init_track() {
         auto **instruments_bank = new C0deTracker::Instrument *[INSTRUMENTS];
-        instruments_bank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, 0.5f, 0.0f, C0deTracker::ADSR(100.f, 5.f, 0.f, 100.f)), 0.2f);
+        instruments_bank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, 0.5f, 0.0f, C0deTracker::ADSR(100.f, 5.f, 0.f, 100.f)), 0.128f);
         instruments_bank[BASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE, 1.f, 0.5f, C0deTracker::ADSR(100.0f, 0.f, 0.0f, 100.f)),1.f);
-        instruments_bank[DRUMS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.00377f, C0deTracker::ADSR(100.f, 0.0f, 0.0f, 100.f)), .5f);
-        instruments_bank[SNARE] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, .225f, C0deTracker::ADSR(100.f, 0.0f, 0.0f, 100.f)), 0.6f);
+        instruments_bank[DRUMS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.00377f, C0deTracker::ADSR(100.f, 0.0f, 0.0f, 100.f)), .32f);
+        instruments_bank[SNARE] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, .225f, C0deTracker::ADSR(100.f, 0.0f, 0.0f, 100.f)), 0.384f);
 
         using C0deTracker::Editor;
         using C0deTracker::Key;

@@ -29,13 +29,13 @@ int main() {
     std::cout << "Time for track creation = " << deltaT << " ms" << std::endl;
 
     //Method to play sound in real time with the custom stream
-    /*C0deTrackerStream cts;
+    C0deTrackerStream cts;
     cts.init(track, chans, size_of_chans);
     cts.play();
 
     while(cts.getStatus() == sf::SoundSource::Status::Playing){
         std::this_thread::sleep_for(std::chrono::seconds (10));//sleep to reduce CPU usage
-    }*/
+    }
     /************************************************************/
 
     //Method to save in a file the song. Comment previous method to save song in file.

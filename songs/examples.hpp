@@ -56,7 +56,7 @@ namespace  smb1_overworld{
     const float CLOCK = 60.f;
     const float SPEED = 9.f;
     const float BASETIME = 1.f;
-    const uint_fast8_t INSTRUMENTS = 5;
+    const uint_fast8_t INSTRUMENTS = 4;
     enum instrument_name{BASS, MAIN, DRUMS, SNARE};
 
     C0deTracker::Track* init_track();

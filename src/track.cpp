@@ -226,7 +226,7 @@ namespace C0deTracker {
 
 
                 if (current_instruction->instrument_index < this->instruments) {
-                    if (current_instruction != chan[i].getLastInstructionAddress()) {
+                    if (this->readFx) {
                         chan[i].setLastInstructionAddress(current_instruction);
                         chan[i].setRelease(false);
                         chan[i].setTime(t);

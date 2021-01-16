@@ -62,5 +62,20 @@ namespace  smb1_overworld{
     C0deTracker::Track* init_track();
 }
 
+namespace  kirbys_dreamland_greengreens{
+    const uint_fast8_t ROWS = 16;
+    const uint_fast8_t FRAMES = 3;
+    const uint_fast8_t CHANNELS = 4;
+    const uint_fast8_t fx_per_chan[CHANNELS] = {1,1,1,1};
+    const float CLOCK = 60.f;
+    const float SPEED = 5.f;
+    const float BASETIME = 1.f;
+    const uint_fast8_t INSTRUMENTS = 1;
+    enum instrument_name{TRIMAIN};
+    enum chan_name{PULSE0, PULSE1, TRIANGLE2, NOISE3};
+
+    C0deTracker::Track* init_track();
+}
+
 
 #endif //CODETRACKER_EXAMPLES_HPP

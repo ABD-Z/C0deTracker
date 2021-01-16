@@ -6,7 +6,7 @@
 #include "../../songs/tutorial.hpp"//include your song
 
 int main() {
-#define SONG smb1_overworld
+#define SONG kirbys_dreamland_greengreens
     std::chrono::time_point t1 = std::chrono::system_clock::now();
 
     C0deTracker::Channel* chans;//declare a pointer of channels
@@ -43,7 +43,7 @@ int main() {
     std::vector<sf::Int16> samples;
     std::cout << "Begin sampling" << std::endl;
 
-    float duration_in_sec = 90.f;
+    float duration_in_sec = 36.f;
     float number_of_samples = SAMPLE_RATE * duration_in_sec * PANNING;
     samples.reserve(number_of_samples);
 

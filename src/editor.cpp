@@ -36,7 +36,7 @@ namespace C0deTracker {
 
     Pattern** Editor::loadEmptyPatterns() {
         auto **p = new C0deTracker::Pattern*[Editor::channels * Editor::frames];
-        for(uint_fast8_t i = 0; i < Editor::channels * Editor::frames; ++i){
+        for(uint_fast16_t i = 0; i < Editor::channels * Editor::frames; ++i){
             p[i] = new C0deTracker::Pattern(Editor::rows, Editor::fx_per_chan[i / Editor::frames]);
         }
         return p;

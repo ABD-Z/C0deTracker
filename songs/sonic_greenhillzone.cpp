@@ -7,7 +7,7 @@
 namespace sonic_green_hill_zone{
     C0deTracker::Track *init_track() {
         auto **instruments_bank = new C0deTracker::Instrument *[INSTRUMENTS];
-        instruments_bank[HITHAT] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.00377f, C0deTracker::ADSR(100.f, 10.f, 0.0f, 0.f)), .56f);
+        instruments_bank[HITHAT] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.00077f, C0deTracker::ADSR(55.f, 40.f, 0.0f, 0.f)), .56f);
 
         using C0deTracker::Editor;
         using C0deTracker::Key;
@@ -30,7 +30,7 @@ namespace sonic_green_hill_zone{
 #define UI32 uint_fast32_t
 
         VOLM(0.75f);
-        CHANL(0);
+        CHANL(SN3);
         PATRN(0);
         I(0x00, K(A,2));
         I(0x08, K(A,2));

@@ -6,7 +6,7 @@
 #include "../../songs/tutorial.hpp"//include your song
 
 int main() {
-#define SONG sonic_green_hill_zone
+#define SONG fzero_intro
     std::chrono::time_point t1 = std::chrono::system_clock::now();
 
     C0deTracker::Channel* chans;//declare a pointer of channels

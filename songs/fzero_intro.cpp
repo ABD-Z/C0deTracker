@@ -6,11 +6,11 @@
 namespace fzero_intro{
     C0deTracker::Track* init_track(){
         auto** instruments_bank = new C0deTracker::Instrument*[INSTRUMENTS];
-        instruments_bank[TRUMPET] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .08f, 0.0f, C0deTracker::ADSR(40.f,10.f,0.0f,4.f)), 0.15f);
-        instruments_bank[SNARE] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.001f, C0deTracker::ADSR(100000.f, 9.0f, 0.0f, 1.f)), 0.4f);
+        instruments_bank[TRUMPET] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .08f, 0.0f, C0deTracker::ADSR(40.f,10.f,0.0f,4.f)), 0.2f);
+        instruments_bank[SNARE] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.001f, C0deTracker::ADSR(100000.f, 15.0f, 0.0f, 1.f)), 0.75f);
         instruments_bank[BASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE, .6f, 0.5f, C0deTracker::ADSR(100.0f, 6.f, 0.0f, 5.33f)), .8f);
-        instruments_bank[BRASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE, .12f, 0.5f, C0deTracker::ADSR(33.f,3.33f,0.4f,2.f)), 0.33f);
-        instruments_bank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE,.5f, 0.f, C0deTracker::ADSR(10.f,0.f,0.0f,10.f)), 0.125f);
+        instruments_bank[BRASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE, .12f, 0.5f, C0deTracker::ADSR(33.f,3.33f,0.4f,2.f)), 0.6f);
+        instruments_bank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE,.5f, 0.f, C0deTracker::ADSR(10.f,0.f,0.0f,10.f)), 0.25f);
 
         using C0deTracker::Editor;
         using C0deTracker::Key;

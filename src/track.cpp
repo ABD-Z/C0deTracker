@@ -186,7 +186,6 @@ namespace C0deTracker {
                 return res;
             }
             this->time_advance += this->step;
-            //printf("porta pitch dif %f\n",chan[3].porta_pitch_dif);
             ++this->row_counter;
             this->readFx = true;
             if (this->branch) {
@@ -245,7 +244,13 @@ namespace C0deTracker {
                                 }
                                 chan[i].setInstructionState(current_instruction);
                             }else{
-                                chan[i].porta_pitch_dif = Notes::key2pitch(current_instruction->key)  - (Notes::key2pitch(chan[i].instruct_state.key) - chan[i].porta_pitch_dif);
+                                chan[i].portamento_time_step = t;
+                                if(chan[i].instruct_state.key.octave == Notes::CONTINUE){
+                                    chan[i].porta_pitch_dif = 0;
+                                }else{
+                                    chan[i].porta_pitch_dif += Notes::key2pitch(current_instruction->key) - (Notes::key2pitch(chan[i].instruct_state.key) /*- chan[i].porta_pitch_dif*/);
+                                }
+
                                 if(chan[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
                                     delete chan[i].instrument;
                                     chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
@@ -253,8 +258,6 @@ namespace C0deTracker {
                                 chan[i].setInstructionState(current_instruction);
                             }
                         }
-                        //this->instruments_bank[chan[i].getInstructionState()->instrument_index]->get_oscillator()->setRelease(
-                        //        false);
                         chan[i].instrument->get_oscillator()->setRelease(false);
                         chan[i].pitch_slide_val = 0;
                         chan[i].pitch_slide_time = t;
@@ -283,8 +286,6 @@ namespace C0deTracker {
                                 chan[i].setRelease(true);
                                 chan[i].setTimeRelease(t);
                                 chan[i].setTrack(this);
-                                //this->instruments_bank[chan[i].getInstructionState()->instrument_index]->get_oscillator()->setRelease(
-                                //        true);
                                 chan[i].instrument->get_oscillator()->setRelease(true);
                             }
                             if (current_instruction->volume != Notes::CONTINUE &&
@@ -315,8 +316,6 @@ namespace C0deTracker {
                 }
                 //check if channel is released because of release effect
                 if(chan[i].isReleased()){
-                    //this->instruments_bank[chan[i].getInstructionState()->instrument_index]->get_oscillator()->setRelease(
-                    //        true);
                     chan[i].instrument->get_oscillator()->setRelease(true);
                 }
 

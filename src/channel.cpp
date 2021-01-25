@@ -174,42 +174,21 @@ namespace C0deTracker {
         }
         if(this->portamento) {
             if (this->porta_pitch_dif < 0) {
-                /*this->portamento_val -= (this->portamento_speed   / this->track->getSpeed()) * (t - this->portamento_time);
-                if(this->portamento_val <= this->porta_pitch_dif){
-                    printf("end portamento down\n");
-                    printf("porta_pitch_dif < 0 %f\n", this->porta_pitch_dif);
-                    printf("portamento val %f\n", this->portamento_val);
-                    printf("portamento speed %f\n",this->portamento_speed);
-                    this->portamento_val = 0;
-                    this->porta_pitch_dif = 0;
-                    this->instruct_state.key = this->porta_key;
-                }*/
                 if (t - this->portamento_time_step >= 1. / this->track->getClock()) {
                     this->portamento_time_step += 1. / this->track->getClock();
                     this->porta_pitch_dif += (this->portamento_speed * this->track->getSpeed());
-                }
-
-                if (this->porta_pitch_dif > 0) {
-                    this->porta_pitch_dif = 0;
+                    if (this->porta_pitch_dif > 0) {
+                        this->porta_pitch_dif = 0;
+                    }
                 }
             } else {
                 if (this->porta_pitch_dif > 0) {
-                    /*this->portamento_val += (this->portamento_speed   / this->track->getSpeed()) * (t - this->portamento_time);
-                    if(this->portamento_val >= this->porta_pitch_dif){
-                        printf("end portamento up\n");
-                        printf("porta_pitch_dif < 0 %f\n", this->porta_pitch_dif);
-                        printf("portamento val %f\n", this->portamento_val);
-                        printf("portamento speed %f\n",this->portamento_speed);
-                        this->portamento_val = 0;
-                        this->porta_pitch_dif = 0;
-                        this->instruct_state.key = this->porta_key;
-                    }*/
                     if (t - this->portamento_time_step >= 1. / this->track->getClock()) {
                         this->portamento_time_step += 1. / this->track->getClock();
                         this->porta_pitch_dif -= (this->portamento_speed * this->track->getSpeed());
-                    }
-                    if (this->porta_pitch_dif < 0) {
-                        this->porta_pitch_dif = 0;
+                        if (this->porta_pitch_dif < 0) {
+                            this->porta_pitch_dif = 0;
+                        }
                     }
                 }
             }
@@ -283,6 +262,9 @@ namespace C0deTracker {
                 this->portamento = fx_val != 0;
                 this->portamento_speed = float(fx_val)/float(0x800000);
                 this->portamento_time_step = t;
+                if(this->portamento_speed == 0){
+                    this->porta_pitch_dif = 0;
+                }
                 return true;
             case 0x1C://retrieg
                 this->retrieg_delay = (fx_val >> 4 * 4);

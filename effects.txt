@@ -34,7 +34,7 @@ Channel effects :
 -1A xx yy zz : Delayed Transpose. yy number of semitones to transpose. zz : number of new note to continue this effect (put 00 to interrupt the effect). xx delay in ticks :
                 -if x = 00 - 7F, delay x ticks, transpose downwards.
                 -if x = 80 - FF, delay x - 7F ticks, transpose upwards.
--1B xx xx xx : Portamento. Automatically slide to new frequency with xx xx xx/8F FF FF pitch at each tick.
+-1B xx xx xx : Portamento. Automatically slide to new frequency with xx xx xx/80 00 00 pitch at each tick.
 -1C xx yy zz : Retrieg xx ticks to retriggers the note, yy number of retriegers, zz repeat effect
 -1D xx xx xx : panning slide from right to left
 -1E xx xx xx : panning slide from left right

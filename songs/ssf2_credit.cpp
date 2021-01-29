@@ -10,17 +10,18 @@ namespace ssf2_credit_theme{
         //*******************************************INSTRUMENTS BANK*************************************************//
         C0deTracker::Instrument** instrubank;
         instrubank = new C0deTracker::Instrument*[INSTRUMENTS];
-        instrubank[COWBELL] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.0105f, C0deTracker::ADSR(10000.f, 3.86f, 0.00f, 0.f)), 0.2455f);
+        instrubank[COWBELL] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.0105f, C0deTracker::ADSR(10000.f, 5.0f, 0.00f, 0.f)), 0.35f);
         instrubank[CRASH] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.0055, C0deTracker::ADSR(10000.f, 1.86f, 0.00f, 0.f)), 0.32);
         instrubank[TRIANGLE] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE2, .0025f, C0deTracker::ADSR(100000.f, 2.66f, 0.00f, 2.f)), 0.22f);
         instrubank[WOOD] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE2, 0.1f, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f)), .6f);
-        instrubank[HITHAT] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.00377f, C0deTracker::ADSR(1000.f, 33.3f, 0.0f, 0.f)), .56f);
+        instrubank[HITHAT] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.00337f, C0deTracker::ADSR(100.f, 20.f, 0.0f, 0.f)), .55f);
         instrubank[KICK] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.1f, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f)), 0.666f);
         instrubank[SNARE] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.0025f, C0deTracker::ADSR(100000.f, 9.66f, 0.05f, 1.f)), 1.f);
-        instrubank[STRING] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SAW, 0.08f, C0deTracker::ADSR(10.f, 0.88, 0.5, 6.0f)), .78f);
-        instrubank[BASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE, 0.55f, 0.5f, C0deTracker::ADSR(666.0f, 0.3f, 0.2f, 17.75f)), 1.f);
-        instrubank[MAIN2] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SINUS, .125f, 0.f, C0deTracker::ADSR(10.0f, .6f, .12f, 6.f)), 0.5f);
-        instrubank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .166f, 0.f, C0deTracker::ADSR(24.f, 6.f, .15f, 6.f)), 0.8f);
+        instrubank[STRING] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SAW, 0.08f, C0deTracker::ADSR(10.f, 0.88, 0.5, 6.0f)), .9f);
+        instrubank[BASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE, .05f, 0.5f, C0deTracker::ADSR(666.0f, 0.3f, 0.2f, 17.75f)), 0.2f);
+        instrubank[BASSGUITAR] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.66f, 0.0f, C0deTracker::ADSR(20.0f, 0.3f, 0.2f, 500.f)), 0.1125f);
+        instrubank[MAIN2] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SINUS, .125, 0.f, C0deTracker::ADSR(10.0f, .6f, .12f, 6.f)), 0.55f);
+        instrubank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .166f, 0.f, C0deTracker::ADSR(24.f, 6.f, .15f, 6.f)), 0.85f);
         return instrubank;
     }
 
@@ -260,7 +261,6 @@ namespace ssf2_credit_theme{
         I(58, k(A,1));
         I(60, SNARE, Key(G_S, 2));
         I(62, k(A,1));
-
 
         printf("WRITING PATTERN 14 CHAN 0\n");
         PTRN_INDX(14);
@@ -609,7 +609,7 @@ namespace ssf2_credit_theme{
         PTRN_INDX(0);
         INSTR_INDX(BASS);
         VOLUME(1.f);
-        I(0, k(C_S, 2)); R(31);
+        I(0, k(C_S, 2), ui32(0x137E0000)); R(31);
         I(32, k(B, 1)); R(61);
         I(62, k(A_S, 1));
 
@@ -890,13 +890,13 @@ namespace ssf2_credit_theme{
         I(16 + 12, k(F,1)); R(16 + 13);
         I(16 + 14, k(F,1)); R(16 + 15);
 
-        I(32 + 0, k(F_S,1)); R(32 + 1);
-        I(32 + 2, k(F_S,1)); R(32 + 3);
-        I(32 + 4, k(F_S,1)); R(32 +5);
-        I(32 +6, k(F_S,1)); R(32 +7);
-        I(32 +8, k(F_S,1)); R(32 +9);
-        I(32 +10, k(F_S,1)); R(32 +11);
-        I(32 +12, k(F_S,1)); R(32 +13);
+        I(32 + 0, k(D_S,1)); R(32 + 1);
+        I(32 + 2, k(D_S,1)); R(32 + 3);
+        I(32 + 4, k(D_S,1)); R(32 +5);
+        I(32 +6, k(D_S,1)); R(32 +7);
+        I(32 +8, k(D_S,1)); R(32 +9);
+        I(32 +10, k(D_S,1)); R(32 +11);
+        I(32 +12, k(D_S,1)); R(32 +13);
 
         I(46, k(G_S,1)); R(49);
         I(50, k(G_S,1)); R(51);
@@ -1471,7 +1471,7 @@ namespace ssf2_credit_theme{
         I(56, k(C_S,3));
 
         INSTR_INDX(HITHAT);
-        VOLUME(0.66);
+        VOLUME(0.5);
         I(26+2, k(D,4), uint_fast32_t(0x1C030301));
         I(28+2, k(D,4));
         I(58+2, k(D,4), uint_fast32_t(0x1C030301));
@@ -1555,6 +1555,220 @@ namespace ssf2_credit_theme{
         INSTR_INDX(COWBELL);
         I(0,k(C_S,3)); I(4,k(C_S,3)); I(8,k(C_S,3)); I(12,k(C_S,3));
 
+
+        printf("WRITING PATTERN 0 CHAN 8\n");
+        CHAN_INDX(8);
+        PTRN_INDX(0);
+        INSTR_INDX(BASSGUITAR);
+        VOLUME(1.f);
+        I(0, k(C_S, 2), ui32(0x13820000)); //R(31);
+        I(32, k(B, 1)); R(60);
+        I(62, k(A_S, 1));
+
+        printf("WRITING PATTERN 1 CHAN 8\n");
+        PTRN_INDX(1);
+        //R(31);
+        I(32, k(B, 1)); //R(45);
+        I(46, k(G_S, 1)); R(59);
+        I(60, k(G_S, 1));
+
+        printf("WRITING PATTERN 2 CHAN 8\n");
+        PTRN_INDX(2);
+        I(0, k(C_S, 2)); //R(1);
+        I(32, k(B,1)); R(49);
+        I(48, k(B,1)); R(59);
+        I(50, k(B,1)); R(51);
+        I(52, k(B,1)); R(53);
+        I(54, k(B,1)); R(59);
+        I(60, k(B,1)); R(61);
+        I(62, k(A_S,1));
+
+        printf("WRITING PATTERN 4 CHAN 3\n");
+        PTRN_INDX(4);
+        I(0, k(C_S, 2), ui32(0x1F000507));
+        I(2, k(C_S, 2));
+        I(4, k(C_S, 2));
+        I(6, k(C_S, 2));
+        I(8, k(C_S, 2));
+        I(10, k(C_S, 2));
+        I(12, k(C_S, 2));
+
+        I(14, k(C, 2), ui32(0x1F000F01));
+        I(18, k(C, 2), ui32(0x1F00050F));
+        I(20, k(C, 2));
+        I(22, k(C, 2));
+        I(24, k(C, 2));
+        I(26, k(C, 2));
+        I(28, k(C, 2));
+        I(30, k(C, 2));
+        I(31, k(C, 2));
+
+        I(32+0, k(A_S, 1));
+        I(32+2, k(A_S, 1));
+        I(32+4, k(A_S, 1));
+        I(32+6, k(A_S, 1));
+        I(32+8, k(A_S, 1));
+        I(32+10, k(A_S, 1));
+        I(32+12, k(A_S, 1));
+
+        I(32+14, k(G_S, 1), ui32(0x1F000F01));
+        I(32+18, k(G_S, 1), ui32(0x1F00050F));
+        I(32+20, k(G_S, 1));
+        I(32+22, k(G_S, 1));
+        I(32+24, k(G_S, 1));
+        I(32+26, k(G_S, 1));
+        I(32+28, k(G_S, 1));
+        I(32+30, k(G_S, 1));
+        I(32+31, k(G_S, 1));
+
+        printf("WRITING PATTERN 5 CHAN 3\n");
+        PTRN_INDX(5);
+        I(0, k(F_S, 1));
+        I(2, k(F_S, 1));
+        I(4, k(F_S, 1));
+        I(6, k(F_S, 1));
+        I(8, k(F_S, 1));
+        I(10, k(F_S, 1));
+        I(12, k(F_S, 1));
+
+        I(14, k(F,1), ui32(0x1F000F01));
+        I(18, k(F,1), ui32(0x1F00050F));
+        I(20, k(F,1));
+        I(22, k(F,1));
+        I(24, k(F,1));
+        I(26, k(F,1));
+        I(28, k(F,1));
+        I(30, k(F,1));
+
+        I(32 + 0, k(D_S, 1));
+        I(32 + 2, k(D_S, 1));
+        I(32 + 4, k(D_S, 1));
+        I(32 + 6, k(D_S, 1));
+        I(32 + 8, k(D_S, 1));
+        I(32 + 10, k(D_S, 1));
+        I(32 + 12, k(D_S, 1));
+
+        I(32+14, k(G_S, 1), ui32(0x1F000F01));
+        I(50, k(G_S, 1), ui32(0x1F000504));
+        I(52, k(G_S, 1));
+        I(54, k(G_S, 1));
+        I(55, k(G_S, 1));
+        I(56, k(G_S, 1), ui32(0x1F000F01));
+        I(60, k(G_S, 1), ui32(0x1F000503));
+        I(62, k(G_S, 1));
+        I(63, k(G_S, 1));
+
+        printf("WRITING PATTERN 8 CHAN 3\n");
+        PTRN_INDX(8);
+        I(0, k(A_S,1), ui32(0x1F000F01));
+        I(4, k(A_S,1), ui32(0x1F000A01));
+        I(6, k(A_S,1), ui32(0x1F000503));
+        I(8, k(A_S,1));
+        I(9, k(A_S,1));
+        I(10, k(A_S,1), ui32(0x1F000A01));
+        I(12, k(A_S,1), ui32(0x1F000502));
+        I(14, k(A_S,1));
+
+        I(16, k(G_S,1), ui32(0x1F000F01));
+        I(20, k(G_S,1), ui32(0x1F000503));
+        I(22, k(G_S,1));
+        I(24, k(G_S,1));
+        I(26, k(G_S,1), ui32(0x1F000F01));
+        I(30, k(G_S,1), ui32(0x1F000501));
+
+        I(32, k(F_S,1), ui32(0x1F000F01));
+        I(36, k(F_S,1), ui32(0x1F000505));
+        I(38, k(F_S,1));
+        I(40, k(F_S,1));
+        I(42, k(F_S,1));
+        I(44, k(F_S,1));
+        I(46, k(F_S,1), ui32(0x1F000F02));
+
+        I(50, k(G_S,1));
+        I(54, k(D_S,1), ui32(0x1F000501));
+        I(56, k(G_S,1), ui32(0x1F000F01));
+        I(60, k(D_S,1), ui32(0x1F000502));
+        I(62, k(D_S,1));
+
+        printf("WRITING PATTERN 9 CHAN 3\n");
+        PTRN_INDX(9);
+        I(0, k(A_S,1), ui32(0x1F000F01));
+        I(4, k(A_S,1), ui32(0x1F000A01));
+        I(6, k(A_S,1), ui32(0x1F000503));
+        I(8, k(A_S,1));
+        I(9, k(A_S,1));
+        I(10, k(A_S,1), ui32(0x1F000A01));
+        I(12, k(A_S,1), ui32(0x1F000502));
+        I(14, k(A_S,1));
+
+        I(16, k(G_S,1), ui32(0x1F000F01));
+        I(20, k(G_S,1), ui32(0x1F000503));
+        I(22, k(G_S,1));
+        I(24, k(G_S,1));
+        I(26, k(G_S,1), ui32(0x1F000F01));
+        I(30, k(G_S,1), ui32(0x1F000501));
+
+        I(32, k(F_S,1), ui32(0x1F000F01));
+        I(36, k(F_S,1), ui32(0x1F000505));
+        I(38, k(F_S,1));
+        I(40, k(F_S,1));
+        I(42, k(F_S,1));
+        I(44, k(F_S,1));
+        I(46, k(F_S,1), ui32(0x1F000F02));
+
+        I(50, k(G_S,1), ui32(0x1F000A07));
+        I(52, k(G_S,1));
+        I(54, k(G_S,1));
+        I(56, k(G_S,1));
+        I(58, k(G_S,1));
+        I(60, k(A_S,1));
+        I(62, k(C,2));
+
+        printf("WRITING PATTERN 10 CHAN 3\n");
+        PTRN_INDX(10);
+        I(0, k(C_S,2));
+
+        printf("WRITING PATTERN 11 CHAN 3\n");
+        PTRN_INDX(11);
+        I(0, k(C_S,2));
+        I(16, k(C,2));
+        I(32, k(A_S,1));
+        I(46, k(G_S,1));
+
+        printf("WRITING PATTERN 12 CHAN 3\n");
+        PTRN_INDX(12);
+        I(0, k(F_S,1));
+        I(16 + 0, k(F,1));
+        I(32 + 0, k(D_S,1));
+        I(46, k(G_S,1));
+        I(62, k(C,2), ui32(0x1F000A01));
+
+        printf("WRITING PATTERN 13 CHAN 3\n");
+        PTRN_INDX(13);
+        I(0, k(C_S,2));
+        I(16 + 0, k(C,2));
+        I(30, k(B,1));
+
+        I(48, k(A_S,1), ui32(0x1F000A01));
+        I(48 + 2,  k(A_S,1), ui32(0x1F000502));
+        I(48 + 4,  k(A_S,1));
+        I(48 + 6,  k(A_S,1), ui32(0x1F000F01));
+        I(48 + 10,  k(A_S,1), ui32(0x1F000503));
+        I(48 + 12,  k(A_S,1));
+        I(48 + 14,  k(A_S,1));
+
+        printf("WRITING PATTERN 14 CHAN 3\n");
+        PTRN_INDX(14);
+        I(0, k(F_S,1));
+        I(12, k(F_S,1), ui32(0x1F000F01));
+
+        I(16, k(F,1));
+        I(32, k(D_S,1), ui32(0x1F000A04));
+        I(36, k(D_S,1));
+        I(40, k(G_S,1));
+        I(42, k(G_S,1));
+        I(46, k(C_S,2));
+
         return patterns;
     }
 
@@ -1576,6 +1790,7 @@ namespace ssf2_credit_theme{
         EPI(5,2,0); EPI(5,3,0);
         EPI(6,1,0); EPI(6,2,0); EPI(6,3,0); EPI(6,9,8);
         EPI(7,6,5);
+        EPI(8,3,1); EPI(8,6,4); EPI(8,7,5);
 
 
         return patterns_indices;

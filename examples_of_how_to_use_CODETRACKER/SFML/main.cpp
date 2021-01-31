@@ -29,13 +29,13 @@ int main() {
     std::cout << "Time for track creation = " << deltaT << " ms" << std::endl;
 
     //Method to play sound in real time with the custom stream
-    C0deTrackerStream cts;
+    /*C0deTrackerStream cts;
     cts.init(track, chans, size_of_chans);
     cts.play();
 
     while(cts.getStatus() == sf::SoundSource::Status::Playing){
         std::this_thread::sleep_for(std::chrono::seconds (10));//sleep to reduce CPU usage
-    }
+    }*/
     /************************************************************/
 
     //Method to save in a file the song. Comment previous method to save song in file.
@@ -43,7 +43,7 @@ int main() {
     std::vector<sf::Int16> samples;
     std::cout << "Begin sampling" << std::endl;
 
-    float duration_in_sec = 90.f;
+    float duration_in_sec = 180.f;
     float number_of_samples = SAMPLE_RATE * duration_in_sec * PANNING;
     samples.reserve(number_of_samples);
 
@@ -54,7 +54,7 @@ int main() {
     }
 
     buffer.loadFromSamples(&samples[0], samples.size(), PANNING, SAMPLE_RATE);
-    buffer.saveToFile("kirbysdreamland_greengreens.wav");
+    buffer.saveToFile("super_street_fighter_II_credit_theme.wav");
     std::cout << "End sampling" << std::endl;
 
 

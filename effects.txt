@@ -2,7 +2,7 @@ Track effects :
 -00 xx xx xx : slide up Track pitch xx xx xx / FF FF FF FF each tick
 -01 xx xx xx : slide down Track pitch xx xx xx / FF FF FF FF each tick
 -02 xxx yyy  : sine vibrato (pitch) to Track. xxx speed, yyy depth.
--03 xx xx xx : change global Track pitch. 03 80 00 00 = +- 0 semitones ; 03 00 00 00 = -1 semitones ; 03 8F FF FF = +1 semitones
+-03 xx xx xx : change global Track pitch. 03 80 00 00 = +- 0 semitones ; 03 00 00 00 = -1 semitones ; 03 FF FF FF = +1 semitones
 -04 xx xx xx : set Track volume percentage (xx xx xx / FF FF FF).
 -05 xx xx xx : slide up Track volume xx xx xx / FF FF FF every tick. Stop at max volume FF FF FF.
 -06 xx xx xx : slide down Track volume xx xx xx / FF FF FF every tick. Stop at min volume 00 00 00.
@@ -29,7 +29,7 @@ Channel effects :
 -15 xx xx xx : volume slide up
 -16 xx xx xx : volume slide down
 -17 xxx yyy  : Tremolo
--18 xxx yyy  : panning xxx left, yyy right
+-18 xx xx xx  : panning xxx left, yyy right
 -19 uvw xyz  : Arpeggio. Base note +u, +v, +w, +x, +y, +z each tick.
 -1A xx yy zz : Delayed Transpose. yy number of semitones to transpose. zz : number of new note to continue this effect (put 00 to interrupt the effect). xx delay in ticks :
                 -if x = 00 - 7F, delay x ticks, transpose downwards.

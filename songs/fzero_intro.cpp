@@ -18,7 +18,7 @@ namespace fzero_intro{
 
         Editor::loadTrackProperties(ROWS, FRAMES, CHANNELS, fx_per_chan); //Load track propreties in the editor
         auto** patterns = Editor::loadEmptyPatterns(); //generate empty patterns for song writing
-        auto** pattern_indices = Editor::loadEmptyPatternsIndices(); //generate empty patterns indices for patterns indexing
+        auto* pattern_indices = Editor::loadEmptyPatternsIndices(); //generate empty patterns indices for patterns indexing
         Editor::storePatterns(patterns); // store patterns in editor
         Editor::storePatternsIndices(pattern_indices); // store pattern indices in editor
 

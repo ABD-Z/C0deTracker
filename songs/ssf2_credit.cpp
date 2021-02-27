@@ -1791,12 +1791,12 @@ namespace ssf2_credit_theme{
         return patterns;
     }
 
-    uint_fast8_t**  gen_track_patterns_indices(){
+    uint_fast8_t*  gen_track_patterns_indices(){
         printf("PATTERN INDICES TAB OF LENGTH %d INITIALIZING\n", CHANNELS*FRAMES);
 
 
         using namespace C0deTracker;
-        auto** patterns_indices = Editor::loadEmptyPatternsIndices();
+        auto* patterns_indices = Editor::loadEmptyPatternsIndices();
 #define EPI Editor::enterPatternIndice
 
         Editor::storePatternsIndices(patterns_indices);
@@ -1850,7 +1850,7 @@ namespace ssf2_credit_theme{
         //*******************************************INSTRUMENTS BANK*************************************************//
         C0deTracker::Instrument** instrubank = gen_instrubank();
         C0deTracker::Pattern** patterns = gen_patterns();
-        uint_fast8_t** indices = gen_track_patterns_indices();
+        uint_fast8_t* indices = gen_track_patterns_indices();
 
         return new C0deTracker::Track(CLOCK, BASETIME, SPEED, ROWS, FRAMES, CHANNELS, instrubank, INSTRUMENTS, patterns, indices, fx_per_chan);
     }

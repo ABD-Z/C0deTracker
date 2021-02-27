@@ -16,7 +16,7 @@
 namespace C0deTracker {
     Track::Track(float clk, float basetime, float speed, uint_fast8_t rows, uint_fast8_t frames, uint_fast8_t channels,
                  Instrument **instruments_bank, uint_fast8_t numb_of_instruments, Pattern **track_patterns,
-                 uint_fast8_t **pattern_indices,
+                 uint_fast8_t *pattern_indices,
                  const uint_fast8_t *effects_per_chan) {
         this->clk = clk;
         this->basetime = basetime;
@@ -36,7 +36,7 @@ namespace C0deTracker {
     }
 
     Track::~Track() {
-        for (uint8_t i = 0; i < this->channels * this->frames; ++i) { delete this->pattern_indices[i]; }
+        //for (uint8_t i = 0; i < this->channels * this->frames; ++i) { delete this->pattern_indices[i]; }
         delete[] this->pattern_indices;
         for (uint8_t i = 0; i < this->channels * this->frames; ++i) {delete this->track_patterns[i];}
         delete[] this->track_patterns;
@@ -219,7 +219,7 @@ namespace C0deTracker {
                     chan[i].update_fx(t);
                 }
                 uint_fast8_t chan_number = chan[i].getNumber();
-                uint_fast8_t pattern_index = *this->pattern_indices[chan_number * this->frames + this->frame_counter];
+                uint_fast8_t pattern_index = this->pattern_indices[chan_number * this->frames + this->frame_counter];
                 Pattern *pat = this->track_patterns[chan_number * (this->frames) + pattern_index];
                 Instruction *current_instruction = pat->instructions[this->row_counter];
 

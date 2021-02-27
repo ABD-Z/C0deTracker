@@ -26,7 +26,7 @@ namespace C0deTracker {
     uint_fast8_t Editor::channels = 0;
     const uint_fast8_t *Editor::fx_per_chan = nullptr;
     Pattern **Editor::pattern = nullptr;
-    uint_fast8_t  ** Editor::pattern_indices = nullptr;
+    uint_fast8_t* Editor::pattern_indices = nullptr;
 
     void Editor::loadTrackProperties(uint_fast8_t number_of_rows, uint_fast8_t number_of_frames,
                                      uint_fast8_t number_of_channels, const uint_fast8_t *effects_per_chan) {
@@ -67,7 +67,7 @@ namespace C0deTracker {
         Editor::pattern = p;
     }
 
-    void Editor::storePatternsIndices(uint_fast8_t **pi) {
+    void Editor::storePatternsIndices(uint_fast8_t*pi) {
         Editor::pattern_indices = pi;
     }
 
@@ -314,18 +314,18 @@ namespace C0deTracker {
         }
     }
 
-    uint_fast8_t** Editor::loadEmptyPatternsIndices() {
-        auto** pi = new uint8_t*[Editor::channels * Editor::frames];
+    uint_fast8_t* Editor::loadEmptyPatternsIndices() {
+        auto* pi = new uint8_t[Editor::channels * Editor::frames];
         for(uint_fast8_t i = 0; i < Editor::channels; ++i){
             for(uint_fast8_t j = 0; j < Editor::frames; ++j){
-                pi[i * Editor::frames + j] = new uint_fast8_t(j);
+                pi[i * Editor::frames + j] = j;
             }
         }
         return pi;
     }
 
     void Editor::enterPatternIndice(uint_fast8_t channel, uint_fast8_t frame, uint_fast8_t pattern_indice) {
-        *Editor::pattern_indices[channel * Editor::frames + frame] = pattern_indice;
+        Editor::pattern_indices[channel * Editor::frames + frame] = pattern_indice;
     }
 
 

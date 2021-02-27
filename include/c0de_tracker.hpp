@@ -462,7 +462,7 @@ namespace C0deTracker {
          * @param pattern_indices Pointer to the array containing the pointers to the indices of the patterns (to avoid writing several time same pattern)
          */
         Track(float clk, float basetime, float speed, uint_fast8_t rows, uint_fast8_t frames, uint_fast8_t channels,
-              Instrument** instruments_bank, uint_fast8_t numb_of_instruments, Pattern** track_patterns, uint_fast8_t** pattern_indices,
+              Instrument** instruments_bank, uint_fast8_t numb_of_instruments, Pattern** track_patterns, uint_fast8_t* pattern_indices,
               const uint_fast8_t* effects_per_chan);
         /**
          * @brief free everything related to the track, patterns, patterns indices, instruments
@@ -512,7 +512,7 @@ namespace C0deTracker {
         Instrument** instruments_bank;
         uint_fast8_t instruments;
         Pattern** track_patterns;
-        uint_fast8_t** pattern_indices;//new uint_8[channels*frames]
+        uint_fast8_t* pattern_indices;//new uint_8[channels*frames]
         float duration;
         const uint_fast8_t *fx_per_chan;
 
@@ -818,13 +818,13 @@ namespace C0deTracker {
         static void release(uint_fast8_t instruction_index, uint_fast32_t effect);
         static void release(uint_fast8_t instruction_index, float volume, uint_fast32_t effect);
 
-        static void storePatternsIndices(uint_fast8_t** pi);
-        static uint_fast8_t** loadEmptyPatternsIndices();
+        static void storePatternsIndices(uint_fast8_t* pi);
+        static uint_fast8_t* loadEmptyPatternsIndices();
         static void enterPatternIndice(uint_fast8_t channel, uint_fast8_t frame, uint_fast8_t pattern_indice);
 
     private:
         static Pattern **pattern;
-        static uint_fast8_t** pattern_indices;
+        static uint_fast8_t* pattern_indices;
         static uint_fast8_t chan_index, pattern_index, instrument_index, frames;
         static float volume;
         static uint_fast8_t rows;

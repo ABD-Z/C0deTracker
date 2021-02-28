@@ -459,7 +459,7 @@ namespace C0deTracker {
          * @param instruments_bank Pointer to the array containing the pointers to instruments
          * @param numb_of_instruments Size of instruments_bank
          * @param track_patterns Pointer to the array containing the pointers to the patterns which contains the instructions of the music
-         * @param pattern_indices Pointer to the array containing the pointers to the indices of the patterns (to avoid writing several time same pattern)
+         * @param pattern_indices Pointer to the array containing the indices of the patterns (to avoid writing several time same pattern)
          */
         Track(float clk, float basetime, float speed, uint_fast8_t rows, uint_fast8_t frames, uint_fast8_t channels,
               Instrument** instruments_bank, uint_fast8_t numb_of_instruments, Pattern** track_patterns, uint_fast8_t* pattern_indices,

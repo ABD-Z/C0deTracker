@@ -103,9 +103,9 @@ namespace C0deTracker {
     void Editor::enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index,
                                   C0deTracker::Key key, float volume) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = instrument_index;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->key = key;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].instrument_index = instrument_index;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].volume = volume;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].key = key;
         }
     }
 
@@ -156,27 +156,27 @@ namespace C0deTracker {
     void Editor::enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index,
                                   C0deTracker::Key key, float volume, uint_fast32_t **effects) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = instrument_index;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->key = key;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects = effects;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].instrument_index = instrument_index;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].volume = volume;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].key = key;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects = effects;
         }
     }
 
     void Editor::enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key,
                                   float volume, std::vector<uint_fast32_t> effects) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = instrument_index;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->key = key;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].instrument_index = instrument_index;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].volume = volume;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].key = key;
             uint_fast8_t size = Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects =
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects =
                     new uint_fast32_t*[size];
             if(effects.size() < size){
                 size =  effects.size();
             }
             for(int i = 0; i < size; ++i){
-                Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects[i] = new uint_fast32_t(effects[i]);
+                Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects[i] = new uint_fast32_t(effects[i]);
             }
         }
     }
@@ -184,51 +184,51 @@ namespace C0deTracker {
     void Editor::enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key,
                                   float volume, uint_fast32_t effect) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = instrument_index;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->key = key;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].instrument_index = instrument_index;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].volume = volume;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].key = key;
             uint_fast8_t size = Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects =
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects =
                         new uint_fast32_t*[size]{new uint_fast32_t(effect)};
         }
     }
 
     void Editor::enterInstruction(uint_fast8_t instruction_index, float volume) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows) {
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].volume = volume;
         }
     }
 
     void Editor::enterInstruction(uint_fast8_t instruction_index, uint_fast32_t **effects) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects = effects;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects = effects;
         }
     }
 
     void Editor::enterInstruction(uint_fast8_t instruction_index, float volume, uint_fast32_t **effects) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects = effects;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].volume = volume;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects = effects;
         }
     }
 
     void Editor::enterInstruction(uint_fast8_t instruction_index, std::vector<uint_fast32_t> effects) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
             uint_fast8_t size = Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects =
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects =
                     new uint_fast32_t*[size];
             if(effects.size() < size){
                 size =  effects.size();
             }
             for(int i = 0; i < size; ++i){
-                Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects[i] = new uint_fast32_t(effects[i]);
+                Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects[i] = new uint_fast32_t(effects[i]);
             }
         }
     }
 
     void Editor::enterInstruction(uint_fast8_t instruction_index, float volume, std::vector<uint_fast32_t> effects) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].volume = volume;
             Editor::enterInstruction(instruction_index, std::move(effects));
         }
     }
@@ -236,64 +236,64 @@ namespace C0deTracker {
     void Editor::enterInstruction(uint_fast8_t instruction_index, uint_fast32_t effect) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
             uint_fast8_t size = Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects =
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects =
                     new uint_fast32_t*[size]{new uint_fast32_t(effect)};
         }
     }
 
     void Editor::enterInstruction(uint_fast8_t instruction_index, float volume, uint_fast32_t effect) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].volume = volume;
             Editor::enterInstruction(instruction_index, effect);
         }
     }
 
     void Editor::release(uint_fast8_t instruction_index) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = C0deTracker::Notes::RELEASE;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].instrument_index = C0deTracker::Notes::RELEASE;
         }
     }
 
     void Editor::release(uint_fast8_t instruction_index, float volume) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = C0deTracker::Notes::RELEASE;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].instrument_index = C0deTracker::Notes::RELEASE;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].volume = volume;
         }
     }
 
     void Editor::release(uint_fast8_t instruction_index, uint_fast32_t **effects) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = C0deTracker::Notes::RELEASE;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects = effects;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].instrument_index = C0deTracker::Notes::RELEASE;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects = effects;
         }
     }
 
     void Editor::release(uint_fast8_t instruction_index, float volume, uint_fast32_t **effects) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = C0deTracker::Notes::RELEASE;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects = effects;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].instrument_index = C0deTracker::Notes::RELEASE;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects = effects;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].volume = volume;
         }
     }
 
     void Editor::release(uint_fast8_t instruction_index, std::vector<uint_fast32_t> effects) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
             uint_fast8_t size = Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = C0deTracker::Notes::RELEASE;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects =
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].instrument_index = C0deTracker::Notes::RELEASE;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects =
                     new uint_fast32_t*[size];
             if(effects.size() < size){
                 size =  effects.size();
             }
             for(int i = 0; i < size; ++i){
-                Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects[i] = new uint_fast32_t(effects[i]);
+                Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects[i] = new uint_fast32_t(effects[i]);
             }
         }
     }
 
     void Editor::release(uint_fast8_t instruction_index, float volume, std::vector<uint_fast32_t> effects) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].volume = volume;
             Editor::release(instruction_index, std::move(effects));
         }
     }
@@ -301,15 +301,15 @@ namespace C0deTracker {
     void Editor::release(uint_fast8_t instruction_index, uint_fast32_t effect) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
             uint_fast8_t size = Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->instrument_index = C0deTracker::Notes::RELEASE;
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->effects =
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].instrument_index = C0deTracker::Notes::RELEASE;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects =
                         new uint_fast32_t*[size]{new uint_fast32_t(effect)};
         }
     }
 
     void Editor::release(uint_fast8_t instruction_index, float volume, uint_fast32_t effect) {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows) {
-            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index]->volume = volume;
+            Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].volume = volume;
             Editor::release(instruction_index, effect);
         }
     }

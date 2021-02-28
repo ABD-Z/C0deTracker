@@ -221,7 +221,7 @@ namespace C0deTracker {
                 uint_fast8_t chan_number = chan[i].getNumber();
                 uint_fast8_t pattern_index = this->pattern_indices[chan_number * this->frames + this->frame_counter];
                 Pattern *pat = this->track_patterns[chan_number * (this->frames) + pattern_index];
-                Instruction *current_instruction = pat->instructions[this->row_counter];
+                Instruction *current_instruction = &pat->instructions[this->row_counter];
 
 
                 if (current_instruction->instrument_index < this->instruments) {

@@ -421,11 +421,11 @@ namespace C0deTracker {
     };
 
     /**
-     * @brief This structure contains the array of pointers of Instructions. Patterns are fed to the Track.
+     * @brief This structure contains the array of Instructions. Patterns are fed to the Track.
      * @see Instruction , Track
      */
     struct Pattern{
-        Instruction** instructions; /**<Array of Instruction pointers*/
+        Instruction* instructions; /**<Array of Instruction*/
         uint_fast8_t rows; /**< Size of the row*/
         uint_fast8_t n_fx;
         /**

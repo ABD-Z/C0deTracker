@@ -56,6 +56,7 @@ namespace C0deTracker {
     struct Pattern;
     class Track;
     class Channel;
+    class SongData;
     class Editor;
 
 
@@ -760,6 +761,20 @@ namespace C0deTracker {
         uint_fast8_t release_counter = 0;
     };
 
+
+    class SongData{
+    public:
+        const uint_fast8_t ROWS{}, FRAMES{}, CHANNELS{}, INSTRUMENTS{};
+        const uint_fast8_t*  FX_PER_CHAN{};
+        const float CLOCK, SPEED, BASETIME{};
+        SongData(float clock, float speed, float basetime, uint_fast8_t rows, uint_fast8_t frames,
+                 uint_fast8_t channels, uint_fast8_t instruments, uint_fast8_t* fx_per_chan);
+        virtual ~SongData() = 0;
+    protected:
+        C0deTracker::Instrument **instruments_bank{};
+        C0deTracker::Pattern **patterns{};
+        uint_fast8_t *pattern_indices{};
+    };
 
     /**
      * @brief Editor class is used to ease the user while writing his song.

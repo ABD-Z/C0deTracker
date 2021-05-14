@@ -93,6 +93,24 @@ namespace my_song{
         I(24, K(F, 2));
         I(26, K(F, 2));
 
+
+        /*auto& p = Editor::pattern(1);
+
+        p.selectChan(1);
+        p.setVolume(5);
+        p(0) = K(F,2));
+        p(2) = K(F,2));
+        p(4) = K(F,2));
+        p(5) = K(F,2));
+        p.setIns(BASS);
+        p(6) = K(F,2));
+        p(8) = K(F,2));
+        p(10) = K(F,2));
+        p(12) = K(F,2));
+
+
+        p = Editor::pattern(2);*/
+
         PATRN(2);
         I(0, K(F,2));
         I(4, K(B,2));
@@ -146,3 +164,5 @@ namespace my_song{
         return new C0deTracker::Track(CLOCK, BASETIME, SPEED, ROWS, FRAMES, CHANNELS, instruments_bank, INSTRUMENTS, patterns, pattern_indices, fx_per_chan);
     }
 }
+
+

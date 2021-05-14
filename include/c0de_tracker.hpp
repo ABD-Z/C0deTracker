@@ -449,6 +449,7 @@ namespace C0deTracker {
      */
     class Track{
     public:
+        Track() = default;
         /**
          *@brief Track constructor which recquires all the needed parameters below
          * @param clk Clock frequency in Hz (60 in NTSC, 50 in PAL)
@@ -470,6 +471,20 @@ namespace C0deTracker {
          */
         ~Track();
 
+
+
+        uint_fast8_t getNumberofRows() const;
+        uint_fast8_t getNumberofFrames() const;
+        //const uint_fast8_t getNumberofChannels();
+        const uint_fast8_t* getNumberofFXperChannel();
+
+
+        //const float getClock();
+        float getBasetime() const;
+        //const float getSpeed();
+
+
+
         /**
          * @brief main function called at each time to calculate the corresponding sample of the track
          * @param double t time in second
@@ -488,27 +503,33 @@ namespace C0deTracker {
         /**
          * @return value of the clock
          */
-        float getClock();
+        float getClock() const;
 
         /**
          * @return the speed of the track which could be modified by effect 0x09xxxyyy
          */
-        float getSpeed();
+        float getSpeed() const;
 
         /**
          * @return number of channels dedicated fo the track
          */
-        uint_fast8_t getNumberofChannels();
+        uint_fast8_t getNumberofChannels() const;
         /**
          * @return duration of the track.
          * @note It is very approximative, especially when the track jumps frames and changes speed during the song processing
          */
-        float getDuration();
+        float getDuration() const;
 
-    private:
-        float clk , basetime, speed, step;
-        uint_fast8_t  rows, frames;
-        uint_fast8_t channels;
+
+    protected:
+        void setSizeDimensions(const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels, const uint_fast8_t* fx_per_chan);
+        void setTimeDimensions(const float clk, const float basetime, const float speed);
+        void setInstrumentsBank( const Instrument*const*instruments_bank, uint_fast8_t n_instr);
+        void setPatterns(const Pattern* const* patterns);
+        void setPatternsIndices(const uint_fast8_t* patterns_indices);
+        float clk = 60.f, basetime = 1.f, speed = 3.f, step;
+        uint_fast8_t  rows = 0, frames = 0;
+        uint_fast8_t channels = 0;
         float volume = 1.0f, pitch = 0.0f;
         Instrument** instruments_bank;
         uint_fast8_t instruments;
@@ -517,6 +538,7 @@ namespace C0deTracker {
         float duration;
         const uint_fast8_t *fx_per_chan;
 
+    private:
         uint_fast8_t row_counter = 0, frame_counter = 0;
         double time_advance = 0.0;
         double time = 0.0;
@@ -766,10 +788,14 @@ namespace C0deTracker {
     public:
         const uint_fast8_t ROWS{}, FRAMES{}, CHANNELS{}, INSTRUMENTS{};
         const uint_fast8_t*  FX_PER_CHAN{};
-        const float CLOCK, SPEED, BASETIME{};
+        const float CLOCK{}, SPEED{}, BASETIME{};
         SongData(float clock, float speed, float basetime, uint_fast8_t rows, uint_fast8_t frames,
                  uint_fast8_t channels, uint_fast8_t instruments, uint_fast8_t* fx_per_chan);
         virtual ~SongData() = 0;
+
+        const C0deTracker::Instrument * const * getInstrumentsBank();
+        const C0deTracker::Pattern* const* getPatterns();
+        const uint_fast8_t* getPatterIndices();
     protected:
         C0deTracker::Instrument **instruments_bank{};
         C0deTracker::Pattern **patterns{};

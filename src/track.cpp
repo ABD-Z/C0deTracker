@@ -45,11 +45,11 @@ namespace C0deTracker {
     }
 
 
-    uint_fast8_t Track::getNumberofChannels() {
+    uint_fast8_t Track::getNumberofChannels() const {
         return this->channels;
     }
 
-    float Track::getDuration() {
+    float Track::getDuration() const {
         return this->duration;
     }
 
@@ -355,12 +355,51 @@ namespace C0deTracker {
         return this->panning;
     }
 
-    float Track::getClock() {
+    float Track::getClock() const {
         return this->clk;
     }
 
-    float Track::getSpeed() {
+    float Track::getSpeed() const {
         return this->speed;
     }
+
+    void Track::setSizeDimensions(const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels, const uint_fast8_t *fx_per_chan) {
+        this->rows = rows; this->frames = frames; this->channels = channels; this->fx_per_chan = fx_per_chan;
+    }
+
+    uint_fast8_t Track::getNumberofRows() const {
+        return this->rows;
+    }
+
+    uint_fast8_t Track::getNumberofFrames() const {
+        return this->frames;
+    }
+
+    const uint_fast8_t *Track::getNumberofFXperChannel() {
+        return this->fx_per_chan;
+    }
+
+    void Track::setTimeDimensions(const float clk, const float basetime, const float speed) {
+        this->clk = clk; this->basetime = basetime; this->speed = speed;
+        this->step = this->basetime * this->speed / this->clk;
+        this->duration = float(this->frames * this->rows) * this->step;
+    }
+
+    float Track::getBasetime() const {
+        return this->basetime;
+    }
+
+    void Track::setInstrumentsBank(const Instrument*const*instruments_bank, uint_fast8_t n_instr) {
+        this->instruments_bank = const_cast<Instrument **>(instruments_bank); this->instruments = n_instr;
+    }
+
+    void Track::setPatterns(const Pattern *const *patterns) {
+        this->track_patterns = const_cast<Pattern **>(patterns);
+    }
+
+    void Track::setPatternsIndices(const uint_fast8_t *patterns_indices) {
+        this->pattern_indices = const_cast<uint_fast8_t *>(patterns_indices);
+    }
+
 
 }

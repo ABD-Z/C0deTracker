@@ -95,4 +95,16 @@ namespace  C0deTracker{
                        : CLOCK(clock), SPEED(speed), BASETIME(basetime), ROWS(rows), FRAMES(frames), CHANNELS(channels),
                        INSTRUMENTS(instruments), FX_PER_CHAN(fx_per_chan){
     }
+
+    const C0deTracker::Instrument *const *SongData::getInstrumentsBank() {
+        return this->instruments_bank;
+    }
+
+    const C0deTracker::Pattern* const* SongData::getPatterns(){
+        return this->patterns;
+    }
+
+    const uint_fast8_t *SongData::getPatterIndices() {
+        return this->pattern_indices;
+    }
 }

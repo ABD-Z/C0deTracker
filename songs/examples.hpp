@@ -95,5 +95,4 @@ namespace  sonic_green_hill_zone{
     C0deTracker::Track* init_track();
 }
 
-
 #endif //CODETRACKER_EXAMPLES_HPP

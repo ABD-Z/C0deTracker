@@ -6,12 +6,12 @@
 #include "../../songs/tutorial.hpp"//include your song
 
 int main() {
-#define SONG sonic_green_hill_zone
+#define SONG my_song
     std::chrono::time_point t1 = std::chrono::system_clock::now();
 
-    C0deTracker::Channel* chans;//declare a pointer of channels
+    /*C0deTracker::Channel* chans;//declare a pointer of channels
     uint_fast8_t  size_of_chans = SONG::CHANNELS; //get the number of channel needed of the song
-    chans = new C0deTracker::Channel[size_of_chans];//allocate channels
+    chans = new C0deTracker::Channel[size_of_chans];//allocate channels*/
      /*chans[0].disable();
     chans[1].disable();
      chans[2].disable();
@@ -20,7 +20,14 @@ int main() {
     chans[5].disable();
    chans[6].disable();
     chans[7].disable();*/
-    C0deTracker::Track* track = SONG::init_track();//initialise the track
+   // C0deTracker::Track* track = SONG::init_track();//initialise the track
+
+
+    C0deTracker::Track* track = new TutoTrack();
+    C0deTracker::Channel* chans;
+    uint_fast8_t  size_of_chans = track->getNumberofChannels();
+    chans = new C0deTracker::Channel[size_of_chans];
+
 
     std::chrono::time_point t2 = std::chrono::system_clock::now();
 
@@ -29,13 +36,13 @@ int main() {
     std::cout << "Time for track creation = " << deltaT << " ms" << std::endl;
 
     //Method to play sound in real time with the custom stream
-    /*C0deTrackerStream cts;
+    C0deTrackerStream cts;
     cts.init(track, chans, size_of_chans);
     cts.play();
 
     while(cts.getStatus() == sf::SoundSource::Status::Playing){
         std::this_thread::sleep_for(std::chrono::seconds (10));//sleep to reduce CPU usage
-    }*/
+    }
     /************************************************************/
 
     //Method to save in a file the song. Comment previous method to save song in file.

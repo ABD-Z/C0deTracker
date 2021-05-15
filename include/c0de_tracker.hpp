@@ -498,7 +498,7 @@ namespace C0deTracker {
          * @return global panning if the track
          * @brief 0.5 is centered ; 0 sound is only on left ; 1 only on right
          */
-        float getPanning();
+        float getPanning() const;
 
         /**
          * @return value of the clock
@@ -520,9 +520,10 @@ namespace C0deTracker {
          */
         float getDuration() const;
 
+        virtual void init();
 
     protected:
-        void setSizeDimensions(const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels, const uint_fast8_t* fx_per_chan);
+        void setSizeDimensions(const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels,  const uint_fast8_t* fx_per_chan);
         void setTimeDimensions(const float clk, const float basetime, const float speed);
         void setInstrumentsBank( const Instrument*const*instruments_bank, uint_fast8_t n_instr);
         void setPatterns(const Pattern* const* patterns);

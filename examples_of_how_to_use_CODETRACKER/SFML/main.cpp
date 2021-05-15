@@ -6,27 +6,21 @@
 #include "../../songs/tutorial.hpp"//include your song
 
 int main() {
-#define SONG my_song
     std::chrono::time_point t1 = std::chrono::system_clock::now();
 
-    /*C0deTracker::Channel* chans;//declare a pointer of channels
-    uint_fast8_t  size_of_chans = SONG::CHANNELS; //get the number of channel needed of the song
-    chans = new C0deTracker::Channel[size_of_chans];//allocate channels*/
-     /*chans[0].disable();
-    chans[1].disable();
-     chans[2].disable();
-    chans[3].disable();
-    chans[4].disable();
-    chans[5].disable();
-   chans[6].disable();
-    chans[7].disable();*/
-   // C0deTracker::Track* track = SONG::init_track();//initialise the track
-
-
-    C0deTracker::Track* track = new TutoTrack();
+    C0deTracker::Track* track = new Sonic_GreenHillZoneTheme();
+    track->init();
     C0deTracker::Channel* chans;
     uint_fast8_t  size_of_chans = track->getNumberofChannels();
     chans = new C0deTracker::Channel[size_of_chans];
+    /*chans[0].disable();
+   chans[1].disable();
+    chans[2].disable();
+   chans[3].disable();
+   chans[4].disable();
+   chans[5].disable();
+  chans[6].disable();
+   chans[7].disable();*/
 
 
     std::chrono::time_point t2 = std::chrono::system_clock::now();

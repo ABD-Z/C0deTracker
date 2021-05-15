@@ -351,7 +351,7 @@ namespace C0deTracker {
         return res;
     }
 
-    float Track::getPanning() {
+    float Track::getPanning() const {
         return this->panning;
     }
 
@@ -364,7 +364,9 @@ namespace C0deTracker {
     }
 
     void Track::setSizeDimensions(const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels, const uint_fast8_t *fx_per_chan) {
+
         this->rows = rows; this->frames = frames; this->channels = channels; this->fx_per_chan = fx_per_chan;
+        //this->fx_per_chan = new uint_fast8_t [this->channels];
     }
 
     uint_fast8_t Track::getNumberofRows() const {
@@ -400,6 +402,8 @@ namespace C0deTracker {
     void Track::setPatternsIndices(const uint_fast8_t *patterns_indices) {
         this->pattern_indices = const_cast<uint_fast8_t *>(patterns_indices);
     }
+
+    void Track::init() {}
 
 
 }

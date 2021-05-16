@@ -31,8 +31,6 @@ namespace C0deTracker {
         this->step = this->basetime * this->speed / this->clk;
         this->duration = float(this->frames * this->rows) * this->step;
         this->fx_per_chan = effects_per_chan;
-        printf("STEP : %f\n", this->step);
-        printf("DURATION : %f\n", this->duration);
     }
 
     Track::~Track() {
@@ -92,13 +90,11 @@ namespace C0deTracker {
         } else {
             this->vibrato_val = this->vibrato_depth * sin(TWOPI * this->vibrato_speed * (t - this->vibrato_time));
         }
-        //printf("volume %f", this->volume);
     }
 
     bool Track::decode_fx(uint_fast32_t fx, double t) {
         uint_fast8_t fx_code = fx >> 4 * 6;
         uint_fast32_t fx_val = fx & 0x00FFFFFF;
-        //printf("%.3f FX CODE : %x ; FX VAL : %x\n", t, fx_code, fx_val);
         switch (fx_code) {
             case 0x00://pitch slide up
                 this->pitch_slide_up = float(fx_val) / float(0x00FFFFFF);
@@ -135,7 +131,7 @@ namespace C0deTracker {
             case 0x07://tremolo
                 this->tremolo_speed = float(fx_val >> 4 * 3) / float(0x100);
                 this->tremolo_depth = float(fx_val & 0xFFF) / float(0xFFF);
-                this->tremolo_time = t; //printf("tremolo speed %f\n", this->tremolo_speed);
+                this->tremolo_time = t;
                 return true;
             case 0x08://set global track panning
                 this->panning = float(fx_val) / float(0xFFFFFF);
@@ -168,7 +164,6 @@ namespace C0deTracker {
                 this->panning_slide_time = t;
                 return true;
             default:
-                //printf("unknown effect %x\n", fx_code);
                 return false;
         }
     }

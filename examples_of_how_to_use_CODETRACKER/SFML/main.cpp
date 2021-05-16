@@ -34,6 +34,7 @@ int main() {
     cts.init(track, chans, size_of_chans);
     cts.play();
 
+
     while(cts.getStatus() == sf::SoundSource::Status::Playing){
         std::this_thread::sleep_for(std::chrono::seconds (10));//sleep to reduce CPU usage
     }

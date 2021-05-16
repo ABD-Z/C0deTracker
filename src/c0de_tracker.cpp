@@ -89,22 +89,4 @@ namespace  C0deTracker{
         }
         delete[] this->instructions;
     }
-
-    SongData::SongData(float clock, float speed, float basetime, uint_fast8_t rows, uint_fast8_t frames,
-                       uint_fast8_t channels, uint_fast8_t instruments, uint_fast8_t *fx_per_chan)
-                       : CLOCK(clock), SPEED(speed), BASETIME(basetime), ROWS(rows), FRAMES(frames), CHANNELS(channels),
-                       INSTRUMENTS(instruments), FX_PER_CHAN(fx_per_chan){
-    }
-
-    const C0deTracker::Instrument *const *SongData::getInstrumentsBank() {
-        return this->instruments_bank;
-    }
-
-    const C0deTracker::Pattern* const* SongData::getPatterns(){
-        return this->patterns;
-    }
-
-    const uint_fast8_t *SongData::getPatterIndices() {
-        return this->pattern_indices;
-    }
 }

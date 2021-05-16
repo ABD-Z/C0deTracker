@@ -128,7 +128,6 @@ namespace C0deTracker {
         if(this->transpose_semitones > 0 && this->n_time_to_transpose > 0){
             if(this->transpose_delay > 0x7F){//transpose up to this->transpose_semitones
                 if(t - (this->transpose_time_step) >=  double((this->transpose_delay - 0x7F)) / this->track->getClock() && this->transpose_semitone_counter < this->transpose_semitones) {
-                    //printf("transposing up\n");
                     this->transpose_time_step +=  double((this->transpose_delay - 0x7F)) / this->track->getClock();
                     ++this->transpose_semitone_counter;
                     ++this->instruct_state.key.note;
@@ -136,7 +135,6 @@ namespace C0deTracker {
                 }
             }else{//transpose down
                 if(t - (this->transpose_time_step) >= double((this->transpose_delay) ) / this->track->getClock() && this->transpose_semitone_counter < this->transpose_semitones ){
-                    //printf("transposing down\n");
                     this->transpose_time_step += double((this->transpose_delay)) / this->track->getClock();
                     ++this->transpose_semitone_counter;
                     --this->instruct_state.key.note;
@@ -198,7 +196,6 @@ namespace C0deTracker {
     bool Channel::decode_fx(uint_fast32_t fx, double t) {
         uint_fast8_t fx_code = fx >> 4 * 6;
         uint_fast32_t fx_val = fx & 0x00FFFFFF;
-        //printf("%.3f FX CODE : %x ; FX VAL : %x\n", t, fx_code, fx_val);
         switch (fx_code) {
             case 0x10://pitch slide up
                 this->pitch_slide_up = float(fx_val) / float(0x00FFFFFF);
@@ -242,12 +239,12 @@ namespace C0deTracker {
             case 0x19://arpeggio
                 this->arpeggio = true;
                 this->arpeggio_step = t;
-                this->arpeggio_val[0] = float(fx_val >> 4 * 5); printf("arpeggio\n0 : %x\n", this->arpeggio_val[0]);
-                this->arpeggio_val[1] = float( (fx_val >> 4 * 4) & 0xF); printf("1 : %x\n", this->arpeggio_val[1]);
-                this->arpeggio_val[2] = float( (fx_val >> 4 * 3) & 0xF); printf("2 : %x\n", this->arpeggio_val[2]);
-                this->arpeggio_val[3] = float( (fx_val >> 4 * 2) & 0xF); printf("3 : %x\n", this->arpeggio_val[3]);
-                this->arpeggio_val[4] = float( (fx_val >> 4 * 1) & 0xF); printf("4 : %x\n", this->arpeggio_val[4]);
-                this->arpeggio_val[5] = float(fx_val & 0xF); printf("5 : %x\n", this->arpeggio_val[5]);
+                this->arpeggio_val[0] = float(fx_val >> 4 * 5);
+                this->arpeggio_val[1] = float( (fx_val >> 4 * 4) & 0xF);
+                this->arpeggio_val[2] = float( (fx_val >> 4 * 3) & 0xF);
+                this->arpeggio_val[3] = float( (fx_val >> 4 * 2) & 0xF);
+                this->arpeggio_val[4] = float( (fx_val >> 4 * 1) & 0xF);
+                this->arpeggio_val[5] = float(fx_val & 0xF);
                 if(this->arpeggio_val[0] == 0 && this->arpeggio_val[1] == 0 && this->arpeggio_val[2] == 0 && this->arpeggio_val[3] == 0 && this->arpeggio_val[4] == 0 && this->arpeggio_val[5] == 0){
                     this->arpeggio = false;
                 }

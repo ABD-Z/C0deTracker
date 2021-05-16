@@ -21,7 +21,6 @@ void TutoTrack::init() {
     using C0deTracker::Editor;
     using C0deTracker::Key;
     using namespace C0deTracker::Notes;
-    for(uint_fast8_t i = 0;i<this->channels;++i){printf("%d ; ",this->fx_per_chan[i]);}
     Editor::loadTrackProperties(this->rows, this->frames, this->channels, this->fx_per_chan); //Load track propreties in the editor
     auto** patterns = Editor::loadEmptyPatterns(); //generate empty patterns for song writing
     auto* pattern_indices = Editor::loadEmptyPatternsIndices(); //generate empty patterns indices for patterns indexing

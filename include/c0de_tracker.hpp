@@ -52,6 +52,7 @@ namespace C0deTracker {
     class Oscillator;
     class PSG;
     class Instrument;
+    struct Instrument_Data;
     struct Instruction;
     struct Pattern;
     class Track;
@@ -270,11 +271,133 @@ namespace C0deTracker {
         static float saw(float a, float f, double t, float dc, float FMfeed);
         static float whitenoise(float a, float f, double t, float dc, float FMfeed);
         static float whitenoise2(float a, float f, double t, float dc, float FMfeed);
-
         virtual float handleAmpEnvelope(double t, double rt) = 0;
-
-
     };
+
+    /**
+     * @brief Abstract class used to generate simple waveform such as SINUS, SQUARE, TRIANGLE, SAW and WHITENOISE over
+     * time. Oscillator handles basic stuff : amplitude (a), frequency (f), phase (p), duty cycle (dc), and even frequency
+     * modulation feed (FMfeed) for FM synth support.
+     * @note This class should not be instantiated. PSG class is one of its specialization.
+     * @see C0deTracker::PSG, C0deTracker::Waveforms
+     */
+    class Osc{
+    public :
+        explicit Osc();
+        /**
+         * @brief Basic constructor. By default, duty cycle is equal to 0.5 and phase to 0
+         * @param wavetype of the oscillator
+         */
+        explicit Osc(uint_fast8_t wavetype);
+        /**
+         * @brief Second constructor.
+         * @param wavetype of the oscillator
+         * @param dc duty cycle
+         */
+        explicit Osc(uint_fast8_t wavetype, float dc);
+        /**
+         * @brief Second constructor.
+         * @param wavetype of the oscillator
+         * @param dc duty cycle
+         * @param p phase
+         */
+        explicit Osc(uint_fast8_t wavetype, float dc, float p);
+        /**
+         * @brief Second constructor.
+         * @param wavetype of the oscillator
+         * @param dc duty cycle
+         * @param p phase
+         * @param pitch pitch
+         */
+        explicit Osc(uint_fast8_t wavetype, float dc, float p, float pitch);
+        /**
+         * @brief copy oscillator. Used for cloning instruments in channel
+         * @return Oscillator allocated dynamically
+         */
+        Osc* clone();
+        ~Osc();
+
+        /**
+         * @brief set the wavetype of the oscillator to generate the corresponding waveform
+         * @param wavetype 0, 1, 2, 3, 4, 5 => SINUS, SQUARE, TRIANGLE, SAW, WHITENOISE, WHITENOISE2
+         * @see Waveforms
+         */
+        void setWavetype(uint_fast8_t wavetype);
+
+        /**
+         * @brief return the value of the corresponding wavetype
+         */
+        uint_fast8_t getWavetype();
+
+        /**
+         * @brief set the duty cycle of the waveform
+         * @param dc duty cycle of the waveform
+         */
+        void setDutycycle(float dc);
+        /**
+         *
+         * @return get the duty cycle of the waveform
+         */
+        float getDutycycle();
+
+        /**
+         * @brief Set the phase of the waveform. The value set is multiplied by 1/frequency (percentage of waveform period)
+         * @param p  phase of the waveform.
+         */
+        void setPhase(float p);
+        /**
+         *
+         * @return the phase in float
+         */
+        float getPhase();
+        /**
+         * @brief Generates corresponding waveform selected.
+         * @param a Amplitude
+         * @param f Frequency
+         * @param t Time
+         * @param dc Duty cycle
+         * @param p Phase
+         * @return Signal amplitude at time t with the given duty cycle dc and phase p.
+         */
+        float oscillate(float a, float f, double t, float dc, float p);
+        /**
+         * @brief Same as previous oscillate, but with release time to handle release envelope. This function is fully abstract, it is implemented in PSG.
+         * @param a Amplitude
+         * @param f Frequency
+         * @param rt Release time
+         * @param t Time
+         * @param dc Duty cycle
+         * @param p Phase
+         * @return Signal amplitude at time t with the given duty cycle dc and phase p.
+         */
+        float oscillate(float a, float f, double t, double rt, float dc, float p);
+        /**
+         * @brief Get pointer to structure holding ADSR values for envelope
+         * @return pointer to ADSR struct
+         * @see C0deTracker::ADSR
+         */
+        ADSR* getAmpEnvelope();
+        /**
+         * @brief Set release state of the oscillator.
+         * @param r boolean to set the release state
+         */
+        void setRelease(bool r) ;
+        /**
+         * @brief Check if the oscillator is in release state or not
+         * @return release member
+         */
+        bool isReleased();
+    private:
+        uint_fast8_t wavetype = SINUS; float dutycycle = 0.5f; float phase = 0.0f; float pitch = 0.0f;
+        static float sinus(float a, float f, double t, float dc, float FMfeed);
+        static float square(float a, float f, double t, float dc, float FMfeed);
+        static float triangle(float a, float f, double t, float dc, float FMfeed);
+        static float saw(float a, float f, double t, float dc, float FMfeed);
+        static float whitenoise(float a, float f, double t, float dc, float FMfeed);
+        static float whitenoise2(float a, float f, double t, float dc, float FMfeed);
+        float handleAmpEnvelope(double t, double rt);
+    };
+
 
     /**
      * @brief PSG class inherit from Oscillator. This class is the specification of simple sound generator, Pulse Sound
@@ -396,6 +519,13 @@ namespace C0deTracker {
     private:
         float global_volume = 1.0f;
         Oscillator* osc = nullptr;
+    };
+
+    struct Instrument_Data{
+        uint_fast8_t wavetype = SINUS;
+        ADSR amp_envelope = ADSR(100.f, 0.0f, 1.0f, 1.0f);
+        float volume = 1.0f; float pitch = 0.0f; float duty_cycle = 0.5f; float phase = 0.0f;
+        Instrument_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase);
     };
 
     /**

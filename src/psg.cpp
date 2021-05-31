@@ -40,10 +40,8 @@ namespace C0deTracker {
         return output;
     }
 
-
-
     float PSG::oscillate(float a, float f, double t, double rt, float dc, float p) {
-        return this->handleAmpEnvelope(t, rt) * Oscillator::oscillate(a, f, t, dc, p);;
+        return this->handleAmpEnvelope(t, rt) * Oscillator::oscillate(a, f, t, dc, p);
     }
 
     float PSG::oscillate(float a, float f, double t, float dc, float p) {

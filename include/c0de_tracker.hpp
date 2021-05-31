@@ -283,39 +283,8 @@ namespace C0deTracker {
      */
     class Osc{
     public :
-        explicit Osc();
-        /**
-         * @brief Basic constructor. By default, duty cycle is equal to 0.5 and phase to 0
-         * @param wavetype of the oscillator
-         */
-        explicit Osc(uint_fast8_t wavetype);
-        /**
-         * @brief Second constructor.
-         * @param wavetype of the oscillator
-         * @param dc duty cycle
-         */
-        explicit Osc(uint_fast8_t wavetype, float dc);
-        /**
-         * @brief Second constructor.
-         * @param wavetype of the oscillator
-         * @param dc duty cycle
-         * @param p phase
-         */
-        explicit Osc(uint_fast8_t wavetype, float dc, float p);
-        /**
-         * @brief Second constructor.
-         * @param wavetype of the oscillator
-         * @param dc duty cycle
-         * @param p phase
-         * @param pitch pitch
-         */
-        explicit Osc(uint_fast8_t wavetype, float dc, float p, float pitch);
-        /**
-         * @brief copy oscillator. Used for cloning instruments in channel
-         * @return Oscillator allocated dynamically
-         */
-        Osc* clone();
-        ~Osc();
+        explicit Osc() = default;
+        ~Osc() = default;
 
         /**
          * @brief set the wavetype of the oscillator to generate the corresponding waveform
@@ -361,6 +330,17 @@ namespace C0deTracker {
          */
         float oscillate(float a, float f, double t, float dc, float p);
         /**
+         * @brief Generates corresponding waveform selected.
+         * @param a Amplitude
+         * @param f Frequency
+         * @param t Time
+         * @param dc Duty cycle
+         * @param p Phase
+         * @param FMfeed signal feeding for FM
+         * @return Signal amplitude at time t with the given duty cycle dc and phase p.
+         */
+        float oscillate(float a, float f, double t, float dc, float p, float FMfeed);
+        /**
          * @brief Same as previous oscillate, but with release time to handle release envelope. This function is fully abstract, it is implemented in PSG.
          * @param a Amplitude
          * @param f Frequency
@@ -372,11 +352,29 @@ namespace C0deTracker {
          */
         float oscillate(float a, float f, double t, double rt, float dc, float p);
         /**
+         * @brief Same as previous oscillate, but with release time to handle release envelope. This function is fully abstract, it is implemented in PSG.
+         * @param a Amplitude
+         * @param f Frequency
+         * @param rt Release time
+         * @param t Time
+         * @param dc Duty cycle
+         * @param p Phase
+         * @param FMfeed signal feeding for FM
+         * @return Signal amplitude at time t with the given duty cycle dc and phase p.
+         */
+        float oscillate(float a, float f, double t, double rt, float dc, float p, float FMfeed);
+
+        void setAttack(float A);
+        void setDecay(float D);
+        void setSustain(float S);
+        void setRelease(float R);
+
+        /**
          * @brief Get pointer to structure holding ADSR values for envelope
          * @return pointer to ADSR struct
          * @see C0deTracker::ADSR
          */
-        ADSR* getAmpEnvelope();
+        const ADSR* getAmpEnvelope();
         /**
          * @brief Set release state of the oscillator.
          * @param r boolean to set the release state
@@ -389,6 +387,9 @@ namespace C0deTracker {
         bool isReleased();
     private:
         uint_fast8_t wavetype = SINUS; float dutycycle = 0.5f; float phase = 0.0f; float pitch = 0.0f;
+        ADSR amp_envelope = ADSR(100.f, 0.0f, 1.0f, 1.0f);
+        bool release = false;
+        float current_envelope_amplitude = 0.f; /**<Used to calculate envelope notably for release state*/
         static float sinus(float a, float f, double t, float dc, float FMfeed);
         static float square(float a, float f, double t, float dc, float FMfeed);
         static float triangle(float a, float f, double t, float dc, float FMfeed);

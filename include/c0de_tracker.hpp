@@ -286,6 +286,8 @@ namespace C0deTracker {
         explicit Osc() = default;
         ~Osc() = default;
 
+        void setOscillatorParams(Instrument_Data* instrdata);
+
         /**
          * @brief set the wavetype of the oscillator to generate the corresponding waveform
          * @param wavetype 0, 1, 2, 3, 4, 5 => SINUS, SQUARE, TRIANGLE, SAW, WHITENOISE, WHITENOISE2
@@ -296,7 +298,7 @@ namespace C0deTracker {
         /**
          * @brief return the value of the corresponding wavetype
          */
-        uint_fast8_t getWavetype();
+        uint_fast8_t getWavetype() const;
 
         /**
          * @brief set the duty cycle of the waveform
@@ -307,7 +309,7 @@ namespace C0deTracker {
          *
          * @return get the duty cycle of the waveform
          */
-        float getDutycycle();
+        float getDutycycle() const;
 
         /**
          * @brief Set the phase of the waveform. The value set is multiplied by 1/frequency (percentage of waveform period)
@@ -318,7 +320,16 @@ namespace C0deTracker {
          *
          * @return the phase in float
          */
-        float getPhase();
+        float getPhase() const;
+
+        void setVolume(float v);
+
+        float getVolume() const;
+
+        void setPitch(float p);
+
+        float getPitch() const;
+
         /**
          * @brief Generates corresponding waveform selected.
          * @param a Amplitude
@@ -384,9 +395,10 @@ namespace C0deTracker {
          * @brief Check if the oscillator is in release state or not
          * @return release member
          */
-        bool isReleased();
+        bool isReleased() const;
     private:
         uint_fast8_t wavetype = SINUS; float dutycycle = 0.5f; float phase = 0.0f; float pitch = 0.0f;
+        float volume = 1.0f;
         ADSR amp_envelope = ADSR(100.f, 0.0f, 1.0f, 1.0f);
         bool release = false;
         float current_envelope_amplitude = 0.f; /**<Used to calculate envelope notably for release state*/
@@ -526,7 +538,9 @@ namespace C0deTracker {
         uint_fast8_t wavetype = SINUS;
         ADSR amp_envelope = ADSR(100.f, 0.0f, 1.0f, 1.0f);
         float volume = 1.0f; float pitch = 0.0f; float duty_cycle = 0.5f; float phase = 0.0f;
+        Instrument_Data() = default;
         Instrument_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase);
+        void setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase);
     };
 
     /**
@@ -656,6 +670,7 @@ namespace C0deTracker {
         void setSizeDimensions(const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels,  const uint_fast8_t* fx_per_chan);
         void setTimeDimensions(const float clk, const float basetime, const float speed);
         void setInstrumentsBank( const Instrument*const*instruments_bank, uint_fast8_t n_instr);
+        void setInstrumentsDataBank(const Instrument_Data* instruments_data_bank, uint_fast8_t n_instr);
         void setPatterns(const Pattern* const* patterns);
         void setPatternsIndices(const uint_fast8_t* patterns_indices);
         float clk = 60.f, basetime = 1.f, speed = 3.f, step;
@@ -663,6 +678,7 @@ namespace C0deTracker {
         uint_fast8_t channels = 0;
         float volume = 1.0f, pitch = 0.0f;
         Instrument** instruments_bank;
+        Instrument_Data* instruments_data_bank;
         uint_fast8_t instruments;
         Pattern** track_patterns;
         uint_fast8_t* pattern_indices;//new uint_8[channels*frames]
@@ -853,6 +869,8 @@ namespace C0deTracker {
         double time_release = 0.0;
         Instruction instruct_state{};
         Instrument* instrument = nullptr;
+        Osc oscillator = Osc();
+        uint_fast8_t instrument_index = Notes::KeysUtilities::CONTINUE;
 
         bool decode_fx(uint_fast32_t fx, double t);
 

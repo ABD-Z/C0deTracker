@@ -62,5 +62,11 @@ namespace C0deTracker{
         this->amp_envelope = amp_envelope;
         this->volume = volume; this->pitch = pitch; this->duty_cycle = duty_cycle; this->phase = phase;
     }
+
+    void Instrument_Data::setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase) {
+        this->wavetype = wavetype; this->amp_envelope = amp_envelope; this->volume = volume; this->pitch = pitch;
+        this->duty_cycle = duty_cycle; this->phase = phase;
+
+    }
 }
 

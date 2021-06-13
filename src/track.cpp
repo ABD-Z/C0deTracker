@@ -400,5 +400,10 @@ namespace C0deTracker {
 
     void Track::init() {}
 
+    void Track::setInstrumentsDataBank(const Instrument_Data* instruments_data_bank, uint_fast8_t n_instr) {
+        this->instruments_data_bank = const_cast<Instrument_Data*>(instruments_data_bank);
+        this->instruments = n_instr;
+    }
+
 
 }

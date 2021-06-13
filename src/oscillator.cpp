@@ -92,13 +92,20 @@ namespace C0deTracker {
 
 
     void Osc::setWavetype(uint_fast8_t wavetype) { this->wavetype = wavetype;}
-    uint_fast8_t Osc::getWavetype() {return this->wavetype;}
+    uint_fast8_t Osc::getWavetype() const {return this->wavetype;}
 
     void Osc::setDutycycle(float dc) { this->dutycycle = dc;}
-    float Osc::getDutycycle() {return this->dutycycle;}
+    float Osc::getDutycycle() const {return this->dutycycle;}
 
     void Osc::setPhase(float p) { this->phase = p;}
-    float Osc::getPhase() {return this->phase;}
+    float Osc::getPhase() const {return this->phase;}
+
+    void Osc::setPitch(float p){this->phase = p;}
+    float Osc::getPitch() const {return this->pitch;}
+
+    void Osc::setVolume(float v) {this->volume = v;}
+    float Osc::getVolume() const {return this->volume;}
+
 
     float Osc::oscillate(float a, float f, double t, float dc, float p) {
         return this->oscillate(a,f,t,dc,p,0);
@@ -195,7 +202,7 @@ namespace C0deTracker {
         this->release = r;
     }
 
-    bool Osc::isReleased() {
+    bool Osc::isReleased() const {
         return this->release;
     }
 
@@ -217,6 +224,12 @@ namespace C0deTracker {
         return output;
     }
 
+    void Osc::setOscillatorParams(Instrument_Data *instrdata) {
+        this->setAttack(instrdata->amp_envelope.attack); this->setDecay(instrdata->amp_envelope.decay);
+        this->setRelease(instrdata->amp_envelope.release); this->setSustain(instrdata->amp_envelope.sustain);
+        this->setWavetype(instrdata->wavetype); this->setDutycycle(instrdata->duty_cycle);
+        this->setPhase(instrdata->phase); this->setVolume(instrdata->volume); this->setPitch(instrdata->pitch);
+    }
 
 
 }

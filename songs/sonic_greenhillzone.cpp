@@ -22,6 +22,17 @@ void Sonic_GreenHillZoneTheme::init() {
     instruments_bank[BASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.5f, 0.9f, C0deTracker::ADSR(100.0f, 1.33f, 0.0f, 10.f)), 0.14f);
     this->setInstrumentsBank(instruments_bank, INSTRUMENTS);
 
+    auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
+    instruments_data_bank[HITHAT].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(50.f, 18.f, 0.0f, 0.f), .55f, .0f, .00077f, .0f);
+    instruments_data_bank[SNARE].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100000.f, 13.f, 0.1f, 4.f), 1.f, .0f, .0025f, .0f);
+    instruments_data_bank[KICK].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f), .66f, .0f, .1f, .0f);
+    instruments_data_bank[SQUARE].setData(C0deTracker::SQUARE, C0deTracker::ADSR(100.0f, 0.f, 0.0f, 100.f), .1f, .0f, .5f, .0f);
+    instruments_data_bank[BELL].setData(C0deTracker::SINUS, C0deTracker::ADSR(500.0f, 5.f, 0.05f, 500.f), .56f, .0f, 1.0f, .0f);
+    instruments_data_bank[LEAD].setData(C0deTracker::SINUS, C0deTracker::ADSR(5.f, .7f, .0f, 5.f), .17f, .0f, .085f, .0f);
+    instruments_data_bank[ACCOMP].setData(C0deTracker::SAW, C0deTracker::ADSR(100.f, .65f, .0f, 5.f), .1f, .0f, .696969f, .0f);
+    instruments_data_bank[BASS].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100.f, 1.33f, .0f, 10.f), .14f, .0f, .5f, .9f);
+    this->setInstrumentsDataBank(instruments_data_bank, INSTRUMENTS);
+
     using C0deTracker::Editor;
     using C0deTracker::Key;
     using namespace C0deTracker::Notes;

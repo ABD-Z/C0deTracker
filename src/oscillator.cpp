@@ -229,6 +229,8 @@ namespace C0deTracker {
         this->setRelease(instrdata->amp_envelope.release); this->setSustain(instrdata->amp_envelope.sustain);
         this->setWavetype(instrdata->wavetype); this->setDutycycle(instrdata->duty_cycle);
         this->setPhase(instrdata->phase); this->setVolume(instrdata->volume); this->setPitch(instrdata->pitch);
+        this->current_envelope_amplitude = 0.0f;
+        this->setRelease(false);
     }
 
 

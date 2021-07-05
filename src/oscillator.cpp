@@ -106,28 +106,30 @@ namespace C0deTracker {
     void Osc::setVolume(float v) {this->volume = v;}
     float Osc::getVolume() const {return this->volume;}
 
-
-    float Osc::oscillate(float a, float f, double t, float dc, float p) {
-        return this->oscillate(a,f,t,dc,p,0);
-    }
-
     float Osc::oscillate(float a, float f, double t, float dc, float p, float FMfeed) {
+        float amp = a * this->getVolume();
+        float frq = f + Notes::pitch2freq(this->getPitch());
+        float phs = p + this->getPhase();
         switch(this->wavetype){
             case SINUS:
-                return Osc::sinus(a, f, t - p*1./f, dc, FMfeed);
+                return Osc::sinus(amp, frq, t - phs*1./frq, dc, FMfeed);
             case SQUARE:
-                return Osc::square(a, f, t - p*1./f, dc, FMfeed);
+                return Osc::square(amp, frq, t - phs*1./frq, dc, FMfeed);
             case TRIANGLE:
-                return Osc::triangle(a, f, t - p*1./f, dc, FMfeed);
+                return Osc::triangle(amp, frq, t - phs*1./frq, dc, FMfeed);
             case SAW:
-                return Osc::saw(a, f, t - p*1./f, dc, FMfeed);
+                return Osc::saw(amp, frq, t - phs*1./frq, dc, FMfeed);
             case WHITENOISE:
-                return Osc::whitenoise(a, f, t - p*1./f, dc, FMfeed);
+                return Osc::whitenoise(amp, frq, t - phs*1./frq, dc, FMfeed);
             case WHITENOISE2:
-                return Osc::whitenoise2(a, f, t - p*1./f, dc, FMfeed);
+                return Osc::whitenoise2(amp, frq, t - phs*1./frq, dc, FMfeed);
             default:
                 return 0;
         }
+    }
+
+    float Osc::oscillate(float a, float f, double t, float dc, float p) {
+        return this->oscillate(a,f,t,dc,p,0);
     }
 
     float Osc::oscillate(float a, float f, double t, double rt, float dc, float p, float FMfeed) {

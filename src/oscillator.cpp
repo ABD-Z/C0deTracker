@@ -108,7 +108,7 @@ namespace C0deTracker {
 
     float Osc::oscillate(float a, float f, double t, float dc, float p, float FMfeed) {
         float amp = a * this->getVolume();
-        float frq = f + Notes::pitch2freq(this->getPitch());
+        float frq = f;
         float phs = p + this->getPhase();
         switch(this->wavetype){
             case SINUS:

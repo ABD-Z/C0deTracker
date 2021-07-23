@@ -290,5 +290,13 @@ namespace C0deTracker {
         }
     }
 
+    float Channel::play_pitch(float a, float p, double t) {
+        return this->oscillator.oscillate(a, Notes::pitch2freq(p), t, this->oscillator.getDutycycle(), this->oscillator.getPhase());
+    }
+
+    float Channel::play_pitch(float a, float p, double t, double rt) {
+        return this->oscillator.oscillate(a, Notes::pitch2freq(p), t, rt, this->oscillator.getDutycycle(), this->oscillator.getPhase());;
+    }
+
 
 }

@@ -854,6 +854,10 @@ namespace C0deTracker {
          */
         void setVolumeInstructionState(float a);
 
+        float play_pitch(float a, float p, double t);
+
+        float play_pitch(float a, float p, double t, double rt);
+
         friend float* Track::play(double t, C0deTracker::Channel *chan, uint_fast8_t size_of_chans);//function play of Track friend of Channel in order to avoid creating a huge amount of getters for each attributes
     private:
         static uint_fast8_t chancount;

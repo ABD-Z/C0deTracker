@@ -100,7 +100,7 @@ namespace C0deTracker {
     void Osc::setPhase(float p) { this->phase = p;}
     float Osc::getPhase() const {return this->phase;}
 
-    void Osc::setPitch(float p){this->phase = p;}
+    void Osc::setPitch(float p){this->pitch = p;}
     float Osc::getPitch() const {return this->pitch;}
 
     void Osc::setVolume(float v) {this->volume = v;}
@@ -129,7 +129,7 @@ namespace C0deTracker {
     }
 
     float Osc::oscillate(float a, float f, double t, float dc, float p) {
-        return this->oscillate(a,f,t,dc,p,0);
+        return this->oscillate(a,f,t,-1,dc,p,0);
     }
 
     float Osc::oscillate(float a, float f, double t, double rt, float dc, float p, float FMfeed) {

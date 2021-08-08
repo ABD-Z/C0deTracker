@@ -32,6 +32,7 @@ namespace C0deTracker {
     float Oscillator::getPhase() {return this->phase;}
 
     float Oscillator::oscillate(float a, float f, double t, float dc, float p) {
+        if(a==0){return 0;}
         switch(this->wavetype){
             case SINUS:
                 return Oscillator::sinus(a, f, t - p*1./f, dc, 0.f);
@@ -108,6 +109,7 @@ namespace C0deTracker {
 
     float Osc::oscillate(float a, float f, double t, float dc, float p, float FMfeed) {
         float amp = a * this->getVolume();
+        if(amp == 0){return 0;}
         float frq = f;
         float phs = p + this->getPhase();
         switch(this->wavetype){
@@ -233,6 +235,17 @@ namespace C0deTracker {
         this->setPhase(instrdata->phase); this->setVolume(instrdata->volume); this->setPitch(instrdata->pitch);
         this->current_envelope_amplitude = 0.0f;
         this->setRelease(false);
+    }
+
+    float Osc::pitch2freq(float pitch) {
+        if(this->current_pitch == pitch) {
+            return this->current_frequency;
+        }
+        else {
+            this->current_pitch = pitch;
+            this->current_frequency = Notes::pitch2freq(pitch);
+            return this->current_frequency;
+        }
     }
 
 

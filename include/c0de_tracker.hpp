@@ -396,11 +396,15 @@ namespace C0deTracker {
          * @return release member
          */
         bool isReleased() const;
+
+        float pitch2freq(float pitch);
     private:
         uint_fast8_t wavetype = SINUS; float dutycycle = 0.5f; float phase = 0.0f; float pitch = 0.0f;
         float volume = 1.0f;
         ADSR amp_envelope = ADSR(100.f, 0.0f, 1.0f, 1.0f);
         bool release = false;
+        float current_pitch = this->pitch;
+        float current_frequency = 440;//HZ
         float current_envelope_amplitude = 0.f; /**<Used to calculate envelope notably for release state*/
         static float sinus(float a, float f, double t, float dc, float FMfeed);
         static float square(float a, float f, double t, float dc, float FMfeed);

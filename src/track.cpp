@@ -52,38 +52,45 @@ namespace C0deTracker {
     }
 
     void Track::update_fx(double t) {
-        this->volume -= (this->volume_slide_down / this->speed) * (t - this->volume_slide_time);
-        if (this->volume <= 0) {
-            this->volume = 0.f;
-            this->volume_slide_down = 0.f;
+        if(this->volume_slide_down != 0){
+            this->volume -= (this->volume_slide_down / this->speed) * (t - this->volume_slide_time);
+            if (this->volume <= 0) {
+                this->volume = 0.f;
+                this->volume_slide_down = 0.f;
+            }
         }
-        this->volume += (this->volume_slide_up / this->speed) * (t - this->volume_slide_time);
-        if (this->volume >= MASTER_VOLUME) {
-            this->volume = MASTER_VOLUME;
-            this->volume_slide_up = 0.f;
+        if(this->volume_slide_up != 0){
+            this->volume += (this->volume_slide_up / this->speed) * (t - this->volume_slide_time);
+            if (this->volume >= MASTER_VOLUME) {
+                this->volume = MASTER_VOLUME;
+                this->volume_slide_up = 0.f;
+            }
         }
+        if(this->pitch_slide_down != 0)
+            this->pitch -= (this->pitch_slide_down / this->speed) * (t - this->pitch_slide_time);
 
-        this->pitch -= (this->pitch_slide_down / this->speed) * (t - this->pitch_slide_time);
+        if(this->pitch_slide_up != 0)
+            this->pitch += (this->pitch_slide_up / this->speed) * (t - this->pitch_slide_time);
 
-        this->pitch += (this->pitch_slide_up / this->speed) * (t - this->pitch_slide_time);
-
-        this->panning += (this->panning_slide_right / this->speed) * (t - this->panning_slide_time);
-        if (this->panning >= MASTER_VOLUME) {
-            this->panning = MASTER_VOLUME;
-            this->panning_slide_right = 0.f;
+        if(this->panning_slide_right != 0){
+            this->panning += (this->panning_slide_right / this->speed) * (t - this->panning_slide_time);
+            if (this->panning >= MASTER_VOLUME) {
+                this->panning = MASTER_VOLUME;
+                this->panning_slide_right = 0.f;
+            }
         }
-        this->panning -= (this->panning_slide_left / this->speed) * (t - this->panning_slide_time);
-        if (this->panning <= 0) {
-            this->panning = 0;
-            this->panning_slide_left = 0.f;
+        if(this->panning_slide_left != 0){
+            this->panning -= (this->panning_slide_left / this->speed) * (t - this->panning_slide_time);
+            if (this->panning <= 0) {
+                this->panning = 0;
+                this->panning_slide_left = 0.f;
+            }
         }
-
         if (this->tremolo_speed == 0.f || this->tremolo_depth == 0.f) {
             this->tremolo_val = 1.0f;
         } else {
-            this->tremolo_val =
-                    0.5f * this->tremolo_depth * sin(TWOPI * this->tremolo_speed * (t - this->tremolo_time)) +
-                    (1 - 0.5f * this->tremolo_depth);
+            this->tremolo_val = 0.5f * this->tremolo_depth * sin(TWOPI * this->tremolo_speed * (t - this->tremolo_time))
+                    + (1 - 0.5f * this->tremolo_depth);
         }
         if (this->vibrato_speed == 0.f || this->vibrato_depth == 0.f) {
             this->vibrato_val = 0.0f;
@@ -218,7 +225,6 @@ namespace C0deTracker {
                 Pattern *pat = this->track_patterns[chan_number * (this->frames) + pattern_index];
                 Instruction *current_instruction = &pat->instructions[this->row_counter];
 
-
                 if (current_instruction->instrument_index < this->instruments) {
                     if (this->readFx) {
                         chan[i].setLastInstructionAddress(current_instruction);
@@ -227,15 +233,17 @@ namespace C0deTracker {
                         chan[i].setTrack(this);
                         if(chan[i].getInstructionState()->key.note == Notes::CONTINUE || chan[i].getInstructionState()->key.octave == Notes::CONTINUE){
                             if(chan[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
-                                delete chan[i].instrument;
-                                chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
+                                //delete chan[i].instrument;
+                                //chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
+                                chan[i].oscillator.setOscillatorParams(&this->instruments_data_bank[current_instruction->instrument_index]);
                             }
                             chan[i].setInstructionState(current_instruction);
                         }else{
                             if(!chan[i].portamento){
                                 if(chan[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
-                                    delete chan[i].instrument;
-                                    chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
+                                    //delete chan[i].instrument;
+                                    //chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
+                                    chan[i].oscillator.setOscillatorParams(&this->instruments_data_bank[current_instruction->instrument_index]);
                                 }
                                 chan[i].setInstructionState(current_instruction);
                             }else{
@@ -247,13 +255,15 @@ namespace C0deTracker {
                                 }
 
                                 if(chan[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
-                                    delete chan[i].instrument;
-                                    chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
+                                    //delete chan[i].instrument;
+                                    //chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
+                                    chan[i].oscillator.setOscillatorParams(&this->instruments_data_bank[current_instruction->instrument_index]);
                                 }
                                 chan[i].setInstructionState(current_instruction);
                             }
                         }
-                        chan[i].instrument->get_oscillator()->setRelease(false);
+                        //chan[i].instrument->get_oscillator()->setRelease(false);
+                        chan[i].oscillator.setRelease(false);
                         chan[i].pitch_slide_val = 0;
                         chan[i].pitch_slide_time = t;
                         chan[i].transpose_time_step = t;
@@ -281,7 +291,8 @@ namespace C0deTracker {
                                 chan[i].setRelease(true);
                                 chan[i].setTimeRelease(t);
                                 chan[i].setTrack(this);
-                                chan[i].instrument->get_oscillator()->setRelease(true);
+                                //chan[i].instrument->get_oscillator()->setRelease(true);
+                                chan[i].oscillator.setRelease(true);
                             }
                             if (current_instruction->volume != Notes::CONTINUE &&
                                 ((0.f <= current_instruction->volume) &&
@@ -311,7 +322,8 @@ namespace C0deTracker {
                 }
                 //check if channel is released because of release effect
                 if(chan[i].isReleased()){
-                    chan[i].instrument->get_oscillator()->setRelease(true);
+                    //chan[i].instrument->get_oscillator()->setRelease(true);
+                    chan[i].oscillator.setRelease(true);
                 }
 
                 uint_fast8_t arpeggio = 0;
@@ -325,9 +337,11 @@ namespace C0deTracker {
 
                 if (chan[i].getLastInstructionAddress() != nullptr && chan[i].getTrack() != nullptr) {
                     if (!chan[i].isReleased()) {
-                        s = chan[i].instrument->play_pitch(a, p, t - chan[i].getTime());
+                        //s = chan[i].instrument->play_pitch(a, p, t - chan[i].getTime());
+                        s = chan[i].play_pitch(a, p, t - chan[i].getTime());
                     } else {
-                        s = chan[i].instrument->play_pitch(a, p, t - chan[i].getTime(), t - chan[i].getTimeRelease());
+                        //s = chan[i].instrument->play_pitch(a, p, t - chan[i].getTime(), t - chan[i].getTimeRelease());
+                        s = chan[i].play_pitch(a, p, t - chan[i].getTime(), t - chan[i].getTimeRelease());
                     }
                     res[0] += s * (1 - chan[i].panning);
                     res[1] += s * chan[i].panning;

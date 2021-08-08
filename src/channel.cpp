@@ -78,30 +78,44 @@ namespace C0deTracker {
     }
 
     void Channel::update_fx(double t) {
-        this->volume -= (this->volume_slide_down / this->track->getSpeed()) * (t - this->volume_slide_time);
-        if (this->volume <= 0) {
-            this->volume = 0.f;
-            this->volume_slide_down = 0.f;
-        }
-        this->volume += (this->volume_slide_up / this->track->getSpeed()) * (t - this->volume_slide_time);
-        if (this->volume >= MASTER_VOLUME) {
-            this->volume = MASTER_VOLUME;
-            this->volume_slide_up = 0.f;
+        if(this->volume_slide_down != 0){
+            this->volume -= (this->volume_slide_down / this->track->getSpeed()) * (t - this->volume_slide_time);
+            if (this->volume <= 0) {
+                this->volume = 0.f;
+                this->volume_slide_down = 0.f;
+            }
         }
 
-        this->pitch_slide_val -= (this->pitch_slide_down / this->track->getSpeed()) * (t - this->pitch_slide_time);
-        this->pitch_slide_val += (this->pitch_slide_up   / this->track->getSpeed()) * (t - this->pitch_slide_time);
+        if(this->volume_slide_up != 0){
+            this->volume += (this->volume_slide_up / this->track->getSpeed()) * (t - this->volume_slide_time);
+            if (this->volume >= MASTER_VOLUME) {
+                this->volume = MASTER_VOLUME;
+                this->volume_slide_up = 0.f;
+            }
+        }
 
-        this->panning += (this->panning_slide_right / this->track->getSpeed()) * (t - this->panning_slide_time);
-        if (this->panning >= MASTER_VOLUME) {
-            this->panning = MASTER_VOLUME;
-            this->panning_slide_right = 0.f;
+        if(this->pitch_slide_down != 0)
+            this->pitch_slide_val -= (this->pitch_slide_down / this->track->getSpeed()) * (t - this->pitch_slide_time);
+
+        if(this->pitch_slide_up != 0)
+            this->pitch_slide_val += (this->pitch_slide_up   / this->track->getSpeed()) * (t - this->pitch_slide_time);
+
+        if(this->panning_slide_right != 0){
+            this->panning += (this->panning_slide_right / this->track->getSpeed()) * (t - this->panning_slide_time);
+            if (this->panning >= MASTER_VOLUME) {
+                this->panning = MASTER_VOLUME;
+                this->panning_slide_right = 0.f;
+            }
         }
-        this->panning -= (this->panning_slide_left / this->track->getSpeed()) * (t - this->panning_slide_time);
-        if (this->panning <= 0) {
-            this->panning = 0;
-            this->panning_slide_left = 0.f;
+
+        if(this->panning_slide_left != 0){
+            this->panning -= (this->panning_slide_left / this->track->getSpeed()) * (t - this->panning_slide_time);
+            if (this->panning <= 0) {
+                this->panning = 0;
+                this->panning_slide_left = 0.f;
+            }
         }
+
 
         if (this->tremolo_speed == 0.f || this->tremolo_depth == 0.f) {
             this->tremolo_val = 1.0f;
@@ -291,11 +305,11 @@ namespace C0deTracker {
     }
 
     float Channel::play_pitch(float a, float p, double t) {
-        return this->oscillator.oscillate(a, Notes::pitch2freq(p), t, this->oscillator.getDutycycle(), this->oscillator.getPhase());
+        return this->oscillator.oscillate(a, this->oscillator.pitch2freq(p), t, this->oscillator.getDutycycle(), this->oscillator.getPhase());
     }
 
     float Channel::play_pitch(float a, float p, double t, double rt) {
-        return this->oscillator.oscillate(a, Notes::pitch2freq(p), t, rt, this->oscillator.getDutycycle(), this->oscillator.getPhase());;
+        return this->oscillator.oscillate(a, this->oscillator.pitch2freq(p), t, rt, this->oscillator.getDutycycle(), this->oscillator.getPhase());;
     }
 
 

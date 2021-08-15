@@ -29,6 +29,23 @@ void SuperStreetFighterII_CreditTheme::init() {
     instrubank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .166f, 0.f, C0deTracker::ADSR(24.f, 6.f, .25f, 6.f)), 0.975f);
     this->setInstrumentsBank(instrubank, INSTRUMENTS);
 
+    // Instrument_Data::setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase) {
+    auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
+    instruments_data_bank[COWBELL].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 5.0f, 0.00f, 0.f), 0.48f, 0.0f, .0105f, 0.0f);
+    instruments_data_bank[CRASH].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 1.86f, 0.00f, 0.f), 0.45f, 0.0f, .0055f, 0.0f);
+    instruments_data_bank[TRIANGLE].setData(C0deTracker::WHITENOISE2, C0deTracker::ADSR(100000.f, 2.66f, 0.00f, 2.f), 0.22f, 0.0f, .0025f, 0.0f);
+    instruments_data_bank[WOOD].setData(C0deTracker::WHITENOISE2, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f), 0.85f, 0.0f, .1f, 0.0f);
+    instruments_data_bank[HITHAT].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100.f, 20.f, 0.0f, 0.f), 0.7f, 0.0f, .00337f, 0.0f);
+    instruments_data_bank[KICK].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f), 0.7f, 0.0f, .1f, 0.0f);
+    instruments_data_bank[TOM].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100000.f, 13.66f, 0.0f, 0.f), 0.75f, 0.0f, .2f, 0.0f);
+    instruments_data_bank[SNARE].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100000.f, 9.66f, 0.05f, 1.f), 1.f, 0.0f, 0.0025f, 0.0f);
+    instruments_data_bank[STRING].setData(C0deTracker::SAW, C0deTracker::ADSR(100.f, 20., 0.2, 6.0f), 1.f, 0.0f, .5f, 0.0f);
+    instruments_data_bank[BASS].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(666.0f, 0.3f, 0.2f, 17.75f), .22f, 0.0f, .05f, 0.5f);
+    instruments_data_bank[BASSGUITAR].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(20.0f, 0.3f, 0.2f, 500.f), 0.15f, 0.0f, .66f, 0.0f);
+    instruments_data_bank[MAIN2].setData(C0deTracker::SINUS, C0deTracker::ADSR(10.0f, 1.f, .25f, 6.f), 0.78f, 0.f, 0.13f, 0.0f);
+    instruments_data_bank[MAIN].setData(C0deTracker::SQUARE, C0deTracker::ADSR(24.f, 6.f, .25f, 6.f), 0.975f, 0.0f, .166f, 0.0f);
+    this->setInstrumentsDataBank(instruments_data_bank, INSTRUMENTS);
+
     printf("PATTERNS OF %d INITIALIZING\n", this->getNumberofChannels() * this->getNumberofFrames());
 
 

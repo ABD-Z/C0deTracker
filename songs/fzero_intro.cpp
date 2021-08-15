@@ -17,6 +17,15 @@ void FZERO_MenuTheme::init() {
     instruments_bank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE,.5f, 0.f, C0deTracker::ADSR(10.f,0.f,0.0f,10.f)), 0.25f);
     this->setInstrumentsBank(instruments_bank, INSTRUMENTS);
 
+
+    auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
+    instruments_data_bank[TRUMPET].setData(C0deTracker::SQUARE, C0deTracker::ADSR(40.f,8.f,0.0f,4.f), 0.16f, 0.0f, 0.08f, 0.0f);
+    instruments_data_bank[SNARE].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100000.f, 12.5f, 0.0f, 1.f), 0.7f, 2.48f, 0.0025f, 0.0f);
+    instruments_data_bank[BASS].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(100.0f, 6.f, 0.0f, 5.33f), 0.8f, 0.0f, 0.6f, 0.5f);
+    instruments_data_bank[BRASS].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(33.f,3.33f,0.4f,2.f), 0.6f, 0.0f, 0.12f, 0.5f);
+    instruments_data_bank[MAIN].setData(C0deTracker::SQUARE, C0deTracker::ADSR(10.f,0.f,0.0f,10.f), 0.25f, 0.0f, 0.5f, 0.0f);
+    this->setInstrumentsDataBank(instruments_data_bank, INSTRUMENTS);
+
     using C0deTracker::Editor;
     using C0deTracker::Key;
     using namespace C0deTracker::Notes;

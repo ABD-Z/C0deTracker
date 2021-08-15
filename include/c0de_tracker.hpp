@@ -536,6 +536,8 @@ namespace C0deTracker {
     private:
         float global_volume = 1.0f;
         Oscillator* osc = nullptr;
+        float current_pitch;
+        float current_frequency;
     };
 
     struct Instrument_Data{
@@ -865,6 +867,7 @@ namespace C0deTracker {
         friend float* Track::play(double t, C0deTracker::Channel *chan, uint_fast8_t size_of_chans);//function play of Track friend of Channel in order to avoid creating a huge amount of getters for each attributes
     private:
         static uint_fast8_t chancount;
+
         Instruction* last_instruct_address = nullptr;
         Track* track = nullptr;
 

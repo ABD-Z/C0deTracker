@@ -44,6 +44,7 @@ namespace C0deTracker {
 
     Channel::~Channel() {
         delete this->instrument;
+        Channel::chancount = 0;
     }
 
     double Channel::getTimeRelease() const {

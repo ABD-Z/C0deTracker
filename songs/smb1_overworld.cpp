@@ -18,14 +18,6 @@ void SuperMarioBros_OverworldTheme::init() {
     instruments_bank[SNARE] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, .225f, C0deTracker::ADSR(100.f, 0.0f, 0.0f, 100.f)), 0.384f);
     this->setInstrumentsBank(instruments_bank, INSTRUMENTS);
 
-    // Instrument_Data::setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase) {
-    auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
-    instruments_data_bank[MAIN].setData(C0deTracker::SQUARE, C0deTracker::ADSR(100.f, 5.f, 0.f, 100.f), 0.128f, 0.0f, 0.5f, 0.0f);
-    instruments_data_bank[BASS].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(100.0f, 0.f, .0f, 100.f), 1.0f, .0f, 1.0f, 0.5f);
-    instruments_data_bank[DRUMS].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100.f, 0.0f, 0.0f, 100.f), 0.32f, 0.0f, 0.00377f, 0.0f);
-    instruments_data_bank[SNARE].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100.f, 0.0f, 0.0f, 100.f), 0.384f, 0.0f, 0.225f, 0.0f);
-    this->setInstrumentsDataBank(instruments_data_bank, INSTRUMENTS);
-
     using C0deTracker::Editor;
     using C0deTracker::Key;
     using namespace C0deTracker::Notes;

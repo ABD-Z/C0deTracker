@@ -2,7 +2,6 @@
 // Created by Abdulmajid, Olivier NASSER on 25/08/2020.
 //
 
-
 /**
  * @file oscillator.cpp
  * @brief Oscillator class code (SINUS, SQUARE, TRIANGLE and WHITENOISE)
@@ -77,7 +76,6 @@ namespace C0deTracker {
         double s = (frac_ft - dc < 0) ? t + FMfeed : 0.f + FMfeed;
         double frac_fs = f * s - floor( s / (1.f/f));
         return  float(double(a) * ( frac_fs / (dc) - 0.5));
-
     }
 
     float Oscillator::whitenoise(float a, float f, double t, float dc, float FMfeed) {
@@ -122,9 +120,9 @@ namespace C0deTracker {
             case SAW:
                 return Osc::saw(amp, frq, t - phs*1./frq, dc, FMfeed);
             case WHITENOISE:
-                return Osc::whitenoise(amp, frq, t - phs*1./frq, dc, FMfeed);
+                return this->getVolume() * Osc::whitenoise(a, frq, t - phs*1./frq, dc, FMfeed);
             case WHITENOISE2:
-                return Osc::whitenoise2(amp, frq, t - phs*1./frq, dc, FMfeed);
+                return this->getVolume() * Osc::whitenoise2(a, frq, t - phs*1./frq, dc, FMfeed);
             default:
                 return 0;
         }
@@ -134,16 +132,16 @@ namespace C0deTracker {
         return this->oscillate(a,f,t,-1,dc,p,0);
     }
 
-    float Osc::oscillate(float a, float f, double t, double rt, float dc, float p, float FMfeed) {
-        return this->handleAmpEnvelope(t, rt) * this->oscillate(a, f, t, dc, p, FMfeed);
-    }
-
     float Osc::oscillate(float a, float f, double t, double rt, float dc, float p) {
         return this->oscillate(a,f,t,rt,dc,p,0);
     }
 
+    float Osc::oscillate(float a, float f, double t, double rt, float dc, float p, float FMfeed) {
+        return this->handleAmpEnvelope(t, rt) * this->oscillate(a, f, t, dc, p, FMfeed);
+    }
+
     float Osc::sinus(float a, float f, double t, float dc, float FMfeed) {
-        double frac_ft = f * t - floor(t/(1.f/f));
+        double frac_ft = f * t - floor(t*f);
         return (frac_ft - dc < 0) ? a * 0.5 * sinf(TWOPI * f * t + FMfeed) : - a * 0.5 *(sinf(TWOPI * f * t + FMfeed));
         //return a * 0.5 * sinf(TWOPI * f * t + FMfeed);
     }
@@ -168,18 +166,16 @@ namespace C0deTracker {
         double s = (frac_ft - dc < 0) ? t + FMfeed : 0.f + FMfeed;
         double frac_fs = f * s - floor( s / (1.f/f));
         return  float(double(a) * ( frac_fs / (dc) - 0.5));
-
     }
 
     float Osc::whitenoise(float a, float f, double t, float dc, float FMfeed) {
         float s = Osc::sinus(a, f, t, 0.f, FMfeed)/(dc*0.5);
-        //s = this->sinus(a, f, t/(dc), 0.f, FMfeed);
-        return  a * (s - floor(s) - 0.5);
+        return  a * (s - floor(s) - 0.5f);
     }
 
     float Osc::whitenoise2(float a, float f, double t, float dc, float FMfeed) {
-        float s = Osc::sinus(a, f, t/dc, 0.f, FMfeed);
-        return  a * (s - floor(s) - 0.5);
+        float s = Osc::sinus(a, f, t/(dc), 0.f, FMfeed);
+        return  a * (s - floor(s) - 0.5f);
     }
 
     const ADSR *Osc::getAmpEnvelope() {

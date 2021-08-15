@@ -338,10 +338,10 @@ namespace C0deTracker {
                 if (chan[i].getLastInstructionAddress() != nullptr && chan[i].getTrack() != nullptr) {
                     if (!chan[i].isReleased()) {
                         //s = chan[i].instrument->play_pitch(a, p, t - chan[i].getTime());
-                        s = chan[i].play_pitch(a, p, t - chan[i].getTime());
+                        s = chan[i].play_pitch(a, p, t - chan[i].getTime());//new
                     } else {
                         //s = chan[i].instrument->play_pitch(a, p, t - chan[i].getTime(), t - chan[i].getTimeRelease());
-                        s = chan[i].play_pitch(a, p, t - chan[i].getTime(), t - chan[i].getTimeRelease());
+                        s = chan[i].play_pitch(a, p, t - chan[i].getTime(), t - chan[i].getTimeRelease());//new
                     }
                     res[0] += s * (1 - chan[i].panning);
                     res[1] += s * chan[i].panning;

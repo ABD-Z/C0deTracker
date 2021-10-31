@@ -18,6 +18,13 @@ void TutoTrack::init() {
     instruments_bank[SNARE] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.0025f, C0deTracker::ADSR(100000.f, 9.66f, 0.0f, 1.f)), .8f);
     this->setInstrumentsBank(instruments_bank, INSTRUMENTS);
 
+    auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
+    instruments_data_bank[MAIN].setData(C0deTracker::SQUARE, C0deTracker::ADSR(5.5f,5.5f,0.2f,1.f),0.1f,0.f,0.5f,0.0f);
+    instruments_data_bank[BASS].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(400.0f, 10.f, 0.0f, 10.f), 1.0f, 0.f,0.8f,0.5f);
+    instruments_data_bank[KICK].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f), 0.64f, 0.0f, 0.1f, 0.0f);
+    instruments_data_bank[SNARE].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100000.f, 9.66f, 0.0f, 1.f), 0.8f, 0.0f, 0.0025f, 0.0f);
+    this->setInstrumentsDataBank(instruments_data_bank, INSTRUMENTS);
+
     using C0deTracker::Editor;
     using C0deTracker::Key;
     using namespace C0deTracker::Notes;

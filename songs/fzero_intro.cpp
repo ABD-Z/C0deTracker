@@ -15,7 +15,16 @@ void FZERO_MenuTheme::init() {
     instruments_bank[BASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE, .6f, 0.5f, C0deTracker::ADSR(100.0f, 6.f, 0.0f, 5.33f)), .8f);
     instruments_bank[BRASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE, .12f, 0.5f, C0deTracker::ADSR(33.f,3.33f,0.4f,2.f)), 0.6f);
     instruments_bank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE,.5f, 0.f, C0deTracker::ADSR(10.f,0.f,0.0f,10.f)), 0.25f);
+
     this->setInstrumentsBank(instruments_bank, INSTRUMENTS);
+
+    auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
+    instruments_data_bank[TRUMPET].setData(C0deTracker::SQUARE, C0deTracker::ADSR(40.f,10.f,0.0f,4.f), 0.25f, 0.1f, .08f, 0.5f);
+    instruments_data_bank[SNARE].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100000.f, 15.0f, 0.0f, 1.f), .9f, 2.5f, .00015f, 0);
+    instruments_data_bank[BASS].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(100.0f, 6.f, 0.0f, 5.33f), .8f, .0f, .6f, .5f);
+    instruments_data_bank[BRASS].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(33.f,3.33f,0.4f,2.f), .6f, 0.f, .12f, .5f);
+    instruments_data_bank[MAIN].setData(C0deTracker::SQUARE, C0deTracker::ADSR(10.f,0.f,0.0f,10.f), .25f, .0f, .5f, .0f);
+    this->setInstrumentsDataBank(instruments_data_bank, INSTRUMENTS);
 
     using C0deTracker::Editor;
     using C0deTracker::Key;
@@ -61,7 +70,7 @@ void FZERO_MenuTheme::init() {
 
     CHANL(1);
     INSTR(TRUMPET);
-    VOLM(0.25f);
+    VOLM(0.33f);
     PATRN(0);
     I(0, K(D_S,4));
     I(1, K(D_S,4));

@@ -2,7 +2,7 @@
 // Created by Abdulmajid, Olivier NASSER on 21/01/2021.
 //
 
-#include "examples.hpp"
+#include "sonic_greenhillzone.hpp"
 
 Sonic_GreenHillZoneTheme::Sonic_GreenHillZoneTheme() {
     this->setSizeDimensions(ROWS,FRAMES,CHANNELS,fx_per_chan);

@@ -2,7 +2,7 @@
 // Created by Abdulmajid, Olivier NASSER on 30/08/2020.
 //
 
-#include "examples.hpp"
+#include "ssf2_credit.hpp"
 
 SuperStreetFighterII_CreditTheme::SuperStreetFighterII_CreditTheme() {
     this->setSizeDimensions(ROWS,FRAMES,CHANNELS,FX_per_CHAN);

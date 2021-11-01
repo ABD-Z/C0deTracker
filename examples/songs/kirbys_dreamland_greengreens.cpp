@@ -2,7 +2,7 @@
 // Created by Abdulmajid, Olivier NASSER on 16/01/2021.
 //
 
-#include "examples.hpp"
+#include "kirbys_dreamland_greengreens.hpp"
 
 
 KirbysDreamland_GreenGreensTheme::KirbysDreamland_GreenGreensTheme() {

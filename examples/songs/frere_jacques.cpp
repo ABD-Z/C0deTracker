@@ -1,7 +1,7 @@
 //
 // Created by Abdulmajid, Olivier NASSER on 01/01/2021.
 //
-#include "examples.hpp"
+#include "frere_jacques.hpp"
 
 FrereJacques::FrereJacques() {
     this->setSizeDimensions(ROWS,FRAMES,CHANNELS, fx_per_chan);

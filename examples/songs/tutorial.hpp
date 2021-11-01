@@ -4,7 +4,7 @@
 
 #ifndef C0DETRACKER_TUTORIAL_HPP
 #define C0DETRACKER_TUTORIAL_HPP
-#include "../include/c0de_tracker.hpp"
+#include "../../include/c0de_tracker.hpp"
 
 
 class TutoTrack : public C0deTracker::Track{

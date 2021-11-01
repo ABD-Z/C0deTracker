@@ -11,9 +11,6 @@ int main() {
 
     C0deTracker::Track* track = new TutoTrack();
     track->init();
-    C0deTracker::Channel* chans;
-    uint_fast8_t  size_of_chans = track->getNumberofChannels();
-    chans = new C0deTracker::Channel[size_of_chans];
     /*chans[0].disable();
    chans[1].disable();
     chans[2].disable();
@@ -32,7 +29,7 @@ int main() {
 
     //Method to play sound in real time with the custom stream
     C0deTrackerStream cts;
-    cts.init(track, chans, size_of_chans);
+    cts.init(track);
     cts.play();
 
 
@@ -46,12 +43,12 @@ int main() {
     std::vector<sf::Int16> samples;
     std::cout << "Begin sampling" << std::endl;
 
-    float duration_in_sec = 52.799999f*2;
+    float duration_in_sec = 4.f*2;
     float number_of_samples = SAMPLE_RATE * duration_in_sec * PANNING;
     samples.reserve(number_of_samples);
 
     for (uint_fast64_t i = 0; i < number_of_samples; ++++i) {
-        float* s = track->play(0.5 * double(i) / SAMPLE_RATE, chans, size_of_chans);
+        float* s = track->play(0.5 * double(i) / SAMPLE_RATE);
         samples.push_back((s[0]) * BITS_16*0.5);//left speaker
         samples.push_back((s[1]) * BITS_16*0.5);//right speaker
     }
@@ -62,7 +59,7 @@ int main() {
 
 
     delete track;
-    delete[] chans;
+
 
     return 0;
 }

@@ -3,9 +3,9 @@
 //
 #include "custom_sfml_stream.hpp"
 
-bool C0deTrackerStream::init(C0deTracker::Track *t, C0deTracker::Channel *c, uint_fast8_t  size_of_c) {
+bool C0deTrackerStream::init(C0deTracker::Track *t) {
     printf("SAMPLE RATE = %f Hz\nBUFFER LENGTH = %f second\n", SAMPLE_RATE, BUFFER_LENGTH_S);
-    this->track = t; this->chans = c; this->size_of_chans = size_of_c;
+    this->track = t;
     // Initialize the stream -- important!
     sf::SoundStream::initialize(PANNING, SAMPLE_RATE);
     return true;
@@ -17,8 +17,8 @@ bool C0deTrackerStream::onGetData(sf::SoundStream::Chunk &data) {
     // Fill the chunk with audio data from the stream source
     // (note: must not be empty if you want to continue playing)
     //std::chrono::time_point t1 = std::chrono::system_clock::now();
-    for(int i = 0; i < SAMPLE_RATE * BUFFER_LENGTH_S * PANNING; ++++i){
-        sound = track->play(this->time + (double(i) / 2) / SAMPLE_RATE, this->chans, this->size_of_chans);
+    for(int i = 0; i < SAMPLE_RATE * BUFFER_LENGTH_S * PANNING; i += PANNING){
+        sound = track->play(this->time + (double(i) / 2) / SAMPLE_RATE);
         this->smpls[i] = sound[0] * BITS_16*0.5;
         this->smpls[i+1] = sound[1] * BITS_16*0.5;
     }

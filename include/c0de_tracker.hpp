@@ -640,7 +640,7 @@ namespace C0deTracker {
          * @param uint_fast8_t size_of_chans number of channels created by the user, otherwise the size of the array chan
          * @return pointer to array of float for left and right speaker
          */
-        float* play(double t, Channel* chan, uint_fast8_t size_of_chans);
+        float* play(double t);
 
         /**
          * @return global panning if the track
@@ -690,6 +690,7 @@ namespace C0deTracker {
         const uint_fast8_t *fx_per_chan;
 
     private:
+        C0deTracker::Channel* chans = nullptr;
         uint_fast8_t row_counter = 0, frame_counter = 0;
         double time_advance = 0.0;
         double time = 0.0;
@@ -862,7 +863,7 @@ namespace C0deTracker {
 
         float play_pitch(float a, float p, double t, double rt);
 
-        friend float* Track::play(double t, C0deTracker::Channel *chan, uint_fast8_t size_of_chans);//function play of Track friend of Channel in order to avoid creating a huge amount of getters for each attributes
+        friend float* Track::play(double t);//function play of Track friend of Channel in order to avoid creating a huge amount of getters for each attributes
     private:
         static uint_fast8_t chancount;
         Instruction* last_instruct_address = nullptr;

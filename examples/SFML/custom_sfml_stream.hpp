@@ -17,12 +17,10 @@
 class C0deTrackerStream : public sf::SoundStream {
 public:
     double time = 0;
-    bool init(C0deTracker::Track *t, C0deTracker::Channel *c, uint_fast8_t  size_of_c);
+    bool init(C0deTracker::Track *t);
 
 private:
     C0deTracker::Track *track = nullptr;
-    C0deTracker::Channel *chans = nullptr;
-    uint_fast8_t  size_of_chans = 0;
     sf::Mutex mutex;
     std::vector <sf::Int16> samples;
     sf::Int16 smpls[static_cast<int>(SAMPLE_RATE * BUFFER_LENGTH_S * PANNING)]{0};

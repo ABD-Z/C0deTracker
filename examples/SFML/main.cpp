@@ -1,14 +1,15 @@
 #include "custom_sfml_stream.hpp"
 #include <vector>
 #include <thread>
+#include <chrono>
 
-#include "../../songs/examples.hpp"//include your song
-#include "../../songs/tutorial.hpp"//include your song
+#include "../songs/tutorial.hpp"//include your song
+#define FILENAME "tutotrack.wav"
 
 int main() {
-    std::chrono::time_point t1 = std::chrono::system_clock::now();
+    auto t1 = std::chrono::system_clock::now();
 
-    C0deTracker::Track* track = new Sonic_GreenHillZoneTheme();
+    C0deTracker::Track* track = new TutoTrack();
     track->init();
     C0deTracker::Channel* chans;
     uint_fast8_t  size_of_chans = track->getNumberofChannels();
@@ -23,7 +24,7 @@ int main() {
    chans[7].disable();*/
 
 
-    std::chrono::time_point t2 = std::chrono::system_clock::now();
+    auto t2 = std::chrono::system_clock::now();
 
     double deltaT = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
 
@@ -36,7 +37,7 @@ int main() {
 
 
     while(cts.getStatus() == sf::SoundSource::Status::Playing){
-        std::this_thread::sleep_for(std::chrono::seconds (10));//sleep to reduce CPU usage
+        std::this_thread::sleep_for(std::chrono::seconds (1000000));//sleep to reduce CPU usage
     }
     /************************************************************/
 
@@ -56,7 +57,7 @@ int main() {
     }
 
     buffer.loadFromSamples(&samples[0], samples.size(), PANNING, SAMPLE_RATE);
-    buffer.saveToFile("sonic_green_hill_zone.wav");
+    buffer.saveToFile(FILENAME);
     std::cout << "End sampling" << std::endl;
 
 

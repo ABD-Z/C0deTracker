@@ -41,6 +41,7 @@ namespace C0deTracker {
         for (uint8_t i = 0; i < this->instruments; ++i) { delete this->instruments_bank[i]; }
         delete[] this->instruments_bank;
         delete[] this->chans;
+        //delete this->name;
     }
 
 
@@ -215,7 +216,7 @@ namespace C0deTracker {
                 if(this->chans[i].getTrack() != nullptr){
                     this->chans[i].update_fx(t);
                 }
-                uint_fast8_t chan_number = this->chans[i].getNumber();
+                uint_fast8_t chan_number = i;
                 uint_fast8_t pattern_index = this->pattern_indices[chan_number * this->frames + this->frame_counter];
                 Pattern *pat = this->track_patterns[chan_number * (this->frames) + pattern_index];
                 Instruction *current_instruction = &pat->instructions[this->row_counter];
@@ -353,7 +354,6 @@ namespace C0deTracker {
         res[1] *= 4*this->panning;//right
 
         this->readFx = false;
-        this->time = t;
         return res;
     }
 
@@ -415,5 +415,52 @@ namespace C0deTracker {
         this->instruments = n_instr;
     }
 
+    void Track::setName(const char *name) {
+        //delete[] this->name;
+        this->name = const_cast<char *>(name);
+    }
+
+    char* Track::getName() const {
+        return this->name;
+    }
+
+    void Track::resetState() {
+        volume = 1.0f; pitch = 0.0f;
+         row_counter = 0; frame_counter = 0;
+         time_advance = 0.0;
+
+        readFx = true;
+         volume_slide_up = 0.f;
+         volume_slide_down = 0.f;
+         volume_slide_time = 0.0;
+
+         pitch_slide_up = 0.f;
+         pitch_slide_down = 0.f;
+         pitch_slide_time = 0.0;
+
+         tremolo_speed = 0.0f;
+         tremolo_depth = 0.0f;
+         tremolo_val = 1.0f;
+         tremolo_time = 0.0;
+
+         vibrato_speed = 0.0f;
+         vibrato_depth = 0.0f;
+         vibrato_val = 0.0f;
+         vibrato_time = 0.0;
+         panning = 0.5f;
+         branch = false;
+         frametojump = 0;
+         rowtojump = 0;
+
+         stop = false;
+
+         panning_slide_right = 0.f;
+         panning_slide_left = 0.f;
+         panning_slide_time = 0.0;
+
+         for(int16_t i = this->channels-1; i >= 0 ; --i){
+             this->chans[i].resetState();
+         }
+    }
 
 }

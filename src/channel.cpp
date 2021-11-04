@@ -14,9 +14,6 @@
 #include "../include/c0de_tracker.hpp"
 
 namespace C0deTracker {
-    Channel::Channel(uint_fast8_t number) {this->number = number;}
-    uint_fast8_t Channel::getNumber() const {return number;}
-
     bool Channel::isEnable() const{return this->enable_sound;}
     void Channel::enable() {this->enable_sound = true;}
     void Channel::disable() {this->enable_sound = false; this->last_instruct_address = nullptr; this->track = nullptr;}
@@ -36,15 +33,11 @@ namespace C0deTracker {
 
     void Channel::setTime(double time) { this->time = time;}
 
-    uint_fast8_t Channel::chancount = 0;
 
-    Channel::Channel() {
-        this->number = Channel::chancount++;
-    }
+    Channel::Channel()=default;
 
     Channel::~Channel() {
         delete this->instrument;
-        Channel::chancount = 0;
     }
 
     double Channel::getTimeRelease() const {
@@ -311,6 +304,71 @@ namespace C0deTracker {
 
     float Channel::play_pitch(float a, float p, double t, double rt) {
         return this->oscillator.oscillate(a, this->oscillator.pitch2freq(p), t, rt, this->oscillator.getDutycycle(), this->oscillator.getPhase());;
+    }
+
+    void Channel::resetState() {
+        last_instruct_address = nullptr;
+        track = nullptr;
+        /**Channel state**/
+         time = 0.0;
+         enable_sound = true;
+         volume = 1.0f; pitch = 0.0f; speed = 1.0f;
+         released = false;
+         time_release = 0.0;
+         instrument_index = Notes::KeysUtilities::CONTINUE;
+
+         volume_slide_up = 0.f;
+         volume_slide_down = 0.f;
+         volume_slide_time = 0.0;
+
+         pitch_slide_up = 0.f;
+         pitch_slide_down = 0.f;
+         pitch_slide_time = 0.0;
+         pitch_slide_val =0.0;
+
+         portamento = false;
+         portamento_speed = 0.f;
+         porta_pitch_dif = 0.0f;
+         portamento_time_step = 0;
+
+         tremolo_speed = 0.0f;
+         tremolo_depth = 0.0f;
+         tremolo_val = 1.0f;
+         tremolo_time = 0.0;
+
+         vibrato_speed = 0.0f;
+         vibrato_depth = 0.0f;
+         vibrato_val = 0.0f;
+         vibrato_time = 0.0;
+
+         panning = 0.5f;
+
+         panning_slide_right = 0.f;
+         panning_slide_left = 0.f;
+         panning_slide_time = 0.0;
+
+         arpeggio = false;
+         arpeggio_step = 0.0;
+          arpeggio_index = 0;
+
+         transpose_delay = 0;
+         n_time_to_transpose = 0;
+         transpose_semitones = 0;
+         transpose_semitone_counter = 0;
+         transpose_time_step = 0;
+
+         retrieg_delay = 0;
+         retrieg_number = 0;
+         n_time_to_retrieg = 0;
+         retrieg_time_step = 0;
+         retrieg_counter = 0;
+
+         delay = 0;
+         release = 0;
+         n_time_to_delrel = 0;
+         delrel_time_step = 0;
+         delay_counter = 0;
+         release_counter = 0;
     }
 
 

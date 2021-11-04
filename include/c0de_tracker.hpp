@@ -668,15 +668,24 @@ namespace C0deTracker {
          */
         float getDuration() const;
 
+        char* getName() const;
+
+        void resetState();
+
         virtual void init();
 
     protected:
+        void setName(const char* name);
         void setSizeDimensions(const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels,  const uint_fast8_t* fx_per_chan);
         void setTimeDimensions(const float clk, const float basetime, const float speed);
         void setInstrumentsBank( const Instrument*const*instruments_bank, uint_fast8_t n_instr);
         void setInstrumentsDataBank(const Instrument_Data* instruments_data_bank, uint_fast8_t n_instr);
         void setPatterns(const Pattern* const* patterns);
         void setPatternsIndices(const uint_fast8_t* patterns_indices);
+
+
+    private:
+        char* name = "_";
         float clk = 60.f, basetime = 1.f, speed = 3.f, step;
         uint_fast8_t  rows = 0, frames = 0;
         uint_fast8_t channels = 0;
@@ -689,11 +698,12 @@ namespace C0deTracker {
         float duration;
         const uint_fast8_t *fx_per_chan;
 
-    private:
+
+
         C0deTracker::Channel* chans = nullptr;
+
         uint_fast8_t row_counter = 0, frame_counter = 0;
         double time_advance = 0.0;
-        double time = 0.0;
 
         bool decode_fx(uint_fast32_t fx, double t);
         bool readFx = true;
@@ -739,18 +749,10 @@ namespace C0deTracker {
          * @brief create a channel. Each channel created has it is own number
          */
         Channel();
-        /**
-         * @brief create a channel with a specified number
-         * @param number the number of the channel
-         */
-        explicit Channel(uint_fast8_t number);
+
 
         ~Channel();
 
-        /**
-         * @return number of the channel
-         */
-        uint_fast8_t getNumber() const;
         /**
          * @return if the channel is enabled to play_single_channel sound
          */
@@ -863,14 +865,14 @@ namespace C0deTracker {
 
         float play_pitch(float a, float p, double t, double rt);
 
+        void resetState();
+
         friend float* Track::play(double t);//function play of Track friend of Channel in order to avoid creating a huge amount of getters for each attributes
     private:
-        static uint_fast8_t chancount;
         Instruction* last_instruct_address = nullptr;
         Track* track = nullptr;
 
         /**Channel state**/
-        uint_fast8_t number;
         double time = 0.0;
         bool enable_sound = true;
         float volume = 1.0f, pitch = 0.0f, speed = 1.0f;
@@ -894,7 +896,6 @@ namespace C0deTracker {
 
         bool portamento = false;
         float portamento_speed = 0.f;
-        float portamento_val = 0.f;
         float porta_pitch_dif = 0.0f;
         double portamento_time_step = 0;
 

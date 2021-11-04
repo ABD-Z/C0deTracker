@@ -18,6 +18,7 @@ class C0deTrackerStream : public sf::SoundStream {
 public:
     double time = 0;
     bool init(C0deTracker::Track *t);
+    void changeTrack(C0deTracker::Track *t);
 
 private:
     C0deTracker::Track *track = nullptr;

@@ -4,6 +4,7 @@
 #include "custom_sfml_stream.hpp"
 
 bool C0deTrackerStream::init(C0deTracker::Track *t) {
+    this->time = 0;
     printf("SAMPLE RATE = %f Hz\nBUFFER LENGTH = %f second\n", SAMPLE_RATE, BUFFER_LENGTH_S);
     this->track = t;
     // Initialize the stream -- important!
@@ -38,6 +39,14 @@ void C0deTrackerStream::onSeek(sf::Time timeOffset) {
     sf::Lock lock(this->mutex);
     this->time = timeOffset.asSeconds();
     // Change the current position in the stream source
+}
+
+void C0deTrackerStream::changeTrack(C0deTracker::Track *t) {
+    sf::Lock lock(this->mutex);
+    this->track->resetState();
+    this->stop();
+    this->time = 0;
+    this->track = t;
 }
 
 

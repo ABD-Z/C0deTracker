@@ -1,9 +1,10 @@
 //
 // Created by Abdulmajid, Olivier NASSER on 01/01/2021.
 //
-#include "frere_jacques.hpp"
+#include "examples.hpp"
 
 FrereJacques::FrereJacques() {
+    this->setName(NAME);
     this->setSizeDimensions(ROWS,FRAMES,CHANNELS, fx_per_chan);
     this->setTimeDimensions(CLOCK,BASETIME,SPEED);
 }

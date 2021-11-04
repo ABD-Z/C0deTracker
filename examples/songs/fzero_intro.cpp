@@ -1,9 +1,10 @@
 //
 // Created by Administrateur on 02/01/2021.
 //
-#include "fzero_intro.hpp"
+#include "examples.hpp"
 
 FZERO_MenuTheme::FZERO_MenuTheme() {
+    this->setName(NAME);
     this->setSizeDimensions(ROWS,FRAMES,CHANNELS,fx_per_chan);
     this->setTimeDimensions(CLOCK, SPEED, BASETIME);
 }

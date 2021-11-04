@@ -2,9 +2,10 @@
 // Created by Abdulmajid, Olivier NASSER on 21/01/2021.
 //
 
-#include "sonic_greenhillzone.hpp"
+#include "examples.hpp"
 
 Sonic_GreenHillZoneTheme::Sonic_GreenHillZoneTheme() {
+    this->setName(NAME);
     this->setSizeDimensions(ROWS,FRAMES,CHANNELS,fx_per_chan);
     this->setTimeDimensions(CLOCK, SPEED, BASETIME);
 }

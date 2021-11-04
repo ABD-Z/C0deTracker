@@ -2,10 +2,11 @@
 // Created by Abdulmajid, Olivier NASSER on 16/01/2021.
 //
 
-#include "kirbys_dreamland_greengreens.hpp"
+#include "examples.hpp"
 
 
 KirbysDreamland_GreenGreensTheme::KirbysDreamland_GreenGreensTheme() {
+    this->setName(NAME);
     this->setSizeDimensions(ROWS,FRAMES,CHANNELS,fx_per_chan);
     this->setTimeDimensions(CLOCK, SPEED, BASETIME);
 }

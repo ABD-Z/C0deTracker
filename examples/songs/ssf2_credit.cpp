@@ -2,9 +2,10 @@
 // Created by Abdulmajid, Olivier NASSER on 30/08/2020.
 //
 
-#include "ssf2_credit.hpp"
+#include "examples.hpp"
 
 SuperStreetFighterII_CreditTheme::SuperStreetFighterII_CreditTheme() {
+    this->setName(NAME);
     this->setSizeDimensions(ROWS,FRAMES,CHANNELS,FX_per_CHAN);
     this->setTimeDimensions(CLOCK, SPEED, BASETIME);
 }
@@ -60,8 +61,7 @@ void SuperStreetFighterII_CreditTheme::init() {
 #define k Key
 #define ui32 uint_fast32_t
 
-    Editor::loadTrackProperties(this->rows, this->frames, this->channels, this->fx_per_chan); //Load track propreties in the editor
-    for(uint_fast8_t i = 0;i<this->channels;++i){printf("%d ; ",this->fx_per_chan[i]);}
+    Editor::loadTrackProperties(ROWS, FRAMES, CHANNELS, FX_per_CHAN); //Load track propreties in the editor
     auto** patterns = Editor::loadEmptyPatterns(); //generate empty patterns for song writing
     auto* pattern_indices = Editor::loadEmptyPatternsIndices(); //generate empty patterns indices for patterns indexing
 

@@ -5,6 +5,7 @@
 #include "tutorial.hpp"
 
 TutoTrack::TutoTrack(){
+    this->setName(NAME);
     this->setSizeDimensions(ROWS,FRAMES,CHANNELS,FX_per_CHAN);
     this->setTimeDimensions(CLOCK, SPEED, BASETIME);
 }
@@ -28,7 +29,7 @@ void TutoTrack::init() {
     using C0deTracker::Editor;
     using C0deTracker::Key;
     using namespace C0deTracker::Notes;
-    Editor::loadTrackProperties(this->rows, this->frames, this->channels, this->fx_per_chan); //Load track propreties in the editor
+    Editor::loadTrackProperties(ROWS, FRAMES, CHANNELS, FX_per_CHAN); //Load track propreties in the editor
     auto** patterns = Editor::loadEmptyPatterns(); //generate empty patterns for song writing
     auto* pattern_indices = Editor::loadEmptyPatternsIndices(); //generate empty patterns indices for patterns indexing
 

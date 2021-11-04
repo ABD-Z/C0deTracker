@@ -9,6 +9,7 @@
 
 class TutoTrack : public C0deTracker::Track{
 private:
+    constexpr static const char* NAME = "TUTO_TRACK";
     static const uint_fast8_t ROWS = 28;
     static const uint_fast8_t FRAMES = 4;
     static const uint_fast8_t CHANNELS = 3;

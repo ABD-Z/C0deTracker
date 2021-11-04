@@ -1,10 +1,11 @@
 //
 // Created by Abdulmajid, Olivier NASSER on 08/01/2021.
 //
-#include "smb1_overworld.hpp"
+#include "examples.hpp"
 
 
 SuperMarioBros_OverworldTheme::SuperMarioBros_OverworldTheme() {
+    this->setName(NAME);
     this->setSizeDimensions(ROWS,FRAMES,CHANNELS,fx_per_chan);
     this->setTimeDimensions(CLOCK, SPEED, BASETIME);
 }

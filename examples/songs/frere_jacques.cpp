@@ -11,11 +11,6 @@ FrereJacques::FrereJacques() {
 
 void FrereJacques::init() {
     //Track::init();
-    auto** instruments_bank = new C0deTracker::Instrument*[INSTRUMENTS];
-    instruments_bank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE,1.f, 0.5f, C0deTracker::ADSR(4.66f,2.f,0.5f,4.f)), 0.6f);
-    instruments_bank[BASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SINUS, .5f, 0.f, C0deTracker::ADSR(1000.0f, 2.f, 0.2f, 5.33f)), 1.f);
-    this->setInstrumentsBank(instruments_bank, INSTRUMENTS);
-
     auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
     instruments_data_bank[MAIN].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(4.66f,2.f,0.5f,4.f),0.6f,0.f,1.0f,0.5f);
     instruments_data_bank[BASS].setData(C0deTracker::SINUS, C0deTracker::ADSR(1000.0f, 2.f, 0.2f, 5.33f), 1.0f, 0.f,0.5f,0.f);

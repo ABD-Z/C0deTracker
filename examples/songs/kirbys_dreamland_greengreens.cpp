@@ -13,25 +13,6 @@ KirbysDreamland_GreenGreensTheme::KirbysDreamland_GreenGreensTheme() {
 
 void KirbysDreamland_GreenGreensTheme::init() {
     //Track::init();
-    auto **instruments_bank = new C0deTracker::Instrument *[INSTRUMENTS];
-    instruments_bank[TRIMAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE, 1.f, 0.5f, C0deTracker::ADSR(100.0f, 0.f, 0.0f, 100.f)),1.f);
-    instruments_bank[SQ50] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .5f, 0.f, C0deTracker::ADSR(100.0f, 0.f, 0.0f, 100.f)),.3f);
-    instruments_bank[SQ25] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .25f, 0.f, C0deTracker::ADSR(100.0f, 0.f, 0.0f, 100.f)),.3f);
-    instruments_bank[SQ125_LONG] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .125f, 0.f, C0deTracker::ADSR(10.f, 0.f, 0.0f, 100.f)),.3f);
-    instruments_bank[SQ125_SHORT] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .125f, 0.f, C0deTracker::ADSR(80.f, 3.f, 0.0f, 100.f)),.3f);
-    instruments_bank[SQ50_0A] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .5f, 0.f, C0deTracker::ADSR(65.0f, 5.f, 0.3f, 100.f)),.3f);
-    instruments_bank[SQ50_0B] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .5f, 0.f, C0deTracker::ADSR(65.0f, 3.f, 0.2222f, 100.f)),.3f);
-    instruments_bank[SQ50_0C] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .5f, 0.f, C0deTracker::ADSR(65.0f, 5.f, 0.2222f, 100.f)),.3f);
-    instruments_bank[SQ50_0D] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .5f, 0.f, C0deTracker::ADSR(65.0f, 6.f, 0.2222f, 100.f)),.3f);
-    instruments_bank[SQ50_0E] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .5f, 0.f, C0deTracker::ADSR(1.767f, 4.4f, 0.1111f, 100.f)),.3f);
-    instruments_bank[SQ50_0F] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .5f, 0.f, C0deTracker::ADSR(65.f, 2.840909f, 0.f, 100.f)),.3f);
-    instruments_bank[SQ50_10] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, .5f, 0.f, C0deTracker::ADSR(65.f, 100.f, 0.3f, 100.f)),.3f);
-    instruments_bank[DRUM1] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.00377f, C0deTracker::ADSR(100.f, 10.0f, 0.0f, 100.f)), .6f);
-    instruments_bank[DRUM2] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.00377f, C0deTracker::ADSR(100.f, 20.0f, 0.0f, 100.f)), .5f);
-    instruments_bank[DRUM3] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.00377f, C0deTracker::ADSR(100.f, 20.0f, 0.0f, 100.f)), .4f);
-    instruments_bank[DRUM4] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.00377f, C0deTracker::ADSR(100.f, 20.0f, 0.0f, 100.f)), .3f);
-    this->setInstrumentsBank(instruments_bank, INSTRUMENTS);
-
     auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
     instruments_data_bank[TRIMAIN].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(100.0f, 0.f, 0.0f, 100.f), 1.f, 0, 1, .5f);
     instruments_data_bank[SQ50].setData(C0deTracker::SQUARE, C0deTracker::ADSR(100.0f, 0.f, 0.0f, 100.f), .3f, 0, .5f, 0);

@@ -12,12 +12,6 @@ SuperMarioBros_OverworldTheme::SuperMarioBros_OverworldTheme() {
 
 void SuperMarioBros_OverworldTheme::init() {
     //Track::init();
-    auto **instruments_bank = new C0deTracker::Instrument *[INSTRUMENTS];
-    instruments_bank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, 0.5f, 0.0f, C0deTracker::ADSR(100.f, 5.f, 0.f, 100.f)), 0.128f);
-    instruments_bank[BASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE, 1.f, 0.5f, C0deTracker::ADSR(100.0f, 0.f, 0.0f, 100.f)),1.f);
-    instruments_bank[DRUMS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.00377f, C0deTracker::ADSR(100.f, 0.0f, 0.0f, 100.f)), .32f);
-    instruments_bank[SNARE] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, .225f, C0deTracker::ADSR(100.f, 0.0f, 0.0f, 100.f)), 0.384f);
-    this->setInstrumentsBank(instruments_bank, INSTRUMENTS);
 
     auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
     instruments_data_bank[MAIN].setData(C0deTracker::SQUARE, C0deTracker::ADSR(100.f, 5.f, 0.f, 100.f), .128f, 0.f, .5f, 0.f);

@@ -12,13 +12,6 @@ TutoTrack::TutoTrack(){
 
 void TutoTrack::init() {
     //Track::init();
-    auto** instruments_bank = new C0deTracker::Instrument*[INSTRUMENTS];
-    instruments_bank[MAIN] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::SQUARE, 0.5f, C0deTracker::ADSR(5.5f,5.5f,0.2f,1.f)), 0.1f);
-    instruments_bank[BASS] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::TRIANGLE, 0.8f, 0.5f, C0deTracker::ADSR(400.0f, 10.f, 0.0f, 10.f)), 1.f);
-    instruments_bank[KICK] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.1f, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f)), 0.64f);
-    instruments_bank[SNARE] = new C0deTracker::Instrument(new C0deTracker::PSG(C0deTracker::WHITENOISE, 0.0025f, C0deTracker::ADSR(100000.f, 9.66f, 0.0f, 1.f)), .8f);
-    this->setInstrumentsBank(instruments_bank, INSTRUMENTS);
-
     auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
     instruments_data_bank[MAIN].setData(C0deTracker::SQUARE, C0deTracker::ADSR(5.5f,5.5f,0.2f,1.f),0.1f,0.f,0.5f,0.0f);
     instruments_data_bank[BASS].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(400.0f, 10.f, 0.0f, 10.f), 1.0f, 0.f,0.8f,0.5f);

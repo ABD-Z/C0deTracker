@@ -6,8 +6,8 @@
 #include "../songs/tutorial.hpp"//include your song
 #include "../songs/examples.hpp"
 
-#define REALTIME
-#define TIME_RECORDING_SECONDS 5
+//#define REALTIME
+#define TIME_RECORDING_SECONDS 1
 #define NUMBER_OF_TRACKS 7
 
 void clear_console(){
@@ -100,8 +100,11 @@ int main() {
     buffer.saveToFile(FILENAME);
     std::cout << "End sampling" << std::endl;
 
+    for(auto* tr : tracks){
+        std::cout << "TRACK DELETED!!" <<std::endl;
+        delete tr;
+    }
 
-    delete track;
 #endif
 
     return 0;

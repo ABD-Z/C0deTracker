@@ -14,34 +14,11 @@
  */
 
 namespace C0deTracker {
-    Track::Track(float clk, float basetime, float speed, uint_fast8_t rows, uint_fast8_t frames, uint_fast8_t channels,
-                 Instrument **instruments_bank, uint_fast8_t numb_of_instruments, Pattern **track_patterns,
-                 uint_fast8_t *pattern_indices,
-                 const uint_fast8_t *effects_per_chan) {
-        this->clk = clk;
-        this->basetime = basetime;
-        this->speed = speed;
-        this->rows = rows;
-        this->frames = frames;
-        this->channels = channels;
-        this->instruments_bank = instruments_bank;
-        this->instruments = numb_of_instruments;
-        this->track_patterns = track_patterns;
-        this->pattern_indices = pattern_indices;
-        this->step = this->basetime * this->speed / this->clk;
-        this->duration = float(this->frames * this->rows) * this->step;
-        this->fx_per_chan = effects_per_chan;
-    }
-
     Track::~Track() {
-        //for (uint8_t i = 0; i < this->channels * this->frames; ++i) { delete this->pattern_indices[i]; }
         delete[] this->pattern_indices;
-        for (uint8_t i = 0; i < this->channels * this->frames; ++i) {delete this->track_patterns[i];}
+        for (uint_fast64_t i = 0; i < this->channels * this->frames; ++i) {delete this->track_patterns[i];printf("Pattern %d deleted\n",+i);}
         delete[] this->track_patterns;
-        for (uint8_t i = 0; i < this->instruments; ++i) { delete this->instruments_bank[i]; }
-        delete[] this->instruments_bank;
         delete[] this->chans;
-        //delete this->name;
     }
 
 
@@ -394,10 +371,6 @@ namespace C0deTracker {
 
     float Track::getBasetime() const {
         return this->basetime;
-    }
-
-    void Track::setInstrumentsBank(const Instrument*const*instruments_bank, uint_fast8_t n_instr) {
-        this->instruments_bank = const_cast<Instrument **>(instruments_bank); this->instruments = n_instr;
     }
 
     void Track::setPatterns(const Pattern *const *patterns) {

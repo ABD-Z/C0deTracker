@@ -40,3 +40,14 @@ Channel effects :
 -1E xx xx xx : panning slide from left right
 -1F xx yy zz  : note delay after xx tick and release after yy tick, zz repeat of the effect. if yy = 0 -> no release.
 -20 xxx yyy : reverb.
+
+Oscilator effects :
+-Change Wavetype
+-Duty cycle (change, slide up/down)
+-Volume (change, slide up/down)
+-Phase (change, slide up/down)
+-Pitch (change, slide up/down)
+-ADSR (change, slide up/down)
+-MULT Freq (change, slide up/down)
+-Feedback
+

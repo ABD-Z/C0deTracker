@@ -49,9 +49,7 @@ namespace C0deTracker {
 
     struct Key;
     struct ADSR;
-    class Oscillator;
-    class PSG;
-    class Instrument;
+    class Osc;
     struct Instrument_Data;
     struct Instruction;
     struct Pattern;
@@ -159,120 +157,6 @@ namespace C0deTracker {
      */
     enum Waveforms{SINUS, SQUARE, TRIANGLE, SAW, WHITENOISE, WHITENOISE2, WAVETYPES};
 
-    /**
-     * @brief Abstract class used to generate simple waveform such as SINUS, SQUARE, TRIANGLE, SAW and WHITENOISE over
-     * time. Oscillator handles basic stuff : amplitude (a), frequency (f), phase (p), duty cycle (dc), and even frequency
-     * modulation feed (FMfeed) for FM synth support.
-     * @note This class should not be instantiated. PSG class is one of its specialization.
-     * @see C0deTracker::PSG, C0deTracker::Waveforms
-     */
-    class Oscillator{
-    public :
-        /**
-         * @brief Basic constructor. By default, duty cycle is equal to 0.5 and phase to 0
-         * @param wavetype of the oscillator
-         */
-        explicit Oscillator(uint_fast8_t wavetype);
-        /**
-         * @brief Second constructor.
-         * @param wavetype of the oscillator
-         * @param dc duty cycle
-         */
-        explicit Oscillator(uint_fast8_t wavetype, float dc);
-        /**
-         * @brief Second constructor.
-         * @param wavetype of the oscillator
-         * @param dc duty cycle
-         * @param p phase
-         */
-        explicit Oscillator(uint_fast8_t wavetype, float dc, float p);
-        /**
-         * @brief copy oscillator. Used for cloning instruments in channel
-         * @return Oscillator allocated dynamically
-         */
-        virtual Oscillator* clone() = 0;
-        virtual ~Oscillator();
-
-        /**
-         * @brief set the wavetype of the oscillator to generate the corresponding waveform
-         * @param wavetype 0, 1, 2, 3, 4, 5 => SINUS, SQUARE, TRIANGLE, SAW, WHITENOISE, WHITENOISE2
-         * @see Waveforms
-         */
-        void setWavetype(uint_fast8_t wavetype);
-
-        /**
-         * @brief return the value of the corresponding wavetype
-         */
-        uint_fast8_t getWavetype();
-
-        /**
-         * @brief set the duty cycle of the waveform
-         * @param dc duty cycle of the waveform
-         */
-        void setDutycycle(float dc);
-        /**
-         *
-         * @return get the duty cycle of the waveform
-         */
-        float getDutycycle();
-
-        /**
-         * @brief Set the phase of the waveform. The value set is multiplied by 1/frequency (percentage of waveform period)
-         * @param p  phase of the waveform.
-         */
-        void setPhase(float p);
-        /**
-         *
-         * @return the phase in float
-         */
-        float getPhase();
-        /**
-         * @brief Generates corresponding waveform selected.
-         * @param a Amplitude
-         * @param f Frequency
-         * @param t Time
-         * @param dc Duty cycle
-         * @param p Phase
-         * @return Signal amplitude at time t with the given duty cycle dc and phase p.
-         */
-        virtual float oscillate(float a, float f, double t, float dc, float p);
-        /**
-         * @brief Same as previous oscillate, but with release time to handle release envelope. This function is fully abstract, it is implemented in PSG.
-         * @param a Amplitude
-         * @param f Frequency
-         * @param rt Release time
-         * @param t Time
-         * @param dc Duty cycle
-         * @param p Phase
-         * @return Signal amplitude at time t with the given duty cycle dc and phase p.
-         */
-        virtual float oscillate(float a, float f, double t, double rt, float dc, float p) = 0;
-        /**
-         * @brief Get pointer to structure holding ADSR values for envelope
-         * @return pointer to ADSR struct
-         * @see C0deTracker::ADSR
-         */
-        virtual ADSR* getAmpEnvelope() = 0;
-        /**
-         * @brief Set release state of the oscillator.
-         * @param r boolean to set the release state
-         */
-        virtual void setRelease(bool r) = 0;
-        /**
-         * @brief Check if the oscillator is in release state or not
-         * @return release member
-         */
-        virtual bool isReleased() = 0;
-    private:
-        uint_fast8_t wavetype = SINUS; float dutycycle = 0.5f; float phase = 0.0f;
-        static float sinus(float a, float f, double t, float dc, float FMfeed);
-        static float square(float a, float f, double t, float dc, float FMfeed);
-        static float triangle(float a, float f, double t, float dc, float FMfeed);
-        static float saw(float a, float f, double t, float dc, float FMfeed);
-        static float whitenoise(float a, float f, double t, float dc, float FMfeed);
-        static float whitenoise2(float a, float f, double t, float dc, float FMfeed);
-        virtual float handleAmpEnvelope(double t, double rt) = 0;
-    };
 
     /**
      * @brief Abstract class used to generate simple waveform such as SINUS, SQUARE, TRIANGLE, SAW and WHITENOISE over
@@ -416,128 +300,6 @@ namespace C0deTracker {
     };
 
 
-    /**
-     * @brief PSG class inherit from Oscillator. This class is the specification of simple sound generator, Pulse Sound
-     * Generator, used in old systems. FM operators are based on this class.
-     *
-     * @see Oscillator
-     */
-    class PSG : public Oscillator{
-    public:
-        explicit PSG(uint_fast8_t wavetype);
-        PSG(uint_fast8_t wavetype, ADSR amp_enveloppe);
-        PSG(uint_fast8_t wavetype, float dc, ADSR amp_enveloppe);
-        PSG(uint_fast8_t wavetype, float dc, float p, ADSR amp_enveloppe);
-        PSG * clone() override;
-        ~PSG() override;
-        float oscillate(float a, float f, double t, float dc, float p) override;
-        float oscillate(float a, float f, double t, double rt, float dc, float p) override;
-        ADSR* getAmpEnvelope() override;
-        void setRelease(bool r) override;
-        bool isReleased() override;
-    private:
-        ADSR amp_envelope = ADSR(100.f, 0.0f, 1.0f, 1.0f);
-        float handleAmpEnvelope(double t, double rt) override;
-    protected:
-        bool release = false;
-        float current_envelope_amplitude = 0.f; /**<Used to calculate envelope notably for release state*/
-    };
-
-    /**
-     * @brief Instrument class is a wrapper for one Oscillator (PSG, or FM). You will basically create your instruments
-     * in a bank (simple array) that you give to your track.
-     *
-     * @see Track
-     */
-    class Instrument{
-    public:
-        Instrument();
-        /**
-         * @brief Creates an instrument which is based on an Oscillator (PSG, FM...)
-         * @param osc Oscillator
-         */
-        explicit Instrument(Oscillator* osc);
-        /**
-         * @brief Creates an instrument which is based on an Oscillator (PSG, FM...)
-         * @param osc Oscillator
-         * @param global_volume specifies instrument global volume
-         */
-        Instrument(Oscillator* osc, float global_volume);
-        /**
-         * @brief Destructor
-         */
-        ~Instrument();
-
-        /**
-         * @brief copy Instrument. Used in channel
-         * @return Instrument allocated dynamically
-         */
-        Instrument* clone();
-
-        /**
-         * @brief Gets instrument core, which is the Oscillator
-         * @return a pointer to Oscillator
-         */
-        Oscillator* get_oscillator() const;
-        /**
-         * @brief Plays sounds at t time with a given key and amplitude
-         * @param a Amplitude
-         * @param k Structure Key (note, octave)
-         * @param t Time
-         * @return The signal
-         */
-        float play_key(float a, Key k, double t);
-        /**
-         * @brief Plays sounds at t time with a given note and octave and amplitude
-         * @param a Amplitude
-         * @param note Note
-         * @param octave Octave
-         * @param t Time
-         * @return The signal
-         */
-        float play(float a, float note, double octave, double t);
-        /**
-         * @brief Plays sounds when released at t time and rt release time with a given key and amplitude
-         * @param a Amplitude
-         * @param k Structure Key (note, octave)
-         * @param t Time
-         * @return The signal
-         */
-        float play_key(float a, Key k, double t, double rt);
-        /**
-         * @brief Plays sounds when released at t time and rt release time with a given note and octave and amplitude
-         * @param a Amplitude
-         * @param note Note
-         * @param octave Octave
-         * @param t Time
-         * @param rt Release Time
-         * @return The Signal
-         */
-        float play(float a, float note, float octave, double t, double rt);
-
-        /**
-         * @brief Plays sounds at t time with a given pitch and amplitude
-         * @param a Amplitude
-         * @param p Pitch
-         * @param t Time
-         * @return The Signal
-         */
-        float play_pitch(float a, float p, double t);
-
-        /**
-         * @brief Plays sounds when released at t and rt release time with a given pitch and amplitude
-         * @param a Amplitude
-         * @param p Pitch
-         * @param t Time
-         * @return The Signal
-         */
-        float play_pitch(float a, float p, double t, double rt);
-
-    private:
-        float global_volume = 1.0f;
-        Oscillator* osc = nullptr;
-    };
-
     struct Instrument_Data{
         uint_fast8_t wavetype = SINUS;
         ADSR amp_envelope = ADSR(100.f, 0.0f, 1.0f, 1.0f);
@@ -598,22 +360,7 @@ namespace C0deTracker {
     class Track{
     public:
         Track() = default;
-        /**
-         *@brief Track constructor which recquires all the needed parameters below
-         * @param clk Clock frequency in Hz (60 in NTSC, 50 in PAL)
-         * @param basetime the base time of the track, it multiplies the speed
-         * @param speed the speed of the track, the tempo = speed * basetime / clk
-         * @param rows Size of a pattern. Number of instructions in each pattern
-         * @param frames Number of patterns
-         * @param channels Number of channel related to polyphony
-         * @param instruments_bank Pointer to the array containing the pointers to instruments
-         * @param numb_of_instruments Size of instruments_bank
-         * @param track_patterns Pointer to the array containing the pointers to the patterns which contains the instructions of the music
-         * @param pattern_indices Pointer to the array containing the indices of the patterns (to avoid writing several time same pattern)
-         */
-        Track(float clk, float basetime, float speed, uint_fast8_t rows, uint_fast8_t frames, uint_fast8_t channels,
-              Instrument** instruments_bank, uint_fast8_t numb_of_instruments, Pattern** track_patterns, uint_fast8_t* pattern_indices,
-              const uint_fast8_t* effects_per_chan);
+
         /**
          * @brief free everything related to the track, patterns, patterns indices, instruments
          */
@@ -678,7 +425,6 @@ namespace C0deTracker {
         void setName(const char* name);
         void setSizeDimensions(const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels,  const uint_fast8_t* fx_per_chan);
         void setTimeDimensions(const float clk, const float basetime, const float speed);
-        void setInstrumentsBank( const Instrument*const*instruments_bank, uint_fast8_t n_instr);
         void setInstrumentsDataBank(const Instrument_Data* instruments_data_bank, uint_fast8_t n_instr);
         void setPatterns(const Pattern* const* patterns);
         void setPatternsIndices(const uint_fast8_t* patterns_indices);
@@ -690,7 +436,6 @@ namespace C0deTracker {
         uint_fast8_t  rows = 0, frames = 0;
         uint_fast8_t channels = 0;
         float volume = 1.0f, pitch = 0.0f;
-        Instrument** instruments_bank;
         Instrument_Data* instruments_data_bank;
         uint_fast8_t instruments;
         Pattern** track_patterns;
@@ -879,7 +624,6 @@ namespace C0deTracker {
         bool released = false;
         double time_release = 0.0;
         Instruction instruct_state{};
-        Instrument* instrument = nullptr;
         Osc oscillator = Osc();
         uint_fast8_t instrument_index = Notes::KeysUtilities::CONTINUE;
 

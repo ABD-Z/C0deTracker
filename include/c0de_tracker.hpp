@@ -428,9 +428,11 @@ namespace C0deTracker {
         void setInstrumentsDataBank(const Instrument_Data* instruments_data_bank, uint_fast8_t n_instr);
         void setPatterns(const Pattern* const* patterns);
         void setPatternsIndices(const uint_fast8_t* patterns_indices);
+        void useGlobalInstruments();
 
 
     private:
+        bool use_global_inst = false;
         char* name = "_";
         float clk = 60.f, basetime = 1.f, speed = 3.f, step;
         uint_fast8_t  rows = 0, frames = 0;

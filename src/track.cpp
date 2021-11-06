@@ -16,7 +16,8 @@
 namespace C0deTracker {
     Track::~Track() {
         delete[] this->pattern_indices;
-        for (uint_fast64_t i = 0; i < this->channels * this->frames; ++i) {delete this->track_patterns[i];printf("Pattern %d deleted\n",+i);}
+        for (uint_fast64_t i = 0; i < this->channels * this->frames; ++i) {delete this->track_patterns[i];}
+        if(!this->use_global_inst){delete this->instruments_data_bank;}
         delete[] this->track_patterns;
         delete[] this->chans;
     }
@@ -434,6 +435,10 @@ namespace C0deTracker {
          for(int16_t i = this->channels-1; i >= 0 ; --i){
              this->chans[i].resetState();
          }
+    }
+
+    void Track::useGlobalInstruments() {
+        this->use_global_inst = true;
     }
 
 }

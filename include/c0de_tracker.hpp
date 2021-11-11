@@ -328,7 +328,7 @@ namespace C0deTracker {
         /**
          * @brief Destructor.
          */
-        ~Instruction();
+        ~Instruction() = default;
     };
 
     /**
@@ -429,6 +429,7 @@ namespace C0deTracker {
         void setPatterns(const Pattern* const* patterns);
         void setPatternsIndices(const uint_fast8_t* patterns_indices);
         void useGlobalInstruments();
+        void setGlobalInstrumentsDataBank(const Instrument_Data *global_instruments_data_bank, uint_fast8_t n_instr);
 
 
     private:
@@ -444,8 +445,6 @@ namespace C0deTracker {
         uint_fast8_t* pattern_indices;//new uint_8[channels*frames]
         float duration;
         const uint_fast8_t *fx_per_chan;
-
-
 
         C0deTracker::Channel* chans = nullptr;
 
@@ -495,10 +494,10 @@ namespace C0deTracker {
         /**
          * @brief create a channel. Each channel created has it is own number
          */
-        Channel();
+        Channel()=default;
 
 
-        ~Channel();
+        ~Channel()=default;
 
         /**
          * @return if the channel is enabled to play_single_channel sound

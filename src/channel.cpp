@@ -33,30 +33,15 @@ namespace C0deTracker {
 
     void Channel::setTime(double time) { this->time = time;}
 
+    double Channel::getTimeRelease() const {return this->time_release;}
 
-    Channel::Channel()=default;
+    void Channel::setTimeRelease(double time) {this->time_release = time;}
 
-    Channel::~Channel()= default;
+    bool Channel::isReleased() const {return this->released;}
 
-    double Channel::getTimeRelease() const {
-        return this->time_release;
-    }
+    void Channel::setRelease(bool r) {this->released = r;}
 
-    void Channel::setTimeRelease(double time) {
-        this->time_release = time;
-    }
-
-    bool Channel::isReleased() const {
-        return this->released;
-    }
-
-    void Channel::setRelease(bool r) {
-        this->released = r;
-    }
-
-    const Instruction *Channel::getInstructionState() const {
-        return &this->instruct_state;
-    }
+    const Instruction *Channel::getInstructionState() const {return &this->instruct_state;}
 
     void Channel::setInstructionState(Instruction *instruc) {
         this->instruct_state.volume = instruc->volume;

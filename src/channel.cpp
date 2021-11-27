@@ -16,7 +16,8 @@
 namespace C0deTracker {
     bool Channel::isEnable() const{return this->enable_sound;}
     void Channel::enable() {this->enable_sound = true;}
-    void Channel::disable() {this->enable_sound = false; this->last_instruct_address = nullptr; this->track = nullptr;}
+    void Channel::disable() {this->enable_sound = false; this->last_instruct_address = nullptr;
+        this->track = nullptr;}
 
     float Channel::getVolume() const{return this->volume;}
     void Channel::setVolume(float volume) {this->volume = volume;}
@@ -26,8 +27,6 @@ namespace C0deTracker {
 
     Instruction* Channel::getLastInstructionAddress() const {return this->last_instruct_address;}
     void Channel::setLastInstructionAddress(Instruction *lastInstructionAddress) { this->last_instruct_address = lastInstructionAddress;}
-
-    void Channel::setTrack(Track *track) {this->track = track;} Track *Channel::getTrack() const {return this->track;}
 
     double Channel::getTime() const{return this->time;}
 
@@ -353,6 +352,9 @@ namespace C0deTracker {
          delay_counter = 0;
          release_counter = 0;
     }
+
+    void Channel::setTrack(Track *track) {this->track = track;}
+    Track *Channel::getTrack() const {return this->track;}
 
 
 }

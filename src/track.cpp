@@ -1,83 +1,249 @@
 //
-// Created by Abdulmajid, Olivier NASSER on 21/10/2020.
+// Created by Administrateur on 21/11/2021.
 //
-
-#include "../include/c0de_tracker.hpp"
-
-/**
- * @file track.cpp
- * @brief Track class code
- * @see code_tracker.hpp
- * @author Abdulmajid, Olivier NASSER
- * @version 0.1
- * @date 21/10/2020
- */
+#include "c0de_tracker.hpp"
 
 namespace C0deTracker {
+    void Track::setTrack_Data(Track_Data *td) {
+        this->track_data = td;
+        this->chans = new C0deTracker::Channel[td->channels];
+        this->clk = td->clk; this->speed = td->speed; this->step = td->step; this->duration = td->duration;
+    }
+
+    Track::Track(Track_Data* td){
+        this->setTrack_Data(td);
+    }
+
+    void Track::changeTrack(Track_Data* td) {
+        this->resetState();
+        delete[] this->chans;
+        this->setTrack_Data(td);
+    }
+
     Track::~Track() {
-        delete[] this->pattern_indices;
-        for (uint_fast32_t i = 0; i < this->channels * this->frames; ++i) {delete this->track_patterns[i];}
-        if(!this->use_global_inst){delete this->instruments_data_bank;}
-        delete[] this->track_patterns;
         delete[] this->chans;
     }
 
+    void Track::resetState() {
+        volume = 1.0f; pitch = 0.0f;
+        row_counter = 0; frame_counter = 0;
+        time_advance = 0.0;
 
-    uint_fast8_t Track::getNumberofChannels() const {
-        return this->channels;
+        readFx = true;
+        volume_slide_up = 0.f;
+        volume_slide_down = 0.f;
+        volume_slide_time = 0.0;
+
+        pitch_slide_up = 0.f;
+        pitch_slide_down = 0.f;
+        pitch_slide_time = 0.0;
+
+        tremolo_speed = 0.0f;
+        tremolo_depth = 0.0f;
+        tremolo_val = 1.0f;
+        tremolo_time = 0.0;
+
+        vibrato_speed = 0.0f;
+        vibrato_depth = 0.0f;
+        vibrato_val = 0.0f;
+        vibrato_time = 0.0;
+        panning = 0.5f;
+        branch = false;
+        frametojump = 0;
+        rowtojump = 0;
+
+        stop = false;
+
+        panning_slide_right = 0.f;
+        panning_slide_left = 0.f;
+        panning_slide_time = 0.0;
+
+
+        /*for(int16_t i = this->track_data->channels-1; i >= 0 ; --i){
+            this->chans[i].resetState();
+        }*/
     }
 
-    float Track::getDuration() const {
-        return this->duration;
+    float *Track::play(double t) {
+        static float res[2];
+
+        res[0] = 0.f; res[1] = 0.f;
+        this->update_fx(t);
+
+        if (t - this->time_advance >= this->step) {
+            if (this->stop) {
+                res[0] = 0;
+                res[1] = 0;
+                return res;
+            }
+            this->time_advance += this->step;
+            ++this->row_counter;
+            this->readFx = true;
+            if (this->branch) {
+                this->row_counter = this->rowtojump;
+                this->frame_counter = this->frametojump;
+                this->branch = false;
+            }
+        }
+
+        if (this->row_counter >= this->track_data->rows) {
+            this->row_counter = 0;
+            ++this->frame_counter;
+        }
+        if (this->frame_counter >= this->track_data->frames) {
+            this->frame_counter = 0;
+        }
+
+        float s = 0.f;//generated signal
+        float a = 0.f;//amplitude
+        float p = 0.f;//pitch
+
+        for (int_fast8_t i = this->track_data->channels - 1; i >= 0; --i) {
+            if (this->chans[i].isEnable()) {
+                if(this->chans[i].getTrack() != nullptr){
+                    this->chans[i].update_fx(t);
+                }
+                uint_fast8_t chan_number = i;
+                uint_fast8_t pattern_index = this->track_data->pattern_indices[chan_number * this->track_data->frames + this->frame_counter];
+                Pattern *pat = this->track_data->track_patterns[chan_number * (this->track_data->frames) + pattern_index];
+                Instruction *current_instruction = &pat->instructions[this->row_counter];
+
+                if (current_instruction->instrument_index < this->track_data->instruments) {
+                    if (this->readFx) {
+                        this->chans[i].setLastInstructionAddress(current_instruction);
+                        this->chans[i].setRelease(false);
+                        this->chans[i].setTime(t);
+                        this->chans[i].setTrack(this);
+                        if(this->chans[i].getInstructionState()->key.note == Notes::CONTINUE || this->chans[i].getInstructionState()->key.octave == Notes::CONTINUE){
+                            if(this->chans[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
+                                //delete chan[i].instrument;
+                                //chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
+                                this->chans[i].oscillator.setOscillatorParams(&this->track_data->instruments_data_bank[current_instruction->instrument_index]);
+                            }
+                            this->chans[i].setInstructionState(current_instruction);
+                        }else{
+                            if(!this->chans[i].portamento){
+                                if(this->chans[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
+                                    //delete chan[i].instrument;
+                                    //chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
+                                    this->chans[i].oscillator.setOscillatorParams(&this->track_data->instruments_data_bank[current_instruction->instrument_index]);
+                                }
+                                this->chans[i].setInstructionState(current_instruction);
+                            }else{
+                                this->chans[i].portamento_time_step = t;
+                                if(this->chans[i].instruct_state.key.octave == Notes::CONTINUE){
+                                    this->chans[i].porta_pitch_dif = 0;
+                                }else{
+                                    this->chans[i].porta_pitch_dif += Notes::key2pitch(current_instruction->key) - (Notes::key2pitch(this->chans[i].instruct_state.key) /*- chan[i].porta_pitch_dif*/);
+                                }
+
+                                if(this->chans[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
+                                    //delete chan[i].instrument;
+                                    //chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
+                                    this->chans[i].oscillator.setOscillatorParams(&this->track_data->instruments_data_bank[current_instruction->instrument_index]);
+                                }
+                                this->chans[i].setInstructionState(current_instruction);
+                            }
+                        }
+                        //chan[i].instrument->get_oscillator()->setRelease(false);
+                        this->chans[i].oscillator.setRelease(false);
+                        this->chans[i].pitch_slide_val = 0;
+                        this->chans[i].pitch_slide_time = t;
+                        this->chans[i].transpose_time_step = t;
+                        this->chans[i].transpose_semitone_counter = 0;
+                        this->chans[i].retrieg_time_step = t;
+                        this->chans[i].retrieg_counter = 0;
+                        this->chans[i].delrel_time_step = t;
+                        this->chans[i].release_counter = 0;
+                        this->chans[i].delay_counter = 0;
+                        if(this->chans[i].n_time_to_transpose > 0){
+                            --this->chans[i].n_time_to_transpose;
+                        }
+                        if(this->chans[i].n_time_to_retrieg > 0){
+                            --this->chans[i].n_time_to_retrieg;
+                        }
+                        if(this->chans[i].n_time_to_delrel){
+                            --this->chans[i].n_time_to_delrel;
+                        }
+                    }
+                } else {
+                    if (this->chans[i].getLastInstructionAddress() != nullptr) {
+                        if (current_instruction->instrument_index == Notes::RELEASE &&
+                            this->chans[i].getInstructionState()->instrument_index < this->track_data->instruments) {
+                            if (!this->chans[i].isReleased()) {
+                                this->chans[i].setRelease(true);
+                                this->chans[i].setTimeRelease(t);
+                                this->chans[i].setTrack(this);
+                                //chan[i].instrument->get_oscillator()->setRelease(true);
+                                this->chans[i].oscillator.setRelease(true);
+                            }
+                            if (current_instruction->volume != Notes::CONTINUE &&
+                                ((0.f <= current_instruction->volume) &&
+                                 (current_instruction->volume <= MASTER_VOLUME))) {
+                                this->chans[i].setVolumeInstructionState(current_instruction->volume);
+                            }
+                        }
+                        if (current_instruction->instrument_index == Notes::CONTINUE &&
+                            this->chans[i].getInstructionState()->instrument_index < this->track_data->instruments) {
+                            if (current_instruction->volume != Notes::CONTINUE &&
+                                ((0.f <= current_instruction->volume) &&
+                                 (current_instruction->volume <= MASTER_VOLUME))) {
+                                this->chans[i].setVolumeInstructionState(current_instruction->volume);
+                            }
+                        }
+                    }
+                }
+
+                if (current_instruction->effects != nullptr && this->readFx) {
+                    for (int_fast8_t fx_indx = this->track_data->fx_per_chan[chan_number] - 1; fx_indx >= 0; --fx_indx) {
+                        if (current_instruction->effects[fx_indx] != nullptr) {
+                            if (!this->decode_fx(*current_instruction->effects[fx_indx], t)) {
+                                this->chans[i].decode_fx(*current_instruction->effects[fx_indx], t);
+                            }
+                        }
+                    }
+                }
+                //check if channel is released because of release effect
+                if(this->chans[i].isReleased()){
+                    //chan[i].instrument->get_oscillator()->setRelease(true);
+                    this->chans[i].oscillator.setRelease(true);
+                }
+
+                uint_fast8_t arpeggio = 0;
+                if(this->chans[i].arpeggio){
+                    arpeggio = this->chans[i].arpeggio_val[this->chans[i].arpeggio_index];
+                }
+
+                a =  this->chans[i].getVolume() * this->chans[i].tremolo_val * this->chans[i].getInstructionState()->volume;
+                p = Notes::key2pitch(this->chans[i].getInstructionState()->key) + this->pitch + this->vibrato_val + this->chans[i].pitch
+                    + this->chans[i].pitch_slide_val + this->chans[i].vibrato_val + arpeggio - this->chans[i].porta_pitch_dif
+                    + this->chans[i].oscillator.getPitch();
+
+                if (this->chans[i].getLastInstructionAddress() != nullptr && this->chans[i].getTrack() != nullptr) {
+                    if (!this->chans[i].isReleased()) {
+                        //s = chan[i].instrument->play_pitch(a, p, t - chan[i].getTime());
+                        s = this->chans[i].play_pitch(a, p, t - this->chans[i].getTime());//new
+                    } else {
+                        //s = chan[i].instrument->play_pitch(a, p, t - chan[i].getTime(), t - chan[i].getTimeRelease());
+                        s = this->chans[i].play_pitch(a, p, t - this->chans[i].getTime(), t - this->chans[i].getTimeRelease());//new
+                    }
+                    res[0] += s * (1 - this->chans[i].panning);
+                    res[1] += s * this->chans[i].panning;
+                }
+            }
+        }
+
+        res[0] *= this->volume * this->tremolo_val;
+        res[1] *=  this->volume * this->tremolo_val;
+
+        res[0] *= 4*(1 - this->panning);//left
+        res[1] *= 4*this->panning;//right
+
+        this->readFx = false;
+        return res;
     }
 
-    void Track::update_fx(double t) {
-        if(this->volume_slide_down != 0){
-            this->volume -= (this->volume_slide_down / this->speed) * (t - this->volume_slide_time);
-            if (this->volume <= 0) {
-                this->volume = 0.f;
-                this->volume_slide_down = 0.f;
-            }
-        }
-        if(this->volume_slide_up != 0){
-            this->volume += (this->volume_slide_up / this->speed) * (t - this->volume_slide_time);
-            if (this->volume >= MASTER_VOLUME) {
-                this->volume = MASTER_VOLUME;
-                this->volume_slide_up = 0.f;
-            }
-        }
-        if(this->pitch_slide_down != 0)
-            this->pitch -= (this->pitch_slide_down / this->speed) * (t - this->pitch_slide_time);
 
-        if(this->pitch_slide_up != 0)
-            this->pitch += (this->pitch_slide_up / this->speed) * (t - this->pitch_slide_time);
-
-        if(this->panning_slide_right != 0){
-            this->panning += (this->panning_slide_right / this->speed) * (t - this->panning_slide_time);
-            if (this->panning >= MASTER_VOLUME) {
-                this->panning = MASTER_VOLUME;
-                this->panning_slide_right = 0.f;
-            }
-        }
-        if(this->panning_slide_left != 0){
-            this->panning -= (this->panning_slide_left / this->speed) * (t - this->panning_slide_time);
-            if (this->panning <= 0) {
-                this->panning = 0;
-                this->panning_slide_left = 0.f;
-            }
-        }
-        if (this->tremolo_speed == 0.f || this->tremolo_depth == 0.f) {
-            this->tremolo_val = 1.0f;
-        } else {
-            this->tremolo_val = 0.5f * this->tremolo_depth * sin(TWOPI * this->tremolo_speed * (t - this->tremolo_time))
-                    + (1 - 0.5f * this->tremolo_depth);
-        }
-        if (this->vibrato_speed == 0.f || this->vibrato_depth == 0.f) {
-            this->vibrato_val = 0.0f;
-        } else {
-            this->vibrato_val = this->vibrato_depth * sin(TWOPI * this->vibrato_speed * (t - this->vibrato_time));
-        }
-    }
 
     bool Track::decode_fx(uint_fast32_t fx, double t) {
         uint_fast8_t fx_code = fx >> 4 * 6;
@@ -125,15 +291,15 @@ namespace C0deTracker {
                 return true;
             case 0x09://change speed of the track
                 this->speed = float(fx_val >> 4 * 3) + float(fx_val & 0xFFF) / float(0xFFF);;
-                this->step = this->basetime * this->speed / this->clk;
-                this->duration = float(this->frames * this->rows) * this->step;
+                this->step = this->track_data->basetime * this->speed / this->track_data->clk;
+                this->duration = float(this->track_data->frames * this->track_data->rows) * this->step;
                 return true;
             case 0x0A:// jumpt to frame row
                 this->branch = true;
                 this->frametojump = fx_val >> 4 * 3;
                 this->rowtojump = fx_val & 0xFFF;
                 if ((this->frametojump == this->frame_counter && this->rowtojump == this->row_counter) ||
-                    (this->frametojump >= this->frames) || (this->rowtojump >= this->rows)) {
+                    (this->frametojump >= this->track_data->frames) || (this->rowtojump >= this->track_data->rows)) {
                     this->branch = false;
                 }
                 return true;
@@ -155,296 +321,63 @@ namespace C0deTracker {
         }
     }
 
-    float *Track::play(double t) {
-        static float res[2];
-
-        res[0] = 0.f; res[1] = 0.f;
-        this->update_fx(t);
-
-        if (t - this->time_advance >= this->step) {
-            if (this->stop) {
-                res[0] = 0;
-                res[1] = 0;
-                return res;
-            }
-            this->time_advance += this->step;
-            ++this->row_counter;
-            this->readFx = true;
-            if (this->branch) {
-                this->row_counter = this->rowtojump;
-                this->frame_counter = this->frametojump;
-                this->branch = false;
+    void Track::update_fx(double t) {
+        if(this->volume_slide_down != 0){
+            this->volume -= (this->volume_slide_down / this->speed) * (t - this->volume_slide_time);
+            if (this->volume <= 0) {
+                this->volume = 0.f;
+                this->volume_slide_down = 0.f;
             }
         }
-
-        if (this->row_counter >= this->rows) {
-            this->row_counter = 0;
-            ++this->frame_counter;
-        }
-        if (this->frame_counter >= this->frames) {
-            this->frame_counter = 0;
-        }
-
-        float s = 0.f;//generated signal
-        float a = 0.f;//amplitude
-        float p = 0.f;//pitch
-
-        for (int_fast8_t i = this->channels - 1; i >= 0; --i) {
-            if (this->chans[i].isEnable()) {
-                if(this->chans[i].getTrack() != nullptr){
-                    this->chans[i].update_fx(t);
-                }
-                uint_fast8_t chan_number = i;
-                uint_fast8_t pattern_index = this->pattern_indices[chan_number * this->frames + this->frame_counter];
-                Pattern *pat = this->track_patterns[chan_number * (this->frames) + pattern_index];
-                Instruction *current_instruction = &pat->instructions[this->row_counter];
-
-                if (current_instruction->instrument_index < this->instruments) {
-                    if (this->readFx) {
-                        this->chans[i].setLastInstructionAddress(current_instruction);
-                        this->chans[i].setRelease(false);
-                        this->chans[i].setTime(t);
-                        this->chans[i].setTrack(this);
-                        if(this->chans[i].getInstructionState()->key.note == Notes::CONTINUE || this->chans[i].getInstructionState()->key.octave == Notes::CONTINUE){
-                            if(this->chans[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
-                                //delete chan[i].instrument;
-                                //chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
-                                this->chans[i].oscillator.setOscillatorParams(&this->instruments_data_bank[current_instruction->instrument_index]);
-                            }
-                            this->chans[i].setInstructionState(current_instruction);
-                        }else{
-                            if(!this->chans[i].portamento){
-                                if(this->chans[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
-                                    //delete chan[i].instrument;
-                                    //chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
-                                    this->chans[i].oscillator.setOscillatorParams(&this->instruments_data_bank[current_instruction->instrument_index]);
-                                }
-                                this->chans[i].setInstructionState(current_instruction);
-                            }else{
-                                this->chans[i].portamento_time_step = t;
-                                if(this->chans[i].instruct_state.key.octave == Notes::CONTINUE){
-                                    this->chans[i].porta_pitch_dif = 0;
-                                }else{
-                                    this->chans[i].porta_pitch_dif += Notes::key2pitch(current_instruction->key) - (Notes::key2pitch(this->chans[i].instruct_state.key) /*- chan[i].porta_pitch_dif*/);
-                                }
-
-                                if(this->chans[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
-                                    //delete chan[i].instrument;
-                                    //chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
-                                    this->chans[i].oscillator.setOscillatorParams(&this->instruments_data_bank[current_instruction->instrument_index]);
-                                }
-                                this->chans[i].setInstructionState(current_instruction);
-                            }
-                        }
-                        //chan[i].instrument->get_oscillator()->setRelease(false);
-                        this->chans[i].oscillator.setRelease(false);
-                        this->chans[i].pitch_slide_val = 0;
-                        this->chans[i].pitch_slide_time = t;
-                        this->chans[i].transpose_time_step = t;
-                        this->chans[i].transpose_semitone_counter = 0;
-                        this->chans[i].retrieg_time_step = t;
-                        this->chans[i].retrieg_counter = 0;
-                        this->chans[i].delrel_time_step = t;
-                        this->chans[i].release_counter = 0;
-                        this->chans[i].delay_counter = 0;
-                        if(this->chans[i].n_time_to_transpose > 0){
-                            --this->chans[i].n_time_to_transpose;
-                        }
-                        if(this->chans[i].n_time_to_retrieg > 0){
-                            --this->chans[i].n_time_to_retrieg;
-                        }
-                        if(this->chans[i].n_time_to_delrel){
-                            --this->chans[i].n_time_to_delrel;
-                        }
-                    }
-                } else {
-                    if (this->chans[i].getLastInstructionAddress() != nullptr) {
-                        if (current_instruction->instrument_index == Notes::RELEASE &&
-                                this->chans[i].getInstructionState()->instrument_index < this->instruments) {
-                            if (!this->chans[i].isReleased()) {
-                                this->chans[i].setRelease(true);
-                                this->chans[i].setTimeRelease(t);
-                                this->chans[i].setTrack(this);
-                                //chan[i].instrument->get_oscillator()->setRelease(true);
-                                this->chans[i].oscillator.setRelease(true);
-                            }
-                            if (current_instruction->volume != Notes::CONTINUE &&
-                                ((0.f <= current_instruction->volume) &&
-                                 (current_instruction->volume <= MASTER_VOLUME))) {
-                                this->chans[i].setVolumeInstructionState(current_instruction->volume);
-                            }
-                        }
-                        if (current_instruction->instrument_index == Notes::CONTINUE &&
-                                this->chans[i].getInstructionState()->instrument_index < this->instruments) {
-                            if (current_instruction->volume != Notes::CONTINUE &&
-                                ((0.f <= current_instruction->volume) &&
-                                 (current_instruction->volume <= MASTER_VOLUME))) {
-                                this->chans[i].setVolumeInstructionState(current_instruction->volume);
-                            }
-                        }
-                    }
-                }
-
-                if (current_instruction->effects != nullptr && this->readFx) {
-                    for (int_fast8_t fx_indx = this->fx_per_chan[chan_number] - 1; fx_indx >= 0; --fx_indx) {
-                        if (current_instruction->effects[fx_indx] != nullptr) {
-                            if (!this->decode_fx(*current_instruction->effects[fx_indx], t)) {
-                                this->chans[i].decode_fx(*current_instruction->effects[fx_indx], t);
-                            }
-                        }
-                    }
-                }
-                //check if channel is released because of release effect
-                if(this->chans[i].isReleased()){
-                    //chan[i].instrument->get_oscillator()->setRelease(true);
-                    this->chans[i].oscillator.setRelease(true);
-                }
-
-                uint_fast8_t arpeggio = 0;
-                if(this->chans[i].arpeggio){
-                    arpeggio = this->chans[i].arpeggio_val[this->chans[i].arpeggio_index];
-                }
-
-                a =  this->chans[i].getVolume() * this->chans[i].tremolo_val * this->chans[i].getInstructionState()->volume;
-                p = Notes::key2pitch(this->chans[i].getInstructionState()->key) + this->pitch + this->vibrato_val + this->chans[i].pitch
-                        + this->chans[i].pitch_slide_val + this->chans[i].vibrato_val + arpeggio - this->chans[i].porta_pitch_dif
-                        + this->chans[i].oscillator.getPitch();
-
-                if (this->chans[i].getLastInstructionAddress() != nullptr && this->chans[i].getTrack() != nullptr) {
-                    if (!this->chans[i].isReleased()) {
-                        //s = chan[i].instrument->play_pitch(a, p, t - chan[i].getTime());
-                        s = this->chans[i].play_pitch(a, p, t - this->chans[i].getTime());//new
-                    } else {
-                        //s = chan[i].instrument->play_pitch(a, p, t - chan[i].getTime(), t - chan[i].getTimeRelease());
-                        s = this->chans[i].play_pitch(a, p, t - this->chans[i].getTime(), t - this->chans[i].getTimeRelease());//new
-                    }
-                    res[0] += s * (1 - this->chans[i].panning);
-                    res[1] += s * this->chans[i].panning;
-                }
+        if(this->volume_slide_up != 0){
+            this->volume += (this->volume_slide_up / this->speed) * (t - this->volume_slide_time);
+            if (this->volume >= MASTER_VOLUME) {
+                this->volume = MASTER_VOLUME;
+                this->volume_slide_up = 0.f;
             }
         }
+        if(this->pitch_slide_down != 0)
+            this->pitch -= (this->pitch_slide_down / this->speed) * (t - this->pitch_slide_time);
 
+        if(this->pitch_slide_up != 0)
+            this->pitch += (this->pitch_slide_up / this->speed) * (t - this->pitch_slide_time);
 
-        res[0] *= this->volume * this->tremolo_val;
-        res[1] *=  this->volume * this->tremolo_val;
-
-        res[0] *= 4*(1 - this->panning);//left
-        res[1] *= 4*this->panning;//right
-
-        this->readFx = false;
-        return res;
+        if(this->panning_slide_right != 0){
+            this->panning += (this->panning_slide_right / this->speed) * (t - this->panning_slide_time);
+            if (this->panning >= MASTER_VOLUME) {
+                this->panning = MASTER_VOLUME;
+                this->panning_slide_right = 0.f;
+            }
+        }
+        if(this->panning_slide_left != 0){
+            this->panning -= (this->panning_slide_left / this->speed) * (t - this->panning_slide_time);
+            if (this->panning <= 0) {
+                this->panning = 0;
+                this->panning_slide_left = 0.f;
+            }
+        }
+        if (this->tremolo_speed == 0.f || this->tremolo_depth == 0.f) {
+            this->tremolo_val = 1.0f;
+        } else {
+            this->tremolo_val = 0.5f * this->tremolo_depth * sin(TWOPI * this->tremolo_speed * (t - this->tremolo_time))
+                                + (1 - 0.5f * this->tremolo_depth);
+        }
+        if (this->vibrato_speed == 0.f || this->vibrato_depth == 0.f) {
+            this->vibrato_val = 0.0f;
+        } else {
+            this->vibrato_val = this->vibrato_depth * sin(TWOPI * this->vibrato_speed * (t - this->vibrato_time));
+        }
     }
 
-    float Track::getPanning() const {
-        return this->panning;
-    }
-
-    float Track::getClock() const {
+    float Track::getClock() {
         return this->clk;
     }
 
-    float Track::getSpeed() const {
+    float Track::getSpeed() {
         return this->speed;
     }
 
-    void Track::setSizeDimensions(const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels, const uint_fast8_t *fx_per_chan) {
-        this->rows = rows; this->frames = frames; this->channels = channels; this->fx_per_chan = fx_per_chan;
-        this->chans = new C0deTracker::Channel[this->channels];
+    float Track::getDuration() {
+        return this->duration;
     }
-
-    uint_fast8_t Track::getNumberofRows() const {
-        return this->rows;
-    }
-
-    uint_fast8_t Track::getNumberofFrames() const {
-        return this->frames;
-    }
-
-    const uint_fast8_t *Track::getNumberofFXperChannel() {
-        return this->fx_per_chan;
-    }
-
-    void Track::setTimeDimensions(const float clk, const float basetime, const float speed) {
-        this->clk = clk; this->basetime = basetime; this->speed = speed;
-        this->step = this->basetime * this->speed / this->clk;
-        this->duration = float(this->frames * this->rows) * this->step;
-    }
-
-    float Track::getBasetime() const {
-        return this->basetime;
-    }
-
-    void Track::setPatterns(const Pattern *const *patterns) {
-        this->track_patterns = const_cast<Pattern **>(patterns);
-    }
-
-    void Track::setPatternsIndices(const uint_fast8_t *patterns_indices) {
-        this->pattern_indices = const_cast<uint_fast8_t *>(patterns_indices);
-    }
-
-    void Track::init() {}
-
-    void Track::setInstrumentsDataBank(const Instrument_Data* instruments_data_bank, uint_fast8_t n_instr) {
-        this->instruments_data_bank = const_cast<Instrument_Data*>(instruments_data_bank);
-        this->instruments = n_instr;
-    }
-
-    void Track::setName(const char *name) {
-        //delete[] this->name;
-        this->name = const_cast<char *>(name);
-    }
-
-    char* Track::getName() const {
-        return this->name;
-    }
-
-    void Track::resetState() {
-        volume = 1.0f; pitch = 0.0f;
-         row_counter = 0; frame_counter = 0;
-         time_advance = 0.0;
-
-        readFx = true;
-         volume_slide_up = 0.f;
-         volume_slide_down = 0.f;
-         volume_slide_time = 0.0;
-
-         pitch_slide_up = 0.f;
-         pitch_slide_down = 0.f;
-         pitch_slide_time = 0.0;
-
-         tremolo_speed = 0.0f;
-         tremolo_depth = 0.0f;
-         tremolo_val = 1.0f;
-         tremolo_time = 0.0;
-
-         vibrato_speed = 0.0f;
-         vibrato_depth = 0.0f;
-         vibrato_val = 0.0f;
-         vibrato_time = 0.0;
-         panning = 0.5f;
-         branch = false;
-         frametojump = 0;
-         rowtojump = 0;
-
-         stop = false;
-
-         panning_slide_right = 0.f;
-         panning_slide_left = 0.f;
-         panning_slide_time = 0.0;
-
-         for(int16_t i = this->channels-1; i >= 0 ; --i){
-             this->chans[i].resetState();
-         }
-    }
-
-    void Track::useGlobalInstruments() {
-        this->use_global_inst = true;
-    }
-
-    void Track::setGlobalInstrumentsDataBank(const Instrument_Data* global_instruments_data_bank, uint_fast8_t n_instr) {
-        this->instruments_data_bank = const_cast<Instrument_Data*>(global_instruments_data_bank);
-        this->instruments = n_instr;
-        this->useGlobalInstruments();
-    }
-
 }

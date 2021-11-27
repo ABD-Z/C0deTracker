@@ -81,7 +81,6 @@ namespace  C0deTracker{
                         break;
                     }else{
                         delete this->instructions[i].effects[j];
-
                     }
                 }
                 delete[] this->instructions[i].effects;

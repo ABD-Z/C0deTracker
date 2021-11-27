@@ -53,6 +53,7 @@ namespace C0deTracker {
     struct Instrument_Data;
     struct Instruction;
     struct Pattern;
+    class Track_Data;
     class Track;
     class Channel;
     class Editor;
@@ -352,33 +353,18 @@ namespace C0deTracker {
         ~Pattern();
     };
 
-    /**
-     * @brief Main class containing all the data needed to run a music. It should works in parallel with Channel.
-     *
-     * @see Channel
-     */
+
+
     class Track{
     public:
         Track() = default;
+
+        Track(Track_Data* td);
 
         /**
          * @brief free everything related to the track, patterns, patterns indices, instruments
          */
         ~Track();
-
-
-
-        uint_fast8_t getNumberofRows() const;
-        uint_fast8_t getNumberofFrames() const;
-        //const uint_fast8_t getNumberofChannels();
-        const uint_fast8_t* getNumberofFXperChannel();
-
-
-        //const float getClock();
-        float getBasetime() const;
-        //const float getSpeed();
-
-
 
         /**
          * @brief main function called at each time to calculate the corresponding sample of the track
@@ -389,70 +375,34 @@ namespace C0deTracker {
          */
         float* play(double t);
 
-        /**
-         * @return global panning if the track
-         * @brief 0.5 is centered ; 0 sound is only on left ; 1 only on right
-         */
-        float getPanning() const;
-
-        /**
-         * @return value of the clock
-         */
-        float getClock() const;
-
-        /**
-         * @return the speed of the track which could be modified by effect 0x09xxxyyy
-         */
-        float getSpeed() const;
-
-        /**
-         * @return number of channels dedicated fo the track
-         */
-        uint_fast8_t getNumberofChannels() const;
-        /**
-         * @return duration of the track.
-         * @note It is very approximative, especially when the track jumps frames and changes speed during the song processing
-         */
-        float getDuration() const;
-
-        char* getName() const;
+        void changeTrack(Track_Data* td);
 
         void resetState();
 
-        virtual void init();
+        float getClock();
 
-    protected:
-        void setName(const char* name);
-        void setSizeDimensions(const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels,  const uint_fast8_t* fx_per_chan);
-        void setTimeDimensions(const float clk, const float basetime, const float speed);
-        void setInstrumentsDataBank(const Instrument_Data* instruments_data_bank, uint_fast8_t n_instr);
-        void setPatterns(const Pattern* const* patterns);
-        void setPatternsIndices(const uint_fast8_t* patterns_indices);
-        void useGlobalInstruments();
-        void setGlobalInstrumentsDataBank(const Instrument_Data *global_instruments_data_bank, uint_fast8_t n_instr);
+        float getSpeed();
+
+        float getDuration();
+
 
 
     private:
-        bool use_global_inst = false;
-        char* name = "_";
-        float clk = 60.f, basetime = 1.f, speed = 3.f, step;
-        uint_fast8_t  rows = 0, frames = 0;
-        uint_fast8_t channels = 0;
-        float volume = 1.0f, pitch = 0.0f;
-        Instrument_Data* instruments_data_bank;
-        uint_fast8_t instruments;
-        Pattern** track_patterns;
-        uint_fast8_t* pattern_indices;//new uint_8[channels*frames]
-        float duration;
-        const uint_fast8_t *fx_per_chan;
-
+        void setTrack_Data(Track_Data* td);
+        bool decode_fx(uint_fast32_t fx, double t);
+        void update_fx(double t);
+        Track_Data* track_data = nullptr;
         C0deTracker::Channel* chans = nullptr;
+
+        float clk; float speed; float step;
+        float duration;
 
         uint_fast8_t row_counter = 0, frame_counter = 0;
         double time_advance = 0.0;
 
-        bool decode_fx(uint_fast32_t fx, double t);
         bool readFx = true;
+
+        float volume = 1.0f, pitch = 0.0f;
         float volume_slide_up = 0.f;
         float volume_slide_down = 0.f;
         double volume_slide_time = 0.0;
@@ -480,7 +430,41 @@ namespace C0deTracker {
         float panning_slide_right = 0.f;
         float panning_slide_left = 0.f;
         double panning_slide_time = 0.0;
-        void update_fx(double t);
+
+    };
+
+
+    class Track_Data{
+    public:
+        Track_Data()=default;
+        virtual ~Track_Data();
+        virtual void load_data();
+        void free_data();
+        bool is_data_loaded();
+        const char* getName();
+        friend Track;
+    protected:
+        void setName(const char* name);
+        void setSizeDimensions(const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels,  const uint_fast8_t* fx_per_chan);
+        void setTimeDimensions(const float clk, const float basetime, const float speed);
+        void setInstrumentsDataBank(const Instrument_Data* instruments_data_bank, uint_fast8_t n_instr);
+        void setPatterns(const Pattern* const* patterns);
+        void setPatternsIndices(const uint_fast8_t* patterns_indices);
+        void useGlobalInstruments();
+        void setGlobalInstrumentsDataBank(const Instrument_Data *global_instruments_data_bank, uint_fast8_t n_instr);
+    private:
+        bool data_loaded;
+        bool use_global_inst = false;
+        char* name = "_";
+        float clk = 60.f, basetime = 1.f, speed = 3.f, step;
+        uint_fast8_t  rows = 0, frames = 0;
+        uint_fast8_t channels = 0;
+        Instrument_Data* instruments_data_bank;
+        uint_fast8_t instruments;
+        Pattern** track_patterns;
+        uint_fast8_t* pattern_indices;//new uint_8[channels*frames]
+        float duration = 0;
+        const uint_fast8_t *fx_per_chan;
     };
 
     /**
@@ -544,16 +528,9 @@ namespace C0deTracker {
          */
         void setLastInstructionAddress(Instruction *lastInstructionAddress);
 
-        /**
-         *
-         * @return address of the track currently working with the channel
-         */
+        void setTrack(Track* track);
         Track *getTrack() const;
-        /**
-         * @brief store the address of the track
-         * @param track currently used to generates sound
-         */
-        void setTrack(Track *track);
+
 
         /**
          *
@@ -613,10 +590,11 @@ namespace C0deTracker {
 
         void resetState();
 
-        friend float* Track::play(double t);//function play of Track friend of Channel in order to avoid creating a huge amount of getters for each attributes
+        friend float* Track::play(double t);
     private:
         Instruction* last_instruct_address = nullptr;
         Track* track = nullptr;
+
 
         /**Channel state**/
         double time = 0.0;

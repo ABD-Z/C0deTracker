@@ -6,9 +6,8 @@
 #include "../songs/tutorial.hpp"//include your song
 #include "../songs/examples.hpp"
 
-//#define REALTIME
-#define TIME_RECORDING_SECONDS 1
-#define NUMBER_OF_TRACKS 7
+#define REALTIME
+#define NUMBER_OF_TRACKS 8
 
 void clear_console(){
 #ifdef __linux__
@@ -22,35 +21,24 @@ void clear_console(){
 }
 
 int main() {
-    auto time1 = std::chrono::system_clock::now();
+    initGlobalInstruments();
     int index = 0;
-    C0deTracker::Track* t0 = new TutoTrack();
-    C0deTracker::Track* t1 = new SuperStreetFighterII_CreditTheme();
-    C0deTracker::Track* t2 = new FrereJacques();
-    C0deTracker::Track* t3 = new FZERO_MenuTheme();
-    C0deTracker::Track* t4 = new SuperMarioBros_OverworldTheme();
-    C0deTracker::Track* t5 = new KirbysDreamland_GreenGreensTheme();
-    C0deTracker::Track* t6 = new Sonic_GreenHillZoneTheme();
+    C0deTracker::Track_Data* tracks_data[] = {new Track_Test(), new TutoTrack, new SuperStreetFighterII_CreditTheme(), new FrereJacques(),
+                                              new FZERO_MenuTheme(), new SuperMarioBros_OverworldTheme(), new KirbysDreamland_GreenGreensTheme(),
+                                              new Sonic_GreenHillZoneTheme()};
 
-    C0deTracker::Track* tracks[] = {t0,t1,t2,t3,t4,t5,t6};
-    for(auto* tr : tracks){
-        tr->init();
-    }
-    C0deTracker::Track* track;
-    track = tracks[index];
-
-    auto time2 = std::chrono::system_clock::now();
-
-    double deltaT = std::chrono::duration_cast<std::chrono::milliseconds>(time2 - time1).count();
-
-    std::cout << "Time for  tracks creation = " << deltaT << " ms" << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds (2));
-    clear_console();
 
     //Method to play sound in real time with the custom stream
+    C0deTracker::Track track_processor;
 #ifdef REALTIME
+    auto time1 = std::chrono::system_clock::now();
+    tracks_data[index]->load_data();
+    auto time2 = std::chrono::system_clock::now();
+    auto deltaT = std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count();
+    std::cout << "Time for " << tracks_data[index]->getName() <<"  tracks creation = " << deltaT << " micro seconds" << std::endl;
+    track_processor.changeTrack(tracks_data[index]);
     C0deTrackerStream cts;
-    cts.init(tracks[index]);
+    cts.init(&track_processor);
     cts.play();
     clear_console();
 
@@ -64,14 +52,21 @@ int main() {
             }else{
                 std::cout << " " << +i <<". ";
             }
-            std::cout << tracks[i]->getName() << std::endl;
+            std::cout << tracks_data[i]->getName() << std::endl;
         }
         std::cout << "Select track number : ";
         std::cin >> select;
         if(select != index  && +NUMBER_OF_TRACKS - +select > 0){
+            cts.stop();
+            tracks_data[index]->free_data();
             index = select;
-            std::cout << " Track selected " << tracks[index]->getName() << std::endl;
-            cts.changeTrack(tracks[index]);
+            std::cout << " Track selected " << tracks_data[index]->getName() << std::endl;
+            time1 = std::chrono::system_clock::now();
+            tracks_data[index]->load_data();
+            time2 = std::chrono::system_clock::now();
+            deltaT = std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count();
+            std::cout << "Time for " << tracks_data[index]->getName() <<"  tracks creation = " << deltaT << " micro seconds" << std::endl;
+            track_processor.changeTrack(tracks_data[index]);
             cts.play();
             std::this_thread::sleep_for(std::chrono::seconds (1));
         }
@@ -81,30 +76,32 @@ int main() {
     /************************************************************/
 #else
     //Method to save in a file the song. Comment previous method to save song in file.
-    std::string FILENAME(track->getName());
-    FILENAME += ".wav";
-    sf::SoundBuffer buffer;
-    std::vector<sf::Int16> samples;
-    std::cout << "Begin sampling" << std::endl;
 
-    float number_of_samples = SAMPLE_RATE * TIME_RECORDING_SECONDS * PANNING;
-    samples.reserve(number_of_samples);
+    for(auto* td : tracks_data) {
+        td->load_data();
+        track_processor.changeTrack(td);
+        std::string FILENAME(td->getName());
+        FILENAME += ".wav";
+        sf::SoundBuffer buffer;
+        std::vector<sf::Int16> samples;
 
-    for (uint_fast64_t i = 0; i < number_of_samples; ++++i) {
-        float* s = track->play(0.5 * double(i) / SAMPLE_RATE);
-        samples.push_back((s[0]) * BITS_16*0.5);//left speaker
-        samples.push_back((s[1]) * BITS_16*0.5);//right speaker
+        std::cout << "Begin sampling " << td->getName() << std::endl;
+
+        unsigned int number_of_samples = SAMPLE_RATE * track_processor.getDuration()*2 * PANNING;
+        samples.reserve(number_of_samples);
+
+        for (uint_fast64_t i = 0; i < number_of_samples; ++++i) {
+            float* s = track_processor.play(0.5 * double(i) / SAMPLE_RATE);
+            samples.push_back((s[0]) * BITS_16*0.5);//left speaker
+            samples.push_back((s[1]) * BITS_16*0.5);//right speaker
+        }
+
+        buffer.loadFromSamples(&samples[0], samples.size(), PANNING, SAMPLE_RATE);
+        buffer.saveToFile(FILENAME);
+        std::cout << "End sampling " << td->getName() << std::endl;
+
+        delete td;
     }
-
-    buffer.loadFromSamples(&samples[0], samples.size(), PANNING, SAMPLE_RATE);
-    buffer.saveToFile(FILENAME);
-    std::cout << "End sampling" << std::endl;
-
-    for(auto* tr : tracks){
-        std::cout << "TRACK DELETED!!" <<std::endl;
-        delete tr;
-    }
-
 #endif
 
     return 0;

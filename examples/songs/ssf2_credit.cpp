@@ -10,8 +10,9 @@ SuperStreetFighterII_CreditTheme::SuperStreetFighterII_CreditTheme() {
     this->setTimeDimensions(CLOCK, SPEED, BASETIME);
 }
 
-void SuperStreetFighterII_CreditTheme::init() {
-    //Track::init();
+void SuperStreetFighterII_CreditTheme::load_data() {
+    Track_Data::load_data();
+
     auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
     instruments_data_bank[COWBELL].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 5.0f, 0.00f, 0.f),0.48f,0.f,.0105f,0.f);
     instruments_data_bank[CRASH].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 1.86f, 0.00f, 0.f), .45f, 0.f,0.0055f,0.f);
@@ -73,7 +74,6 @@ void SuperStreetFighterII_CreditTheme::init() {
     I(58, SNARE, Key(G_S, 2));
     I(60, SNARE, Key(G_S, 3));
 
-    printf("WRITING PATTERN 2 CHAN 0\n");
     PTRN_INDX(2);
     I(0, Key(A, 1));
     //I(4, SNARE, Key(G_S, 2), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x1F0005FF)});

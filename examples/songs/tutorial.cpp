@@ -4,14 +4,14 @@
 
 #include "tutorial.hpp"
 
-TutoTrack::TutoTrack(){
+TutoTrack::TutoTrack() {
     this->setName(NAME);
     this->setSizeDimensions(ROWS,FRAMES,CHANNELS,FX_per_CHAN);
     this->setTimeDimensions(CLOCK, SPEED, BASETIME);
 }
 
-void TutoTrack::init() {
-    //Track::init();
+void TutoTrack::load_data() {
+    Track_Data::load_data();
     auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
     instruments_data_bank[MAIN].setData(C0deTracker::SQUARE, C0deTracker::ADSR(5.5f,5.5f,0.2f,1.f),0.1f,0.f,0.5f,0.0f);
     instruments_data_bank[BASS].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(400.0f, 10.f, 0.0f, 10.f), 1.0f, 0.f,0.8f,0.5f);

@@ -10,8 +10,8 @@ Sonic_GreenHillZoneTheme::Sonic_GreenHillZoneTheme() {
     this->setTimeDimensions(CLOCK, SPEED, BASETIME);
 }
 
-void Sonic_GreenHillZoneTheme::init() {
-    //Track::init();
+void Sonic_GreenHillZoneTheme::load_data() {
+    Track_Data::load_data();
 
     auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
     instruments_data_bank[HITHAT].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(50.f, 18.f, 0.0f, 0.f), .55f, .0f, .00077f, .0f);
@@ -759,3 +759,5 @@ void Sonic_GreenHillZoneTheme::init() {
     this->setPatterns(patterns);
     this->setPatternsIndices(pattern_indices);
 }
+
+

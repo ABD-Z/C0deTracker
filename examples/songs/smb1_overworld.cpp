@@ -3,15 +3,15 @@
 //
 #include "examples.hpp"
 
-
 SuperMarioBros_OverworldTheme::SuperMarioBros_OverworldTheme() {
     this->setName(NAME);
     this->setSizeDimensions(ROWS,FRAMES,CHANNELS,fx_per_chan);
     this->setTimeDimensions(CLOCK, SPEED, BASETIME);
 }
 
-void SuperMarioBros_OverworldTheme::init() {
-    //Track::init();
+void SuperMarioBros_OverworldTheme::load_data() {
+    Track_Data::load_data();
+
 
     auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
     instruments_data_bank[MAIN].setData(C0deTracker::SQUARE, C0deTracker::ADSR(100.f, 5.f, 0.f, 100.f), .128f, 0.f, .5f, 0.f);

@@ -5,12 +5,13 @@
 
 FrereJacques::FrereJacques() {
     this->setName(NAME);
-    this->setSizeDimensions(ROWS,FRAMES,CHANNELS, fx_per_chan);
-    this->setTimeDimensions(CLOCK,BASETIME,SPEED);
+    this->setSizeDimensions(ROWS, FRAMES, CHANNELS, fx_per_chan);
+    this->setTimeDimensions(CLOCK, SPEED, BASETIME);
 }
 
-void FrereJacques::init() {
-    //Track::init();
+void FrereJacques::load_data() {
+    Track_Data::load_data();
+
     auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
     instruments_data_bank[MAIN].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(4.66f,2.f,0.5f,4.f),0.6f,0.f,1.0f,0.5f);
     instruments_data_bank[BASS].setData(C0deTracker::SINUS, C0deTracker::ADSR(1000.0f, 2.f, 0.2f, 5.33f), 1.0f, 0.f,0.5f,0.f);

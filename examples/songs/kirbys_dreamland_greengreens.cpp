@@ -4,15 +4,15 @@
 
 #include "examples.hpp"
 
-
 KirbysDreamland_GreenGreensTheme::KirbysDreamland_GreenGreensTheme() {
     this->setName(NAME);
     this->setSizeDimensions(ROWS,FRAMES,CHANNELS,fx_per_chan);
     this->setTimeDimensions(CLOCK, SPEED, BASETIME);
 }
 
-void KirbysDreamland_GreenGreensTheme::init() {
-    //Track::init();
+void KirbysDreamland_GreenGreensTheme::load_data() {
+    Track_Data::load_data();
+
     auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
     instruments_data_bank[TRIMAIN].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(100.0f, 0.f, 0.0f, 100.f), 1.f, 0, 1, .5f);
     instruments_data_bank[SQ50].setData(C0deTracker::SQUARE, C0deTracker::ADSR(100.0f, 0.f, 0.0f, 100.f), .3f, 0, .5f, 0);

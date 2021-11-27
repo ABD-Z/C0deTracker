@@ -1,15 +1,16 @@
 //
-// Created by Administrateur on 02/01/2021.
+// Created by Abdulmajid, Olivier NASSER on 02/01/2021.
 //
 #include "examples.hpp"
 
 FZERO_MenuTheme::FZERO_MenuTheme() {
     this->setName(NAME);
-    this->setSizeDimensions(ROWS,FRAMES,CHANNELS,fx_per_chan);
+    this->setSizeDimensions(ROWS, FRAMES, CHANNELS, fx_per_chan);
     this->setTimeDimensions(CLOCK, SPEED, BASETIME);
 }
 
-void FZERO_MenuTheme::init() {
+void FZERO_MenuTheme::load_data() {
+    Track_Data::load_data();
     auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
     instruments_data_bank[TRUMPET].setData(C0deTracker::SQUARE, C0deTracker::ADSR(40.f,10.f,0.0f,4.f), 0.25f, 0.1f, .08f, 0.5f);
     instruments_data_bank[SNARE].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100000.f, 15.0f, 0.0f, 1.f), .9f, 2.5f, .00015f, 0);

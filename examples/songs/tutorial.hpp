@@ -7,7 +7,7 @@
 #include "../../include/c0de_tracker.hpp"
 
 
-class TutoTrack : public C0deTracker::Track{
+class TutoTrack : public C0deTracker::Track_Data{
 private:
     constexpr static const char* NAME = "TUTO_TRACK";
     static const uint_fast8_t ROWS = 28;
@@ -21,7 +21,7 @@ private:
     enum instrument_name{MAIN, BASS, KICK, SNARE};
 public:
     TutoTrack();
-    void init() override;
+    void load_data() override;
 
 };
 

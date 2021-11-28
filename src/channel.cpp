@@ -140,7 +140,7 @@ namespace C0deTracker {
             }
         }
 
-        if(this->delay_counter <= this->delay && this->delay > 0 && this->n_time_to_delrel > 0){
+        if(this->delay_counter <= this->delay-1 && this->delay > 0 && this->n_time_to_delrel > 0){
             this->setTime(t);
             if(t - this->delrel_time_step >= 1. / this->track->getClock()){
                 ++this->delay_counter;

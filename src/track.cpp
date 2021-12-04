@@ -215,9 +215,11 @@ namespace C0deTracker {
                 }
 
                 a =  this->chans[i].getVolume() * this->chans[i].tremolo_val * this->chans[i].getInstructionState()->volume;
-                p = Notes::key2pitch(this->chans[i].getInstructionState()->key) + this->pitch + this->vibrato_val + this->chans[i].pitch
-                    + this->chans[i].pitch_slide_val + this->chans[i].vibrato_val + arpeggio - this->chans[i].porta_pitch_dif
+                p = Notes::key2pitch(this->chans[i].getInstructionState()->key)  + this->chans[i].pitch
+                    + this->chans[i].pitch_slide_val  + arpeggio - this->chans[i].porta_pitch_dif
                     + this->chans[i].oscillator.getPitch();
+
+                p += (this->pitch + this->vibrato_val+ this->chans[i].vibrato_val)/(t-this->chans[i].getTime());
 
                 if (this->chans[i].getLastInstructionAddress() != nullptr && this->chans[i].getTrack() != nullptr) {
                     if (!this->chans[i].isReleased()) {

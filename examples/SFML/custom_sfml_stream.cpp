@@ -18,7 +18,7 @@ bool C0deTrackerStream::onGetData(sf::SoundStream::Chunk &data) {
     // Fill the chunk with audio data from the stream source
     // (note: must not be empty if you want to continue playing)
     //std::chrono::time_point t1 = std::chrono::system_clock::now();
-    for(int i = 0; i < SAMPLE_RATE * BUFFER_LENGTH_S * PANNING; i += PANNING){
+    for(unsigned int i = 0; i < SAMPLE_RATE * BUFFER_LENGTH_S * PANNING; i += PANNING){
         sound = track->play(this->time + (double(i) / 2) / SAMPLE_RATE);
         this->smpls[i] = sound[0] * BITS_16*0.5;
         this->smpls[i+1] = sound[1] * BITS_16*0.5;

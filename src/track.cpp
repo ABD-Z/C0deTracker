@@ -215,11 +215,13 @@ namespace C0deTracker {
                 }
 
                 a =  this->chans[i].getVolume() * this->chans[i].tremolo_val * this->chans[i].getInstructionState()->volume;
-                p = Notes::key2pitch(this->chans[i].getInstructionState()->key)  + this->chans[i].pitch
+                p = + this->pitch + Notes::key2pitch(this->chans[i].getInstructionState()->key)  + this->chans[i].pitch
                     + this->chans[i].pitch_slide_val  + arpeggio - this->chans[i].porta_pitch_dif
                     + this->chans[i].oscillator.getPitch();
 
-                p += (this->pitch + this->vibrato_val+ this->chans[i].vibrato_val)/(t-this->chans[i].getTime());
+                if(t-this->chans[i].getTime() > 0)
+                    p += (this->vibrato_val+ this->chans[i].vibrato_val)/(t-this->chans[i].getTime());
+
 
                 if (this->chans[i].getLastInstructionAddress() != nullptr && this->chans[i].getTrack() != nullptr) {
                     if (!this->chans[i].isReleased()) {
@@ -338,11 +340,22 @@ namespace C0deTracker {
                 this->volume_slide_up = 0.f;
             }
         }
-        if(this->pitch_slide_down != 0)
-            this->pitch -= (this->pitch_slide_down / this->speed) * (t - this->pitch_slide_time);
 
-        if(this->pitch_slide_up != 0)
-            this->pitch += (this->pitch_slide_up / this->speed) * (t - this->pitch_slide_time);
+        if(this->pitch_slide_down != 0){
+            this->pitch -= (this->pitch_slide_down / this->getSpeed()) * (t - this->pitch_slide_time);
+            if(this->pitch <= MIN_PITCH){
+                this->pitch = MIN_PITCH;
+                this->pitch_slide_down = 0;
+            }
+        }
+
+        if(this->pitch_slide_up != 0){
+            this->pitch += (this->pitch_slide_up   / this->getSpeed()) * (t - this->pitch_slide_time);
+            if(this->pitch >= MAX_PITCH){
+                this->pitch = MAX_PITCH;
+                this->pitch_slide_up = 0;
+            }
+        }
 
         if(this->panning_slide_right != 0){
             this->panning += (this->panning_slide_right / this->speed) * (t - this->panning_slide_time);

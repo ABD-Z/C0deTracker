@@ -47,6 +47,8 @@ namespace C0deTracker {
                 return this->getVolume() * Osc::whitenoise(a, frq, t - phs*1./frq, dc, FMfeed);
             case WHITENOISE2:
                 return this->getVolume() * Osc::whitenoise2(a, frq, t - phs*1./frq, dc, FMfeed);
+            case NOKIA3310:
+                return Osc::nokia3310(amp, frq, t, 0, FMfeed);
             default:
                 return 0;
         }
@@ -61,6 +63,8 @@ namespace C0deTracker {
     }
 
     float Osc::oscillate(float a, float f, double t, double rt, float dc, float p, float FMfeed) {
+        /*if(f >= MAX_FREQ || f <= MIN_FREQ)
+            return 0;*/
         return this->handleAmpEnvelope(t, rt) * this->oscillate(a, f, t, dc, p, FMfeed);
     }
 
@@ -83,8 +87,7 @@ namespace C0deTracker {
         return  float(double(a) * (std::fmax(1. - 2*frac_fs/dc, -0.) - 0.5));
     }
 
-    float Osc::saw(float a, float f, double t, float dc, float FMfeed) {
-        double T = 1.f / f;
+    float Osc::saw(float a, float f, double t, float dc, float FMfeed) {double T = 1.f / f;
         //t-T*floor(t/T)  <=> mod(t,T)
         double frac_ft = f * t - floor( t / (1.f/f));
         double s = (frac_ft - dc < 0) ? t + FMfeed : 0.f + FMfeed;
@@ -101,6 +104,23 @@ namespace C0deTracker {
         float s = Osc::sinus(a, f, t/(dc), 0.f, FMfeed);
         return  a * (s - floor(s) - 0.5f);
     }
+
+    float Osc::nokia3310(float a, float f, double t, float dc, float FMfeed){
+        double p = 0.1;
+        double mod = f*t + p - floor(f*t + p);
+
+        double sin = sinf(TWOPI*10*f*t);
+
+
+        if(mod < p){
+            double div_sin1 = 10*f* ( f * t +10*p  - floor(f * t + 10*p));
+            return 600*sin/div_sin1;
+        }else{
+            double div_sin2 = 10*f* ( f * t + p  - floor(f * t + p));
+            return 600*sin/div_sin2;
+        }
+    }
+
 
     const ADSR *Osc::getAmpEnvelope() {
         return &this->amp_envelope;
@@ -167,6 +187,4 @@ namespace C0deTracker {
             return this->current_frequency;
         }
     }
-
-
 }

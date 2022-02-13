@@ -4,9 +4,9 @@
 #include <chrono>
 
 #include "../songs/tutorial.hpp"//include your song
-#include "../songs/examples.hpp"
+#include "../songs/nokia3310_DUSHMAN_REMOVER.hpp"
 
-//#define REALTIME
+#define REALTIME
 #define NUMBER_OF_TRACKS 1
 
 void clear_console(){
@@ -23,7 +23,7 @@ void clear_console(){
 int main() {
     initGlobalInstruments();
     int index = 0;
-    C0deTracker::Track_Data* tracks_data[] = {new Nokia3310_Test()/*, new TutoTrack, new SuperStreetFighterII_CreditTheme(), new FrereJacques(),
+    C0deTracker::Track_Data* tracks_data[] = {new Nokia3310_DUSHMAN_REMOVER_Battle()/*, new TutoTrack, new SuperStreetFighterII_CreditTheme(), new FrereJacques(),
                                               new FZERO_MenuTheme(), new SuperMarioBros_OverworldTheme(), new KirbysDreamland_GreenGreensTheme(),
                                               new Sonic_GreenHillZoneTheme()*/};
 

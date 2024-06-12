@@ -256,12 +256,13 @@ namespace C0deTracker {
             case 0x00://pitch slide up
                 this->pitch_slide_up = float(fx_val) / float(0x00FFFFFF);
                 this->pitch_slide_down = 0.f;
+                this->pitch_slide_step = t;
                 this->pitch_slide_time = t;
-
                 return true;
             case 0x01://pitch slide down
                 this->pitch_slide_down = float(fx_val) / float(0x00FFFFFF);
                 this->pitch_slide_up = 0.f;
+                this->pitch_slide_step = t;
                 this->pitch_slide_time = t;
                 return true;
             case 0x02://vibrato
@@ -279,11 +280,13 @@ namespace C0deTracker {
                 this->volume_slide_up = float(fx_val) / float(0x00FFFFFF);
                 this->volume_slide_down = 0.f;
                 this->volume_slide_time = t;
+                this->volume_slide_step = t;
                 return true;
             case 0x06://volume slide down
                 this->volume_slide_down = float(fx_val) / float(0x00FFFFFF);
                 this->volume_slide_up = 0.f;
                 this->volume_slide_time = t;
+                this->volume_slide_step = t;
                 return true;
             case 0x07://tremolo
                 this->tremolo_speed = float(fx_val >> 4 * 3) / float(0x100);
@@ -313,11 +316,13 @@ namespace C0deTracker {
             case 0x0D://slide right panning
                 this->panning_slide_right = float(fx_val) / float(0xFFFFFF);
                 this->panning_slide_left = 0.0f;
+                this->panning_slide_step = t;
                 this->panning_slide_time = t;
                 return true;
             case 0x0E://slide left panning
                 this->panning_slide_left = float(fx_val) / float(0xFFFFFF);
                 this->panning_slide_right = 0.0f;
+                this->panning_slide_step = t;
                 this->panning_slide_time = t;
                 return true;
             default:
@@ -327,48 +332,59 @@ namespace C0deTracker {
 
     void Track::update_fx(double t) {
         if(this->volume_slide_down != 0){
-            this->volume -= (this->volume_slide_down / this->speed) * (t - this->volume_slide_time);
-            if (this->volume <= 0) {
-                this->volume = 0.f;
-                this->volume_slide_down = 0.f;
+            if (t - this->volume_slide_step >= 1./this->getClock()) {
+                this->volume_slide_step += 1. / this->getClock();
+                this->volume -= (this->volume_slide_down / this->speed);
+                if (this->volume <= 0) {
+                    this->volume = 0.f;
+                    this->volume_slide_down = 0.f;
+                }
             }
         }
         if(this->volume_slide_up != 0){
-            this->volume += (this->volume_slide_up / this->speed) * (t - this->volume_slide_time);
-            if (this->volume >= MASTER_VOLUME) {
-                this->volume = MASTER_VOLUME;
-                this->volume_slide_up = 0.f;
+            if (t - this->volume_slide_step >= 1./this->getClock()) {
+                this->volume_slide_step += 1./this->getClock();
+                this->volume += (this->volume_slide_up / this->getSpeed());
+                if (this->volume >= MASTER_VOLUME) {
+                    this->volume = MASTER_VOLUME;
+                    this->volume_slide_up = 0.f;
+                }
             }
         }
 
-        if(this->pitch_slide_down != 0){
-            this->pitch -= (this->pitch_slide_down / this->getSpeed()) * (t - this->pitch_slide_time);
-            if(this->pitch <= MIN_PITCH){
-                this->pitch = MIN_PITCH;
-                this->pitch_slide_down = 0;
+        if(this->pitch_slide_down != 0) {
+            if (t - this->pitch_slide_step >= 1./this->getClock()) {
+                this->pitch_slide_step += 1. / this->getClock();
+                this->pitch -= (this->pitch_slide_down / this->getSpeed());
             }
         }
 
-        if(this->pitch_slide_up != 0){
-            this->pitch += (this->pitch_slide_up   / this->getSpeed()) * (t - this->pitch_slide_time);
-            if(this->pitch >= MAX_PITCH){
-                this->pitch = MAX_PITCH;
-                this->pitch_slide_up = 0;
+        if(this->pitch_slide_up != 0) {
+            if (t - this->pitch_slide_step >= 1./this->getClock()) {
+                this->pitch_slide_step += 1. / this->getClock();
+                this->pitch += (this->pitch_slide_up / this->getSpeed());
             }
         }
 
         if(this->panning_slide_right != 0){
-            this->panning += (this->panning_slide_right / this->speed) * (t - this->panning_slide_time);
-            if (this->panning >= MASTER_VOLUME) {
-                this->panning = MASTER_VOLUME;
-                this->panning_slide_right = 0.f;
+            if (t - this->panning_slide_step >= 1./this->getClock()) {
+                this->panning_slide_step += 1. / this->getClock();
+                this->panning += (this->panning_slide_right / this->getSpeed());
+                if (this->panning >= MASTER_VOLUME) {
+                    this->panning = MASTER_VOLUME;
+                    this->panning_slide_right = 0.f;
+                }
             }
         }
+
         if(this->panning_slide_left != 0){
-            this->panning -= (this->panning_slide_left / this->speed) * (t - this->panning_slide_time);
-            if (this->panning <= 0) {
-                this->panning = 0;
-                this->panning_slide_left = 0.f;
+            if (t - this->panning_slide_step >= 1./this->getClock()) {
+                this->panning_slide_step += 1. / this->getClock();
+                this->panning -= (this->panning_slide_left / this->getSpeed());
+                if (this->panning <= 0) {
+                    this->panning = 0;
+                    this->panning_slide_left = 0.f;
+                }
             }
         }
         if (this->tremolo_speed == 0.f || this->tremolo_depth == 0.f) {

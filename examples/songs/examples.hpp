@@ -10,13 +10,13 @@
 class Track_Test : public C0deTracker::Track_Data{
 private:
     constexpr static const char* NAME = "Testotrack";
-    static const uint_fast8_t ROWS = 16;
+    static const uint_fast8_t ROWS = 32;
     static const uint_fast8_t FRAMES = 1;
     static const uint_fast8_t CHANNELS = 1;
-    constexpr static const uint_fast8_t FX_per_CHAN[CHANNELS] = {1};
+    constexpr static const uint_fast8_t FX_per_CHAN[CHANNELS] = {2};
     constexpr static const float CLOCK = 60.f;
-    constexpr static const float SPEED = 3.f;
-    constexpr static const float BASETIME = 1.f;
+    constexpr static const float SPEED = 1.f;
+    constexpr static const float BASETIME = 3.f;
 public:
     Track_Test();
     void load_data() override;

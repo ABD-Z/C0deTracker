@@ -6,8 +6,9 @@
 #include "../songs/tutorial.hpp"//include your song
 #include "../songs/examples.hpp"
 
-#define REALTIME
-#define NUMBER_OF_TRACKS 8
+//#define REALTIME
+#define NUMBER_OF_TRACKS 1
+//#define NUMBER_OF_TRACKS 7
 
 void clear_console(){
 #ifdef __linux__
@@ -23,9 +24,9 @@ void clear_console(){
 int main() {
     initGlobalInstruments();
     int index = 0;
-    C0deTracker::Track_Data* tracks_data[] = {new Track_Test(), new TutoTrack, new SuperStreetFighterII_CreditTheme(), new FrereJacques(),
+    C0deTracker::Track_Data* tracks_data[] = {new Track_Test()/*,new TutoTrack, new SuperStreetFighterII_CreditTheme(), new FrereJacques(),
                                               new FZERO_MenuTheme(), new SuperMarioBros_OverworldTheme(), new KirbysDreamland_GreenGreensTheme(),
-                                              new Sonic_GreenHillZoneTheme()};
+                                              new Sonic_GreenHillZoneTheme()*/};
 
 
     //Method to play sound in real time with the custom stream
@@ -87,7 +88,9 @@ int main() {
 
         std::cout << "Begin sampling " << td->getName() << std::endl;
 
-        unsigned int number_of_samples = SAMPLE_RATE * track_processor.getDuration()*2 * PANNING;
+        std::cout << "time ; pitch ; frequency" << std::endl;
+
+        unsigned int number_of_samples = 3*SAMPLE_RATE * track_processor.getDuration() * PANNING;
         samples.reserve(number_of_samples);
 
         for (uint_fast64_t i = 0; i < number_of_samples; ++++i) {

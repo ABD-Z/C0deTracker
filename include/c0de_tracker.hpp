@@ -410,10 +410,12 @@ namespace C0deTracker {
         float volume_slide_up = 0.f;
         float volume_slide_down = 0.f;
         double volume_slide_time = 0.0;
+        double volume_slide_step = 0.0;
 
         float pitch_slide_up = 0.f;
         float pitch_slide_down = 0.f;
         double pitch_slide_time = 0.0;
+        double pitch_slide_step = 0.0;
 
         float tremolo_speed = 0.0f;
         float tremolo_depth = 0.0f;
@@ -434,6 +436,7 @@ namespace C0deTracker {
         float panning_slide_right = 0.f;
         float panning_slide_left = 0.f;
         double panning_slide_time = 0.0;
+        double panning_slide_step = 0.0;
 
     };
 
@@ -615,11 +618,13 @@ namespace C0deTracker {
         float volume_slide_up = 0.f;
         float volume_slide_down = 0.f;
         double volume_slide_time = 0.0;
+        double volume_slide_step = 0.0;
 
         float pitch_slide_up = 0.f;
         float pitch_slide_down = 0.f;
         double pitch_slide_time = 0.0;
         double pitch_slide_val =0.0;
+        double pitch_slide_step = 0.0;
 
         bool portamento = false;
         float portamento_speed = 0.f;
@@ -641,6 +646,7 @@ namespace C0deTracker {
         float panning_slide_right = 0.f;
         float panning_slide_left = 0.f;
         double panning_slide_time = 0.0;
+        double panning_slide_step = 0.0;
 
         bool arpeggio = false;
         double arpeggio_step = 0.0;

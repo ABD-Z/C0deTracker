@@ -179,7 +179,7 @@ namespace C0deTracker {
                             }
                             if (current_instruction->volume != Notes::CONTINUE &&
                                 ((0.f <= current_instruction->volume) &&
-                                 (current_instruction->volume <= MASTER_VOLUME))) {
+                                 (current_instruction->volume <= MAX_VOLUME))) {
                                 this->chans[i].setVolumeInstructionState(current_instruction->volume);
                             }
                         }
@@ -187,7 +187,7 @@ namespace C0deTracker {
                             this->chans[i].getInstructionState()->instrument_index < this->track_data->instruments) {
                             if (current_instruction->volume != Notes::CONTINUE &&
                                 ((0.f <= current_instruction->volume) &&
-                                 (current_instruction->volume <= MASTER_VOLUME))) {
+                                 (current_instruction->volume <= MAX_VOLUME))) {
                                 this->chans[i].setVolumeInstructionState(current_instruction->volume);
                             }
                         }
@@ -335,8 +335,8 @@ namespace C0deTracker {
             if (t - this->volume_slide_step >= 1./this->getClock()) {
                 this->volume_slide_step += 1. / this->getClock();
                 this->volume -= (this->volume_slide_down / this->speed);
-                if (this->volume <= 0) {
-                    this->volume = 0.f;
+                if (this->volume <= MIN_VOLUME) {
+                    this->volume = MIN_VOLUME;
                     this->volume_slide_down = 0.f;
                 }
             }
@@ -345,8 +345,8 @@ namespace C0deTracker {
             if (t - this->volume_slide_step >= 1./this->getClock()) {
                 this->volume_slide_step += 1./this->getClock();
                 this->volume += (this->volume_slide_up / this->getSpeed());
-                if (this->volume >= MASTER_VOLUME) {
-                    this->volume = MASTER_VOLUME;
+                if (this->volume >= MAX_VOLUME) {
+                    this->volume = MAX_VOLUME;
                     this->volume_slide_up = 0.f;
                 }
             }
@@ -378,8 +378,8 @@ namespace C0deTracker {
             if (t - this->panning_slide_step >= 1./this->getClock()) {
                 this->panning_slide_step += 1. / this->getClock();
                 this->panning += (this->panning_slide_right / this->getSpeed());
-                if (this->panning >= MASTER_VOLUME) {
-                    this->panning = MASTER_VOLUME;
+                if (this->panning >= MAX_VOLUME) {
+                    this->panning = MAX_VOLUME;
                     this->panning_slide_right = 0.f;
                 }
             }
@@ -389,8 +389,8 @@ namespace C0deTracker {
             if (t - this->panning_slide_step >= 1./this->getClock()) {
                 this->panning_slide_step += 1. / this->getClock();
                 this->panning -= (this->panning_slide_left / this->getSpeed());
-                if (this->panning <= 0) {
-                    this->panning = 0;
+                if (this->panning <= MIN_VOLUME) {
+                    this->panning = MIN_VOLUME;
                     this->panning_slide_left = 0.f;
                 }
             }

@@ -44,7 +44,8 @@
 
 namespace C0deTracker {
 #define TWOPI 6.283185307
-#define MASTER_VOLUME 1.f
+#define MAX_VOLUME 1.f
+#define MIN_VOLUME 0.f
 #define MIN_FREQ 20
 #define MAX_FREQ 20000
 #define MIN_PITCH -53.515

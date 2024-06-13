@@ -31,7 +31,7 @@ namespace C0deTracker {
 
     float Osc::oscillate(float a, float f, double t, float dc, float p, float FMfeed) {
         float amp = a * this->getVolume();
-        if(amp == 0){return 0;}
+        if(amp == MIN_VOLUME){return MIN_VOLUME;}
         float frq = f;
         float phs = p + this->getPhase();
         switch(this->wavetype){
@@ -48,7 +48,7 @@ namespace C0deTracker {
             case WHITENOISE2:
                 return this->getVolume() * Osc::whitenoise2(a, frq, t - phs*1./frq, dc, FMfeed);
             default:
-                return 0;
+                return MIN_VOLUME;
         }
     }
 
@@ -131,17 +131,17 @@ namespace C0deTracker {
     }
 
     float Osc::handleAmpEnvelope(double t, double rt) {
-        float output = MASTER_VOLUME;
-        float attacktime = MASTER_VOLUME / this->amp_envelope.attack;
-        float attack_amp = fmin(MASTER_VOLUME, t*this->amp_envelope.attack);
+        float output = MAX_VOLUME;
+        float attacktime = MAX_VOLUME / this->amp_envelope.attack;
+        float attack_amp = fmin(MAX_VOLUME, t * this->amp_envelope.attack);
         if(this->release && rt >= 0.f){//release
-            output *= fmax(0.f, this->current_envelope_amplitude - (rt) * this->amp_envelope.release);
+            output *= fmax(MIN_VOLUME, this->current_envelope_amplitude - (rt) * this->amp_envelope.release);
         }else{
-            if(attack_amp < MASTER_VOLUME){//attack
+            if(attack_amp < MAX_VOLUME){//attack
                 output *= attack_amp;
                 this->current_envelope_amplitude = output;
             }else{//decay sustain
-                output *= fmax(this->amp_envelope.sustain, MASTER_VOLUME - (t - attacktime) * this->amp_envelope.decay);
+                output *= fmax(this->amp_envelope.sustain, MAX_VOLUME - (t - attacktime) * this->amp_envelope.decay);
                 this->current_envelope_amplitude = output;
             }
         }

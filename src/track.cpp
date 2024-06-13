@@ -356,6 +356,10 @@ namespace C0deTracker {
             if (t - this->pitch_slide_step >= 1./this->getClock()) {
                 this->pitch_slide_step += 1. / this->getClock();
                 this->pitch -= (this->pitch_slide_down / this->getSpeed());
+                if (this->pitch <= MIN_PITCH) {
+                    this->pitch = MIN_PITCH;
+                    this->pitch_slide_down = 0;
+                }
             }
         }
 
@@ -363,6 +367,10 @@ namespace C0deTracker {
             if (t - this->pitch_slide_step >= 1./this->getClock()) {
                 this->pitch_slide_step += 1. / this->getClock();
                 this->pitch += (this->pitch_slide_up / this->getSpeed());
+                if (this->pitch >= MAX_PITCH) {
+                    this->pitch = MAX_PITCH;
+                    this->pitch_slide_up = 0;
+                }
             }
         }
 

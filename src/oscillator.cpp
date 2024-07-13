@@ -29,7 +29,7 @@ namespace C0deTracker {
     void Osc::setVolume(float v) {this->volume = v;}
     float Osc::getVolume() const {return this->volume;}
 
-    float Osc::oscillate(float a, float f, double t, float dc, float p, float FMfeed) {
+    float Osc::oscillate(float a, float f, double t, float FMfeed) {
         float amp = a * this->getVolume();
         if(amp == MIN_VOLUME){return MIN_VOLUME;}
         float frq = f;
@@ -52,16 +52,16 @@ namespace C0deTracker {
         }
     }
 
-    float Osc::oscillate(float a, float f, double t, float dc, float p) {
-        return this->oscillate(a,f,t,-1,dc,p,0);
+    float Osc::oscillate(float a, float f, double t) {
+        return this->oscillate(a,f,t,-1,0);
     }
 
-    float Osc::oscillate(float a, float f, double t, double rt, float dc, float p) {
-        return this->oscillate(a,f,t,rt,dc,p,0);
+    float Osc::oscillate(float a, float f, double t, double rt) {
+        return this->oscillate(a,f,t,rt,0);
     }
 
-    float Osc::oscillate(float a, float f, double t, double rt, float dc, float p, float FMfeed) {
-        return this->handleAmpEnvelope(t, rt) * this->oscillate(a, f, t, dc, p, FMfeed);
+    float Osc::oscillate(float a, float f, double t, double rt, float FMfeed) {
+        return this->handleAmpEnvelope(t, rt) * this->oscillate(a, f, t, FMfeed);
     }
 
     float Osc::sinus(float a, float f, double t, float dc, float FMfeed) {

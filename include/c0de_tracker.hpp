@@ -225,45 +225,18 @@ namespace C0deTracker {
          * @param a Amplitude
          * @param f Frequency
          * @param t Time
-         * @param dc Duty cycle
-         * @param p Phase
          * @return Signal amplitude at time t with the given duty cycle dc and phase p.
          */
-        float oscillate(float a, float f, double t, float dc, float p);
-        /**
-         * @brief Generates corresponding waveform selected.
-         * @param a Amplitude
-         * @param f Frequency
-         * @param t Time
-         * @param dc Duty cycle
-         * @param p Phase
-         * @param FMfeed signal feeding for FM
-         * @return Signal amplitude at time t with the given duty cycle dc and phase p.
-         */
-        float oscillate(float a, float f, double t, float dc, float p, float FMfeed);
+        float oscillate(float a, float f, double t);
         /**
          * @brief Same as previous oscillate, but with release time to handle release envelope. This function is fully abstract, it is implemented in PSG.
          * @param a Amplitude
          * @param f Frequency
          * @param rt Release time
          * @param t Time
-         * @param dc Duty cycle
-         * @param p Phase
          * @return Signal amplitude at time t with the given duty cycle dc and phase p.
          */
-        float oscillate(float a, float f, double t, double rt, float dc, float p);
-        /**
-         * @brief Same as previous oscillate, but with release time to handle release envelope. This function is fully abstract, it is implemented in PSG.
-         * @param a Amplitude
-         * @param f Frequency
-         * @param rt Release time
-         * @param t Time
-         * @param dc Duty cycle
-         * @param p Phase
-         * @param FMfeed signal feeding for FM
-         * @return Signal amplitude at time t with the given duty cycle dc and phase p.
-         */
-        float oscillate(float a, float f, double t, double rt, float dc, float p, float FMfeed);
+        float oscillate(float a, float f, double t, double rt);
 
         void setAttack(float A);
         void setDecay(float D);
@@ -296,6 +269,28 @@ namespace C0deTracker {
         float current_pitch = this->pitch;
         float current_frequency = 440;//HZ
         float current_envelope_amplitude = 0.f; /**<Used to calculate envelope notably for release state*/
+        double time_offset = 0;
+
+        /**
+         * @brief Generates corresponding waveform selected.
+         * @param a Amplitude
+         * @param f Frequency
+         * @param t Time
+         * @param FMfeed signal feeding for FM
+         * @return Signal amplitude at time t with the given duty cycle dc and phase p.
+         */
+        float oscillate(float a, float f, double t, float FMfeed);
+        /**
+         * @brief Same as previous oscillate, but with release time to handle release envelope. This function is fully abstract, it is implemented in PSG.
+         * @param a Amplitude
+         * @param f Frequency
+         * @param rt Release time
+         * @param t Time
+         * @param FMfeed signal feeding for FM
+         * @return Signal amplitude at time t with the given duty cycle dc and phase p.
+         */
+        float oscillate(float a, float f, double t, double rt, float FMfeed);
+
         static float sinus(float a, float f, double t, float dc, float FMfeed);
         static float square(float a, float f, double t, float dc, float FMfeed);
         static float triangle(float a, float f, double t, float dc, float FMfeed);

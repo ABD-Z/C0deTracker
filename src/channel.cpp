@@ -316,11 +316,13 @@ namespace C0deTracker {
     }
 
     float Channel::play_pitch(float a, float p, double t) {
-        return this->oscillator.oscillate(a, this->oscillator.pitch2freq(p), t, this->oscillator.getDutycycle(), this->oscillator.getPhase());
+        float f = this->oscillator.pitch2freq(p, t);
+        return this->oscillator.oscillate(a, f, t);
     }
 
     float Channel::play_pitch(float a, float p, double t, double rt) {
-        return this->oscillator.oscillate(a, this->oscillator.pitch2freq(p), t, rt, this->oscillator.getDutycycle(), this->oscillator.getPhase());;
+        float f = this->oscillator.pitch2freq(p, t);
+        return this->oscillator.oscillate(a, f, t, rt);
     }
 
     void Channel::resetState() {

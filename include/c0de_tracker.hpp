@@ -260,14 +260,17 @@ namespace C0deTracker {
          */
         bool isReleased() const;
 
-        float pitch2freq(float pitch);
+        float pitch2freq(float pitch, double time);
+
+        void resetPhaseTimeOffset();
     private:
         uint_fast8_t wavetype = SINUS; float dutycycle = 0.5f; float phase = 0.0f; float pitch = 0.0f;
         float volume = 1.0f;
         ADSR amp_envelope = ADSR(100.f, 0.0f, 1.0f, 1.0f);
         bool release = false;
-        float current_pitch = this->pitch;
-        float current_frequency = 440;//HZ
+        float current_pitch = -1;
+        float current_frequency = -1;
+        float current_phase = 0.0f;
         float current_envelope_amplitude = 0.f; /**<Used to calculate envelope notably for release state*/
         double time_offset = 0;
 

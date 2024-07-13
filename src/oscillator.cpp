@@ -33,20 +33,22 @@ namespace C0deTracker {
         float amp = a * this->getVolume();
         if(amp == MIN_VOLUME){return MIN_VOLUME;}
         float frq = f;
-        float phs = p + this->getPhase();
+        float dc = this->getDutycycle();
+        float phs = this->current_phase;
+        double x = t - this->time_offset - phs*1./frq;
         switch(this->wavetype){
             case SINUS:
-                return Osc::sinus(amp, frq, t - phs*1./frq, dc, FMfeed);
+                return Osc::sinus(amp, frq, x, dc, FMfeed);
             case SQUARE:
-                return Osc::square(amp, frq, t - phs*1./frq, dc, FMfeed);
+                return Osc::square(amp, frq, x, dc, FMfeed);
             case TRIANGLE:
-                return Osc::triangle(amp, frq, t - phs*1./frq, dc, FMfeed);
+                return Osc::triangle(amp, frq, x, dc, FMfeed);
             case SAW:
-                return Osc::saw(amp, frq, t - phs*1./frq, dc, FMfeed);
+                return Osc::saw(amp, frq, x, dc, FMfeed);
             case WHITENOISE:
-                return this->getVolume() * Osc::whitenoise(a, frq, t - phs*1./frq, dc, FMfeed);
+                return this->getVolume() * Osc::whitenoise(a, frq, x, dc, FMfeed);
             case WHITENOISE2:
-                return this->getVolume() * Osc::whitenoise2(a, frq, t - phs*1./frq, dc, FMfeed);
+                return this->getVolume() * Osc::whitenoise2(a, frq, x, dc, FMfeed);
             default:
                 return MIN_VOLUME;
         }
@@ -154,18 +156,30 @@ namespace C0deTracker {
         this->setWavetype(instrdata->wavetype); this->setDutycycle(instrdata->duty_cycle);
         this->setPhase(instrdata->phase); this->setVolume(instrdata->volume); this->setPitch(instrdata->pitch);
         this->current_envelope_amplitude = 0.0f;
+        this->current_phase = this->getPhase();
         this->setRelease(false);
     }
 
-    float Osc::pitch2freq(float pitch) {
+    float Osc::pitch2freq(float pitch, double time) {
         if(this->current_pitch == pitch) {
             return this->current_frequency;
         }
         else {
+            if (time > 0) {
+                double ft = this->current_frequency * (time - this->time_offset);
+                double frac_ft = ft - floor(ft);
+                this->current_phase = this->current_phase - frac_ft - floor( this->current_phase - frac_ft);
+                this->time_offset = time;
+            }
             this->current_pitch = pitch;
             this->current_frequency = Notes::pitch2freq(pitch);
             return this->current_frequency;
         }
+    }
+
+    void Osc::resetPhaseTimeOffset() {
+        this->current_phase = 0;
+        this->time_offset = 0;
     }
 
 

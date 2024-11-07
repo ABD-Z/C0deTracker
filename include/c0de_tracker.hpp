@@ -46,10 +46,8 @@ namespace C0deTracker {
 #define TWOPI 6.283185307
 #define MAX_VOLUME 1.f
 #define MIN_VOLUME 0.f
-#define MIN_FREQ 20
-#define MAX_FREQ 20000
-#define MIN_PITCH -53.515
-#define MAX_PITCH 66.079
+#define MIN_PITCH -57 // K(C, 0) = 16.352 Hz
+#define MAX_PITCH 50 // K(B, 8) = 7902.133 Hz
 
 
     struct Key;
@@ -62,8 +60,12 @@ namespace C0deTracker {
     class Track;
     class Channel;
     class Editor;
-
-
+    class GlobalFXs;
+    class ChannelFXs;
+    struct SlideFX;
+    struct SpeedDepthFX;
+    struct TransposeFX;
+    struct PortamentoFX;
 
     /**
      * @brief This structure represents a piano key which is represented by its note (C, C#, D, D#, E, F, F#, G, G#, A, A#, B ; see Notes enumeration)
@@ -356,9 +358,128 @@ namespace C0deTracker {
         ~Pattern();
     };
 
+    struct AbstractFX {
+        float val = 0;
+
+        virtual void process(const double t, const float clock, const float speed) = 0;
+        virtual void reset() = 0;
+        virtual float getValue();
+        virtual bool isActive() = 0;
+    };
+
+    struct SlideFX : AbstractFX {
+        const float MIN, MAX, INIT_VAL;
+        double time_step = 0;
+        float slide = 0;
+
+        SlideFX(const float min, const float max, const float init_val);
+        virtual void process(const double t, const float clock, const float speed);
+        virtual void reset();
+        virtual bool isActive();
+    };
+
+    struct SpeedDepthFX : AbstractFX {
+        const float MIN;
+        double start_time = 0;
+        float speed = 0;
+        float depth = 0;
+
+        SpeedDepthFX(const float min);
+        void process(const double t, const float clock, const float speed);
+        void reset();
+        bool isActive();
+    };
+
+    struct TransposeFX : SlideFX {
+        uint_fast8_t repeat = 0;
+        uint_fast8_t semitones = 0;
+        uint_fast8_t semitones_counter = 0;
+        uint_fast8_t delay = 0;
+
+        TransposeFX(const float min, const float max, const float init_val);
+        void process(const double t, const float clock, const float speed);
+        bool isActive();
+    };
+
+    struct PortamentoFX : SlideFX {
+        int_fast8_t sign = 0;
+
+        PortamentoFX(const float min, const float max, const float init_val);
+        void reset();
+        float getValue();
+    };
+
+    struct ArpeggioFX : SlideFX {
+        static const uint_fast8_t SIZE = 6;
+        uint_fast8_t tab[SIZE]{0, 0, 0, 0, 0, 0};
+
+        ArpeggioFX(const float min, const float max, const float init_val);
+        void process(const double t, const float clock, const float speed);
+        float getValue();
+    };
+
+    struct CountableRepeatableFX : AbstractFX {
+        uint_fast8_t delay = 0;
+        uint_fast8_t number = 0;
+        uint_fast8_t repeat = 0;
+        double time_step = 0;
+        uint_fast8_t counter = 0;
 
 
-    class Track{
+        virtual void process(const double t, const float clock, const float speed);
+        virtual bool isActive();
+        void reset();
+    };
+
+    struct RetriegFX : CountableRepeatableFX {
+        void process(const double t, const float clock, const float speed);
+        bool isActive();
+    };
+
+    struct DelayReleaseFX : AbstractFX {
+        CountableRepeatableFX delay, release;
+
+        void process(const double t, const float clock, const float speed);
+        void reset();
+        float getValue();
+        bool isActive();
+    };
+
+    class GlobalFXs {
+    public:
+        GlobalFXs();
+    protected:
+        SlideFX volume{MIN_VOLUME, MAX_VOLUME, 1};
+        SlideFX panning{MIN_VOLUME, MAX_VOLUME, 0.5};
+        SlideFX pitch{MIN_PITCH, MAX_PITCH, 0};
+        SpeedDepthFX tremolo{1};
+        SpeedDepthFX vibrato{0};
+        std::vector<AbstractFX*> effects_table;
+        enum fx_indices{PITCH_SLIDE_UP, PITCH_SLIDE_DOWN, VIBRATO, SET_PITCH,
+                SET_VOLUME, VOLUME_SLIDE_UP, VOLUME_SLIDE_DOWN, TREMOLO, SET_PANNING,
+                PANNING_SLIDE_RIGHT, PANNING_SLIDE_LEFT, GLOBAL_FXS};
+        std::vector<uint_fast8_t> fx_codes = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0D, 0x0E};
+
+        virtual bool decode_fx(const uint_fast32_t fx, const double t);
+        virtual void update_fx(const double t, const float clock, const float speed);
+        virtual void reset_fxs();
+
+    };
+
+    class ChannelFXs : public GlobalFXs {
+    public:
+        ChannelFXs();
+    protected:
+        TransposeFX transpose{MIN_PITCH, MAX_PITCH, 0};
+        PortamentoFX portamento{0, MAX_PITCH - MIN_PITCH, 0};
+        ArpeggioFX arpeggio{0, ArpeggioFX::SIZE, 0};
+        RetriegFX retrieg;
+        DelayReleaseFX delay_release;
+        enum fx_indices_channel{TRANSPOSE=GLOBAL_FXS, PORTAMENTO, ARPEGGIO, RETRIEG, DELAY_RELEASE};
+        virtual bool decode_fx(const uint_fast32_t fx, const double t);
+    };
+
+    class Track : GlobalFXs {
     public:
         Track() = default;
 
@@ -393,7 +514,6 @@ namespace C0deTracker {
     private:
         void setTrack_Data(Track_Data* td);
         bool decode_fx(uint_fast32_t fx, double t);
-        void update_fx(double t);
         Track_Data* track_data = nullptr;
         C0deTracker::Channel* chans = nullptr;
 
@@ -405,37 +525,11 @@ namespace C0deTracker {
 
         bool readFx = true;
 
-        float volume = 1.0f, pitch = 0.0f;
-        float volume_slide_up = 0.f;
-        float volume_slide_down = 0.f;
-        double volume_slide_time = 0.0;
-        double volume_slide_step = 0.0;
-
-        float pitch_slide_up = 0.f;
-        float pitch_slide_down = 0.f;
-        double pitch_slide_time = 0.0;
-        double pitch_slide_step = 0.0;
-
-        float tremolo_speed = 0.0f;
-        float tremolo_depth = 0.0f;
-        float tremolo_val = 1.0f;
-        double tremolo_time = 0.0;
-
-        float vibrato_speed = 0.0f;
-        float vibrato_depth = 0.0f;
-        float vibrato_val = 0.0f;
-        double vibrato_time = 0.0;
-        float panning = 0.5f;
         bool branch = false;
         uint_fast8_t frametojump = 0;
         uint_fast8_t rowtojump = 0;
 
         bool stop = false;
-
-        float panning_slide_right = 0.f;
-        float panning_slide_left = 0.f;
-        double panning_slide_time = 0.0;
-        double panning_slide_step = 0.0;
 
     };
 
@@ -479,7 +573,7 @@ namespace C0deTracker {
      *
      * @see Track
      */
-    class Channel{
+    class Channel : public ChannelFXs{
     public:
         /**
          * @brief create a channel. Each channel created has it is own number
@@ -557,7 +651,7 @@ namespace C0deTracker {
         double getTimeRelease() const;
 
         /**
-         * @brief set the time when release is triggered
+         * @brief set the time when ² is triggered
          * @param time
          */
         void setTimeRelease(double time);
@@ -601,11 +695,10 @@ namespace C0deTracker {
         Instruction* last_instruct_address = nullptr;
         Track* track = nullptr;
 
-
         /**Channel state**/
         double time = 0.0;
         bool enable_sound = true;
-        float volume = 1.0f, pitch = 0.0f, speed = 1.0f;
+        float  speed = 1.0f;
         bool released = false;
         double time_release = 0.0;
         Instruction instruct_state{};
@@ -614,64 +707,7 @@ namespace C0deTracker {
 
         bool decode_fx(uint_fast32_t fx, double t);
 
-        float volume_slide_up = 0.f;
-        float volume_slide_down = 0.f;
-        double volume_slide_time = 0.0;
-        double volume_slide_step = 0.0;
-
-        float pitch_slide_up = 0.f;
-        float pitch_slide_down = 0.f;
-        double pitch_slide_time = 0.0;
-        double pitch_slide_val =0.0;
-        double pitch_slide_step = 0.0;
-
-        bool portamento = false;
-        float portamento_speed = 0.f;
-        float porta_pitch_dif = 0.0f;
-        double portamento_time_step = 0;
-
-        float tremolo_speed = 0.0f;
-        float tremolo_depth = 0.0f;
-        float tremolo_val = 1.0f;
-        double tremolo_time = 0.0;
-
-        float vibrato_speed = 0.0f;
-        float vibrato_depth = 0.0f;
-        float vibrato_val = 0.0f;
-        double vibrato_time = 0.0;
-
-        float panning = 0.5f;
-
-        float panning_slide_right = 0.f;
-        float panning_slide_left = 0.f;
-        double panning_slide_time = 0.0;
-        double panning_slide_step = 0.0;
-
-        bool arpeggio = false;
-        double arpeggio_step = 0.0;
-        uint_fast8_t  arpeggio_index = 0;
-        uint_fast8_t arpeggio_val[6]{};
-
         void update_fx(double t);
-
-        uint_fast8_t transpose_delay = 0;
-        uint_fast8_t n_time_to_transpose = 0;
-        uint_fast8_t transpose_semitones = 0;
-        uint_fast8_t transpose_semitone_counter = 0;
-        double transpose_time_step = 0;
-
-        uint_fast8_t retrieg_delay = 0;
-        uint_fast8_t retrieg_number = 0;
-        uint_fast8_t n_time_to_retrieg = 0;
-        double retrieg_time_step = 0;
-        uint_fast8_t retrieg_counter = 0;
-
-        uint_fast8_t delay = 0;
-        uint_fast8_t release = 0;
-        uint_fast8_t n_time_to_delrel = 0;
-        double delrel_time_step = 0;
-        uint_fast8_t delay_counter = 0;
-        uint_fast8_t release_counter = 0;
     };
 
     /**

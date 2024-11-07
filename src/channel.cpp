@@ -19,19 +19,19 @@ namespace C0deTracker {
     void Channel::disable() {this->enable_sound = false; this->last_instruct_address = nullptr;
         this->track = nullptr;}
 
-    float Channel::getVolume() const{return this->volume;}
-    void Channel::setVolume(float volume) {this->volume = volume;}
+    float Channel::getVolume() const{return this->volume.val;}
+    void Channel::setVolume(float volume) {this->volume.val = volume;}
 
-    float Channel::getPitch() const {return this->pitch;}
-    void Channel::setPitch(float pitch) {this->pitch = pitch;}
+    float Channel::getPitch() const {return this->pitch.val;}
+    void Channel::setPitch(float pitch) {this->pitch.val = pitch;}
 
     Instruction* Channel::getLastInstructionAddress() const {return this->last_instruct_address;}
     void Channel::setLastInstructionAddress(Instruction *lastInstructionAddress) { this->last_instruct_address = lastInstructionAddress;}
 
     double Channel::getTime() const{return this->time;}
 
-    void Channel::setTime(double time) {
-        if (!this->portamento) {
+void Channel::setTime(double time) {
+        if (!this->portamento.isActive() || (this->portamento.isActive() && this->isReleased())) {
             this->time = time;
             this->oscillator.resetPhaseTimeOffset();
         }
@@ -59,265 +59,26 @@ namespace C0deTracker {
     }
 
     void Channel::update_fx(double t) {
-        if(this->volume_slide_down != 0){
-            if (t - this->volume_slide_step >= 1./this->track->getClock()) {
-                this->volume_slide_step += 1./this->track->getClock();
-                this->volume -= (this->volume_slide_down / this->track->getSpeed());
-                if (this->volume <= MIN_VOLUME) {
-                    this->volume = MIN_VOLUME;
-                    this->volume_slide_down = 0.f;
-                }
-            }
-        }
+        float rv = this->retrieg.getValue();
+        uint_fast8_t reldel_state = this->delay_release.getValue();
+        ChannelFXs::update_fx(t, this->track->getClock(), this->track->getSpeed());
 
-        if(this->volume_slide_up != 0){
-            if (t - this->volume_slide_step >= 1./this->track->getClock()) {
-                this->volume_slide_step += 1./this->track->getClock();
-                this->volume += (this->volume_slide_up / this->track->getSpeed());
-                if (this->volume >= MAX_VOLUME) {
-                    this->volume = MAX_VOLUME;
-                    this->volume_slide_up = 0.f;
-                }
-            }
-        }
-
-        if(this->pitch_slide_down != 0) {
-            if (t - this->pitch_slide_step >= 1./this->track->getClock()) {
-                this->pitch_slide_step += 1. / this->track->getClock();
-                this->pitch_slide_val -= (this->pitch_slide_down / this->track->getSpeed());
-                if (this->pitch_slide_val <= MIN_PITCH) {
-                    this->pitch_slide_val = MIN_PITCH;
-                    this->pitch_slide_down = 0;
-                }
-            }
-        }
-
-        if(this->pitch_slide_up != 0) {
-            if (t - this->pitch_slide_step >= 1./this->track->getClock()) {
-                this->pitch_slide_step += 1. / this->track->getClock();
-                this->pitch_slide_val += (this->pitch_slide_up / this->track->getSpeed());
-                if (this->pitch >= MAX_PITCH) {
-                    this->pitch = MAX_PITCH;
-                    this->pitch_slide_up = 0;
-                }
-            }
-        }
-
-
-        if(this->panning_slide_right != 0){
-            if (t - this->panning_slide_step >= 1./this->track->getClock()) {
-                this->panning_slide_step += 1. / this->track->getClock();
-                this->panning += (this->panning_slide_right / this->track->getSpeed());
-                if (this->panning >= MAX_VOLUME) {
-                    this->panning = MAX_VOLUME;
-                    this->panning_slide_right = 0.f;
-                }
-            }
-        }
-
-        if(this->panning_slide_left != 0){
-            if (t - this->panning_slide_step >= 1./this->track->getClock()) {
-                this->panning_slide_step += 1. / this->track->getClock();
-                this->panning -= (this->panning_slide_left / this->track->getSpeed());
-                if (this->panning <= MIN_VOLUME) {
-                    this->panning = MIN_VOLUME;
-                    this->panning_slide_left = 0.f;
-                }
-            }
-        }
-
-
-        if (this->tremolo_speed == 0.f || this->tremolo_depth == 0.f) {
-            this->tremolo_val = 1.0f;
-        } else {
-            this->tremolo_val =
-                    0.5f * this->tremolo_depth * sin(TWOPI * this->tremolo_speed * (t - this->tremolo_time)) +
-                    (1 - 0.5f * this->tremolo_depth);
-        }
-        if (this->vibrato_speed == 0.f || this->vibrato_depth == 0.f) {
-            this->vibrato_val = 0.0f;
-        } else {
-            this->vibrato_val = this->vibrato_depth * sin(TWOPI * this->vibrato_speed * (t - this->vibrato_time));
-        }
-        if(this->arpeggio){
-            if (t - this->arpeggio_step >= 1./this->track->getClock()){
-                this->arpeggio_step += 1./this->track->getClock();
-                ++this->arpeggio_index;
-                if(this->arpeggio_index > 5){
-                    this->arpeggio_index = 0;
-                }
-            }
-        }
-
-        if(this->transpose_semitones > 0 && this->n_time_to_transpose > 0){
-            if(this->transpose_delay > 0x7F){//transpose up to this->transpose_semitones
-                if(t - (this->transpose_time_step) >=  double((this->transpose_delay - 0x7F)) / this->track->getClock() && this->transpose_semitone_counter < this->transpose_semitones) {
-                    this->transpose_time_step +=  double((this->transpose_delay - 0x7F)) / this->track->getClock();
-                    ++this->transpose_semitone_counter;
-                    ++this->instruct_state.key.note;
-
-                }
-            }else{//transpose down
-                if(t - (this->transpose_time_step) >= double((this->transpose_delay) ) / this->track->getClock() && this->transpose_semitone_counter < this->transpose_semitones ){
-                    this->transpose_time_step += double((this->transpose_delay)) / this->track->getClock();
-                    ++this->transpose_semitone_counter;
-                    --this->instruct_state.key.note;
-                }
-            }
-        }
-
-        if(this->retrieg_number > 0 && this->n_time_to_retrieg > 0){
-            if(t - this->retrieg_time_step >= double(this->retrieg_delay) / this->track->getClock() && this->retrieg_counter < this->retrieg_number){
-                this->retrieg_time_step += double(this->retrieg_delay) / this->track->getClock();
-                this->setTime(t);
-                ++this->retrieg_counter;
-            }
-        }
-
-        if(this->delay_counter <= this->delay-1 && this->delay > 0 && this->n_time_to_delrel > 0){
+        if (rv != this->retrieg.getValue())
             this->setTime(t);
-            if(t - this->delrel_time_step >= 1. / this->track->getClock()){
-                ++this->delay_counter;
-                this->delrel_time_step += 1. / this->track->getClock();
-            }
-        }else{
-            if(this->release > 0 && !this->isReleased()){
-                if(this->release_counter <= this->release && this->n_time_to_delrel > 0){
-                    if(t - this->delrel_time_step >= 1. / this->track->getClock()){
-                        ++this->release_counter;
-                        this->delrel_time_step += 1. / this->track->getClock();
-                        if(this->release_counter >= this->release){
-                            this->setRelease(true);
-                            this->setTimeRelease(t);
-                        }
-                    }
-                }
-            }
-        }
-        if(this->portamento) {
-            if (this->porta_pitch_dif < 0) {
-                if (t - this->portamento_time_step >= 1. / this->track->getClock()) {
-                    this->portamento_time_step += 1. / this->track->getClock();
-                    this->porta_pitch_dif += (this->portamento_speed / this->track->getSpeed());
-                    if (this->porta_pitch_dif > 0) {
-                        this->porta_pitch_dif = 0;
-                    }
-                }
-            } else {
-                if (this->porta_pitch_dif > 0) {
-                    if (t - this->portamento_time_step >= 1. / this->track->getClock()) {
-                        this->portamento_time_step += 1. / this->track->getClock();
-                        this->porta_pitch_dif -= (this->portamento_speed / this->track->getSpeed());
-                        if (this->porta_pitch_dif < 0) {
-                            this->porta_pitch_dif = 0;
-                        }
-                    }
-                }
+
+        if (this->delay_release.getValue() == 1) //delay
+            this->setTime(t);
+
+        if (reldel_state == 2) { // release
+            if (reldel_state != this->delay_release.getValue()) {
+                this->setRelease(true);
+                this->setTimeRelease(t);
             }
         }
     }
 
     bool Channel::decode_fx(uint_fast32_t fx, double t) {
-        uint_fast8_t fx_code = fx >> 4 * 6;
-        uint_fast32_t fx_val = fx & 0x00FFFFFF;
-        switch (fx_code) {
-            case 0x10://pitch slide up
-                this->pitch_slide_up = float(fx_val) / float(0x00FFFFFF);
-                this->pitch_slide_down = 0.f;
-                this->pitch_slide_step = t;
-                this->pitch_slide_time = t;
-                return true;
-            case 0x11://pitch slide down
-                this->pitch_slide_down = float(fx_val) / float(0x00FFFFFF);
-                this->pitch_slide_up = 0.f;
-                this->pitch_slide_step = t;
-                this->pitch_slide_time = t;
-                return true;
-            case 0x12://vibrato
-                this->vibrato_speed = float((fx_val >> 4 * 3)) / float(0x100);
-                this->vibrato_depth = float(fx_val & 0xFFF) / float(0x800);
-                this->vibrato_time = t;
-                return true;
-            case 0x13://set pitch
-                this->pitch = (float(fx_val) - float(0x800000)) / float(0x800000);
-                return true;
-            case 0x14://set volume
-                this->volume = float(fx_val) / float(0x00FFFFFF);
-                return true;
-            case 0x15://volume slide up
-                this->volume_slide_up = float(fx_val) / float(0x00FFFFFF);
-                this->volume_slide_down = 0.f;
-                this->volume_slide_time = t;
-                this->volume_slide_step = t;
-                return true;
-            case 0x16://volume slide down
-                this->volume_slide_down = float(fx_val) / float(0x00FFFFFF);
-                this->volume_slide_up = 0.f;
-                this->volume_slide_time = t;
-                this->volume_slide_step = t;
-                return true;
-            case 0x17://tremolo
-                this->tremolo_speed = float(fx_val >> 4 * 3) / float(0x100);
-                this->tremolo_depth = float(fx_val & 0xFFF) / float(0xFFF);
-                this->tremolo_time = t;
-                return true;
-            case 0x18://set  panning
-                this->panning = float(fx_val) / float(0xFFFFFF);
-                return true;
-            case 0x19://arpeggio
-                this->arpeggio = true;
-                this->arpeggio_step = t;
-                this->arpeggio_val[0] = float(fx_val >> 4 * 5);
-                this->arpeggio_val[1] = float( (fx_val >> 4 * 4) & 0xF);
-                this->arpeggio_val[2] = float( (fx_val >> 4 * 3) & 0xF);
-                this->arpeggio_val[3] = float( (fx_val >> 4 * 2) & 0xF);
-                this->arpeggio_val[4] = float( (fx_val >> 4 * 1) & 0xF);
-                this->arpeggio_val[5] = float(fx_val & 0xF);
-                if(this->arpeggio_val[0] == 0 && this->arpeggio_val[1] == 0 && this->arpeggio_val[2] == 0 && this->arpeggio_val[3] == 0 && this->arpeggio_val[4] == 0 && this->arpeggio_val[5] == 0){
-                    this->arpeggio = false;
-                }
-                return true;
-            case 0x1A://transpose
-                this->transpose_delay = (fx_val >> 4 * 4);
-                this->transpose_semitones = (fx_val & 0xFF00) >> 4 * 2;
-                this->n_time_to_transpose = (fx_val & 0xFF);
-                this->transpose_time_step = t;
-                return true;
-            case 0x1B://portamento
-                this->portamento = fx_val != 0;
-                this->portamento_speed = float(fx_val)/float(0x800000);
-                this->portamento_time_step = t;
-                if(this->portamento_speed == 0){
-                    this->porta_pitch_dif = 0;
-                }
-                return true;
-            case 0x1C://retrieg
-                this->retrieg_delay = (fx_val >> 4 * 4);
-                this->retrieg_number = (fx_val & 0xFF00) >> 4 * 2;
-                this->n_time_to_retrieg = (fx_val & 0xFF);
-                this->retrieg_time_step = t;
-                return true;
-            case 0x1D://slide right panning
-                this->panning_slide_right = float(fx_val) / float(0xFFFFFF);
-                this->panning_slide_left = 0.0f;
-                this->panning_slide_time = t;
-                this->panning_slide_step = t;
-                return true;
-            case 0x1E://slide left panning
-                this->panning_slide_left = float(fx_val) / float(0xFFFFFF);
-                this->panning_slide_right = 0.0f;
-                this->panning_slide_time = t;
-                this->panning_slide_step = t;
-                return true;
-            case 0x1F:
-                this->delay = (fx_val >> 4 * 4);
-                this->release = (fx_val & 0xFF00) >> 4 * 2;
-                this->n_time_to_delrel = (fx_val & 0xFF);
-                this->delrel_time_step = t;
-                return true;
-            default:
-                return false;
-        }
+        return ChannelFXs::decode_fx(fx, t);
     }
 
     float Channel::play_pitch(float a, float p, double t) {
@@ -331,68 +92,16 @@ namespace C0deTracker {
     }
 
     void Channel::resetState() {
+        this->reset_fxs();
         last_instruct_address = nullptr;
         track = nullptr;
         /**Channel state**/
          time = 0.0;
          enable_sound = true;
-         volume = 1.0f; pitch = 0.0f; speed = 1.0f;
+         speed = 1.0f;
          released = false;
          time_release = 0.0;
          instrument_index = Notes::KeysUtilities::CONTINUE;
-
-         volume_slide_up = 0.f;
-         volume_slide_down = 0.f;
-         volume_slide_time = 0.0;
-
-         pitch_slide_up = 0.f;
-         pitch_slide_down = 0.f;
-         pitch_slide_time = 0.0;
-         pitch_slide_val =0.0;
-
-         portamento = false;
-         portamento_speed = 0.f;
-         porta_pitch_dif = 0.0f;
-         portamento_time_step = 0;
-
-         tremolo_speed = 0.0f;
-         tremolo_depth = 0.0f;
-         tremolo_val = 1.0f;
-         tremolo_time = 0.0;
-
-         vibrato_speed = 0.0f;
-         vibrato_depth = 0.0f;
-         vibrato_val = 0.0f;
-         vibrato_time = 0.0;
-
-         panning = 0.5f;
-
-         panning_slide_right = 0.f;
-         panning_slide_left = 0.f;
-         panning_slide_time = 0.0;
-
-         arpeggio = false;
-         arpeggio_step = 0.0;
-          arpeggio_index = 0;
-
-         transpose_delay = 0;
-         n_time_to_transpose = 0;
-         transpose_semitones = 0;
-         transpose_semitone_counter = 0;
-         transpose_time_step = 0;
-
-         retrieg_delay = 0;
-         retrieg_number = 0;
-         n_time_to_retrieg = 0;
-         retrieg_time_step = 0;
-         retrieg_counter = 0;
-
-         delay = 0;
-         release = 0;
-         n_time_to_delrel = 0;
-         delrel_time_step = 0;
-         delay_counter = 0;
-         release_counter = 0;
     }
 
     void Channel::setTrack(Track *track) {this->track = track;}

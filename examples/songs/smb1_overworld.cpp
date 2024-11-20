@@ -41,24 +41,27 @@ void SuperMarioBros_OverworldTheme::load_data() {
 #define K Key
 #define UI32 uint_fast32_t
 
-
+    UI32 FX_global_del1_rel7 = 0x1F0108FF;
+    UI32 FX_del4_rel7 = 0x1F040B01;
+    UI32 FX_del7_rel7 = 0x1F070E01;
+    UI32 FX_del1_rel7 = 0x1F010801;
 
     //square wave : O octave famitracker corresponds to O + 1 for C0deTracker
     CHANL(0);
     VOLM(0.7f);
     PATRN(0);
     INSTR(MAIN);
-    I(0, K(F_S, 4), UI32(0x1F0107FF)); I(1, K(F_S, 4)); I(3, K(F_S, 4)); I(5, K(F_S, 4)); I(6, K(F_S, 4));
+    I(0, K(F_S, 4), FX_global_del1_rel7); I(1, K(F_S, 4)); I(3, K(F_S, 4)); I(5, K(F_S, 4)); I(6, K(F_S, 4));
     I(8, K(B, 4)); I(0x0C, K(G, 4));
 
     PATRN(1);
     I(0, K(E,4)); I(3, K(C,4)); I(6, K(G,3));
     I(9, K(C,4)); I(0xB, K(D,4)); I(0xD, K(C_S,4)); I(0xE, K(C,4));
-    I(0x10, K(C,4)); I(0x11, K(G,4), UI32(0x1F040701)); I(0x12, K(B,4), UI32(0x1F070701)); I(0x14, K(C,5), UI32(0x1F0107FF)); I(0x16, K(A,4)); I(0x17, K(B,4));
+    I(0x10, K(C,4)); I(0x11, K(G,4), FX_del4_rel7); I(0x12, K(B,4), FX_del7_rel7); I(0x14, K(C,5), FX_global_del1_rel7); I(0x16, K(A, 4)); I(0x17, K(B, 4));
     I(0x19, K(A,4)); I(0x1B, K(E,4)); I(0x1C, K(F,4)); I(0x1D, K(D,4));
     I(0x20, K(E,4)); I(0x23, K(C,4)); I(0x26, K(G,3));
     I(0x29, K(C,4)); I(0x2B, K(D,4)); I(0x2D, K(C_S,4)); I(0x2E, K(C,4));
-    I(0x30, K(C,4)); I(0x31, K(G,4), UI32(0x1F040701)); I(0x32, K(B,4), UI32(0x1F070701)); I(0x34, K(C,5), UI32(0x1F0107FF)); I(0x36, K(A,4)); I(0x37, K(B,4));
+    I(0x30, K(C,4)); I(0x31, K(G,4), FX_del4_rel7); I(0x32, K(B,4), FX_del7_rel7); I(0x34, K(C,5), FX_global_del1_rel7); I(0x36, K(A, 4)); I(0x37, K(B, 4));
     I(0x39, K(A,4)); I(0x3B, K(E,4)); I(0x3C, K(F,4)); I(0x3D, K(D,4));
 
     PATRN(2);
@@ -86,15 +89,15 @@ void SuperMarioBros_OverworldTheme::load_data() {
     I(0x00, K(C,5)); I(0x01, K(A,4)); I(0x03, K(E,4)); I(0x06, K(E,4));
     I(0x08, K(F,4)); I(0x09, K(C,5)); I(0x0B, K(C,5)); I(0x0C, K(F,4));
     I(0x10, K(G,4));
-    I(0x11, K(F,5), UI32(0x1F040701)); I(0x12, K(F,5), UI32(0x1F070701));
-    I(0x14, K(F,5), UI32(0x1F010701));
-    I(0x15, K(E,5), UI32(0x1F040701)); I(0x16, K(D,5), UI32(0x1F070701));
-    I(0x18, K(C,5), UI32(0x1F0107FF)); I(0x19, K(A,4)); I(0x1B, K(F,4)); I(0x1C, K(E,4));
+    I(0x11, K(F,5), FX_del4_rel7); I(0x12, K(F,5), FX_del7_rel7);
+    I(0x14, K(F,5), FX_del1_rel7);
+    I(0x15, K(E,5), FX_del4_rel7); I(0x16, K(D,5), FX_del7_rel7);
+    I(0x18, K(C,5), FX_global_del1_rel7); I(0x19, K(A, 4)); I(0x1B, K(F, 4)); I(0x1C, K(E, 4));
     I(0x20, K(C,5)); I(0x21, K(A,4)); I(0x23, K(E,4)); I(0x26, K(E,4));
     I(0x28, K(F,4)); I(0x29, K(C,5)); I(0x2B, K(C,5)); I(0x2C, K(F,4));
     I(0x30, K(G,4)); I(0x31, K(D,5)); I(0x33, K(D,5)); I(0x34, K(D,5));
-    I(0x35, K(C,5), UI32(0x1F040701)); I(0x36, K(B,4), UI32(0x1F070701));
-    I(0x38, K(C,5), UI32(0x1F0107FF));
+    I(0x35, K(C,5), FX_del4_rel7); I(0x36, K(B,4), FX_del7_rel7);
+    I(0x38, K(C,5), FX_global_del1_rel7);
 
     P(0,6,4);
     P(0,7,4);
@@ -103,17 +106,17 @@ void SuperMarioBros_OverworldTheme::load_data() {
 
     CHANL(1);
     PATRN(0);
-    I(0, K(E, 5), UI32(0x1F0107FF)); I(1, K(E, 5)); I(3, K(E, 5)); I(5, K(C, 5)); I(6, K(E, 5));
+    I(0, K(E, 5), FX_global_del1_rel7); I(1, K(E, 5)); I(3, K(E, 5)); I(5, K(C, 5)); I(6, K(E, 5));
     I(8, K(G, 5));
 
     PATRN(1);
     I(0x00, K(C,5)); I(0x03, K(G,4)); I(0x06, K(E,4));
     I(0x09, K(A,4)); I(0x0B, K(B,4)); I(0x0D, K(A_S,4)); I(0x0E, K(A,4));
-    I(0x10, K(G,4)); I(0x11, K(E,5), UI32(0x1F040701)); I(0x12, K(G,5), UI32(0x1F070701)); I(0x14, K(A,5), UI32(0x1F0107FF)); I(0x16, K(F,5)); I(0x17, K(G,5));
+    I(0x10, K(G,4)); I(0x11, K(E,5), FX_del4_rel7); I(0x12, K(G,5), FX_del7_rel7); I(0x14, K(A,5), FX_global_del1_rel7); I(0x16, K(F, 5)); I(0x17, K(G, 5));
     I(0x19, K(E,5)); I(0x1B, K(C,5)); I(0x1C, K(D,5)); I(0x1D, K(B,4));
     I(0x20, K(C,5)); I(0x23, K(G,4)); I(0x26, K(E,4));
     I(0x29, K(A,4)); I(0x2B, K(B,4)); I(0x2D, K(A_S,4)); I(0x2E, K(A,4));
-    I(0x30, K(G,4)); I(0x31, K(E,5), UI32(0x1F040701)); I(0x32, K(G,5), UI32(0x1F070701)); I(0x34, K(A,5), UI32(0x1F0107FF)); I(0x36, K(F,5)); I(0x37, K(G,5));
+    I(0x30, K(G,4)); I(0x31, K(E,5), FX_del4_rel7); I(0x32, K(G,5), FX_del7_rel7); I(0x34, K(A,5), FX_global_del1_rel7); I(0x36, K(F, 5)); I(0x37, K(G, 5));
     I(0x39, K(E,5)); I(0x3B, K(C,5)); I(0x3C, K(D,5)); I(0x3D, K(B,4));
 
     PATRN(2);
@@ -142,15 +145,15 @@ void SuperMarioBros_OverworldTheme::load_data() {
     I(0x00, K(E,5)); I(0x01, K(C,4)); I(0x03, K(G,4)); I(0x06, K(G_S,4));
     I(0x08, K(A,4)); I(0x09, K(F,5)); I(0x0B, K(F,5)); I(0x0C, K(A,4));
     I(0x10, K(B,4));
-    I(0x11, K(A,5), UI32(0x1F040701)); I(0x12, K(A,5), UI32(0x1F070701));
-    I(0x14, K(A,5), UI32(0x1F010701));
-    I(0x15, K(G,5), UI32(0x1F040701)); I(0x16, K(F,5), UI32(0x1F070701));
-    I(0x18, K(E,5), UI32(0x1F0107FF)); I(0x19, K(C,4)); I(0x1B, K(A,4)); I(0x1C, K(G,4));
+    I(0x11, K(A,5), FX_del4_rel7); I(0x12, K(A,5), FX_del7_rel7);
+    I(0x14, K(A,5), FX_del1_rel7);
+    I(0x15, K(G,5), FX_del4_rel7); I(0x16, K(F,5), FX_del7_rel7);
+    I(0x18, K(E,5), FX_global_del1_rel7); I(0x19, K(C, 4)); I(0x1B, K(A, 4)); I(0x1C, K(G, 4));
     I(0x20, K(E,5)); I(0x21, K(C,5)); I(0x23, K(G,4)); I(0x26, K(G_S,4));
     I(0x28, K(A,4)); I(0x29, K(F,5)); I(0x2B, K(F,5)); I(0x2C, K(A,4));
     I(0x30, K(B,4)); I(0x31, K(F,5)); I(0x33, K(F,5)); I(0x34, K(F,5));
-    I(0x35, K(E,5), UI32(0x1F040701)); I(0x36, K(D,5), UI32(0x1F070701));
-    I(0x38, K(G,4), UI32(0x1F0107FF));
+    I(0x35, K(E,5), FX_del4_rel7); I(0x36, K(D,5), FX_del7_rel7);
+    I(0x38, K(G,4), FX_global_del1_rel7);
     I(0x39, K(E,4)); I(0x3B, K(E,4)); I(0x3C, K(C,4));
 
     P(1,6,4);
@@ -158,21 +161,25 @@ void SuperMarioBros_OverworldTheme::load_data() {
     P(1,8,3);
     P(1,9,4);
 
+    UI32 FX_bass_global_del0_rel7 = 0x1F0008FF;
+    UI32 FX_bass_del3_rel7 = 0x1F030B01;
+    UI32 FX_bass_del6_rel7 = 0x1F060E01;
+
     CHANL(2);
     VOLM(1.0f);
     INSTR(BASS);
     PATRN(0);
-    I(0, K(D, 3), UI32(0x1F0007FF)); I(1, K(D, 3)); I(3, K(D, 3)); I(5, K(D, 3)); I(6, K(D, 3));
+    I(0, K(D, 3), FX_bass_global_del0_rel7); I(1, K(D, 3)); I(3, K(D, 3)); I(5, K(D, 3)); I(6, K(D, 3));
     I(8, K(G, 4)); I(0x0C, K(G, 3)); I(0x0F, UI32(0x0A001000));
 
     PATRN(1);
     I(0x00, K(G,3)); I(0x03, K(E,3)); I(0x06, K(C,3));
     I(0x09, K(F,3)); I(0x0B, K(G,3)); I(0x0D, K(F_S,3)); I(0x0E, K(F,3));
-    I(0x10, K(E,3)); I(0x11, K(C,4), UI32(0x1F030701)); I(0x12, K(E,4), UI32(0x1F060701)); I(0x14, K(F,4), UI32(0x1F0007FF)); I(0x16, K(D,4)); I(0x17, K(E,4));
+    I(0x10, K(E,3)); I(0x11, K(C,4), FX_bass_del3_rel7); I(0x12, K(E,4), FX_bass_del6_rel7); I(0x14, K(F,4), FX_bass_global_del0_rel7); I(0x16, K(D,4)); I(0x17, K(E,4));
     I(0x19, K(C,4)); I(0x1B, K(A,3)); I(0x1C, K(B,3)); I(0x1D, K(G,3));
     I(0x20, K(G,3)); I(0x23, K(E,3)); I(0x26, K(C,3));
     I(0x29, K(F,3)); I(0x2B, K(G,3)); I(0x2D, K(F_S,3)); I(0x2E, K(F,3));
-    I(0x30, K(E,3)); I(0x31, K(C,4), UI32(0x1F030701)); I(0x32, K(E,4), UI32(0x1F060701)); I(0x34, K(F,4), UI32(0x1F0007FF)); I(0x36, K(D,4)); I(0x37, K(E,4));
+    I(0x30, K(E,3)); I(0x31, K(C,4), FX_bass_del3_rel7); I(0x32, K(E,4), FX_bass_del6_rel7); I(0x34, K(F,4), FX_bass_global_del0_rel7); I(0x36, K(D,4)); I(0x37, K(E,4));
     I(0x39, K(C,4)); I(0x3B, K(A,3)); I(0x3C, K(B,3)); I(0x3D, K(G,3));
 
     PATRN(2);
@@ -207,8 +214,8 @@ void SuperMarioBros_OverworldTheme::load_data() {
     I(0x20, K(C,3)); I(0x23, K(F_S,3)); I(0x24, K(G,3)); I(0x26, K(C,4));
     I(0x28, K(F,3)); I(0x2A, K(F,3)); I(0x2C, K(C,4)); I(0x2D, K(C,4)); I(0x2E, K(F,3));
     I(0x30, K(G,3)); I(0x33, K(G,3)); I(0x34, K(G,3));
-    I(0x35, K(A,3), UI32(0x1F030701)); I(0x36, K(B,3), UI32(0x1F060701));
-    I(0x38, K(C, 4), UI32(0x1F0007FF));
+    I(0x35, K(A,3), FX_bass_del3_rel7); I(0x36, K(B,3), FX_bass_del6_rel7);
+    I(0x38, K(C, 4), FX_bass_global_del0_rel7);
     I(0x3A, K(G,3)); I(0x3C, K(C,3));
 
     P(2,6,4);
@@ -217,124 +224,133 @@ void SuperMarioBros_OverworldTheme::load_data() {
     P(2,9,4);
 
 
+    UI32 FX_drum_del0_rel5_rep1 = 0x1F000501;
+    UI32 FX_drum_del0_rel1_rep4 = 0x1F000104;
+    UI32 FX_drum_del0_rel5_rep2 = 0x1F000502;
+    UI32 FX_drum_del0_rel1_rep3 = 0x1F000103;
+    UI32 FX_drum_del0_rel1_rep2 = 0x1F000102;
+    UI32 FX_drum_del0_rel1_rep5 = 0x1F000105;
+    UI32 FX_drum_del0_rel1_rep1 = 0x1F000101;
+    UI32 FX_drum_del3_rel1_rep1 = 0x1F030401;
+
     CHANL(3);
     PATRN(0);
     VOLM(1.f);
     INSTR(DRUMS);
-    I(0x00, K(C_S, 2), UI32(0x1F000501));
-    I(0x02, K(C_S, 2), UI32(0x1F000104));
+    I(0x00, K(C_S, 2), FX_drum_del0_rel5_rep1);
+    I(0x02, K(C_S, 2), FX_drum_del0_rel1_rep4);
     I(0x03, K(C_S, 2)); I(0x05, K(C_S, 2)); I(0x06, K(C_S, 2));
-    I(0x08, K(C_S, 2), UI32(0x1F000502));
+    I(0x08, K(C_S, 2), FX_drum_del0_rel5_rep2);
     I(0x0B, K(C_S, 2));
-    I(0x0D, K(C_S, 2), UI32(0x1F000103));
+    I(0x0D, K(C_S, 2), FX_drum_del0_rel1_rep3);
     I(0x0E, K(C_S, 2)); I(0x0F, K(C_S, 2));
-    I(0x10, K(C_S, 2), UI32(0x1F000501));
-    I(0x12, K(C_S, 2), UI32(0x1F000104));
+    I(0x10, K(C_S, 2), FX_drum_del0_rel5_rep1);
+    I(0x12, K(C_S, 2), FX_drum_del0_rel1_rep4);
     I(0x13, K(C_S, 2)); I(0x15, K(C_S, 2)); I(0x16, K(C_S, 2));
-    I(0x18, K(C_S, 2), UI32(0x1F000502));
+    I(0x18, K(C_S, 2), FX_drum_del0_rel5_rep2);
     I(0x1B, K(C_S, 2));
-    I(0x1D, K(C_S, 2), UI32(0x1F000103));
+    I(0x1D, K(C_S, 2), FX_drum_del0_rel1_rep3);
     I(0x1E, K(C_S, 2)); I(0x1F, K(C_S, 2));
-    I(0x20, K(C_S, 2), UI32(0x1F000501));
-    I(0x22, K(C_S, 2), UI32(0x1F000104));
+    I(0x20, K(C_S, 2), FX_drum_del0_rel5_rep1);
+    I(0x22, K(C_S, 2), FX_drum_del0_rel1_rep4);
     I(0x23, K(C_S, 2)); I(0x25, K(C_S, 2)); I(0x26, K(C_S, 2));
-    I(0x28, K(C_S, 2), UI32(0x1F000502));
+    I(0x28, K(C_S, 2), FX_drum_del0_rel5_rep2);
     I(0x2B, K(C_S, 2));
-    I(0x2D, K(C_S,2), UI32(0x1F000103));
+    I(0x2D, K(C_S,2), FX_drum_del0_rel1_rep3);
     I(0x2E, K(C_S, 2)); I(0x2F, K(C_S, 2));
-    I(0x30, K(C_S, 2), UI32(0x1F000501));
-    I(0x32, K(C_S, 2), UI32(0x1F000104));
+    I(0x30, K(C_S, 2), FX_drum_del0_rel5_rep1);
+    I(0x32, K(C_S, 2), FX_drum_del0_rel1_rep4);
     I(0x33, K(C_S, 2)); I(0x35, K(C_S, 2)); I(0x36, K(C_S, 2));
-    I(0x38, K(C_S, 2), UI32(0x1F000502));
+    I(0x38, K(C_S, 2), FX_drum_del0_rel5_rep2);
     I(0x3B, K(C_S, 2));
-    I(0x3D, K(C_S,2), UI32(0x1F000103));
+    I(0x3D, K(C_S,2), FX_drum_del0_rel1_rep3);
     I(0x3E, K(C_S, 2)); I(0x3F, K(C_S, 2));
 
     P(3,4,0); P(3,8,0);
 
     PATRN(2);
-    I(0x00, K(C_S,2), UI32(0x1F000102));
+    I(0x00, K(C_S,2), FX_drum_del0_rel1_rep2);
     I(0x03, K(C_S,2));
-    I(0x04, K(C_S,2), UI32(0x1F000501));
-    I(0x06, K(C_S,2), UI32(0x1F000103));
+    I(0x04, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x06, K(C_S,2), FX_drum_del0_rel1_rep3);
     I(0x08, K(C_S,2)); I(0x0B, K(C_S,2));
-    I(0x0C, K(C_S,2), UI32(0x1F000501));
-    I(0x0E, K(C_S,2), UI32(0x1F000101));
-    I(0x10, K(C_S,2), UI32(0x1F000102));
+    I(0x0C, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x0E, K(C_S,2), FX_drum_del0_rel1_rep1);
+    I(0x10, K(C_S,2), FX_drum_del0_rel1_rep2);
     I(0x13, K(C_S,2));
-    I(0x14, K(C_S,2), UI32(0x1F000501));
-    I(0x16, K(C_S,2), UI32(0x1F000103));
+    I(0x14, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x16, K(C_S,2), FX_drum_del0_rel1_rep3);
     I(0x18, K(C_S,2)); I(0x1B, K(C_S,2));
-    I(0x1C, K(C_S,2), UI32(0x1F000501));
-    I(0x1E, K(C_S,2), UI32(0x1F000101));
-    I(0x20, K(C_S,2), UI32(0x1F000102));
+    I(0x1C, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x1E, K(C_S,2), FX_drum_del0_rel1_rep1);
+    I(0x20, K(C_S,2), FX_drum_del0_rel1_rep2);
     I(0x23, K(C_S,2));
-    I(0x24, K(C_S,2), UI32(0x1F000501));
-    I(0x26, K(C_S,2), UI32(0x1F000103));
+    I(0x24, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x26, K(C_S,2), FX_drum_del0_rel1_rep3);
     I(0x28, K(C_S,2)); I(0x2B, K(C_S,2));
-    I(0x2C, K(C_S,2), UI32(0x1F000501));
-    I(0x2E, K(C_S,2), UI32(0x1F000101));
-    I(0x30, K(C_S,2), UI32(0x1F000102));
+    I(0x2C, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x2E, K(C_S,2), FX_drum_del0_rel1_rep1);
+    I(0x30, K(C_S,2), FX_drum_del0_rel1_rep2);
     I(0x33, K(C_S,2));
-    I(0x34, K(C_S,2), UI32(0x1F000501));
-    I(0x36, K(C_S,2), UI32(0x1F000103));
+    I(0x34, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x36, K(C_S,2), FX_drum_del0_rel1_rep3);
     I(0x38, K(C_S,2)); I(0x3B, K(C_S,2));
-    I(0x3C, K(C_S,2), UI32(0x1F000501));
-    I(0x3E, K(C_S,2), UI32(0x1F000101));
+    I(0x3C, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x3E, K(C_S,2), FX_drum_del0_rel1_rep1);
     P(3,6,2); P(3,7,2); P(3,9,2);
 
     PATRN(1);
-    I(0x00, SNARE, K(C_S,1), UI32(0x1F000103));
+    I(0x00, SNARE, K(C_S,1), FX_drum_del0_rel1_rep3);
     I(0x02, K(C_S,2));
-    I(0x03, K(C_S,2), UI32(0x1F030101));
-    I(0x04, K(C_S,2), UI32(0x1F000501));
-    I(0x06, K(C_S,2), UI32(0x1F000105));
-    I(0x07, K(C_S,2), UI32(0x1F030101));
-    I(0x08, SNARE, K(C_S,1), UI32(0x1F000103));
+    I(0x03, K(C_S,2), FX_drum_del3_rel1_rep1);
+    I(0x04, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x06, K(C_S,2), FX_drum_del0_rel1_rep5);
+    I(0x07, K(C_S,2), FX_drum_del3_rel1_rep1);
+    I(0x08, SNARE, K(C_S,1), FX_drum_del0_rel1_rep3);
     I(0x0A, K(C_S,2));
-    I(0x0B, K(C_S,2), UI32(0x1F030101));
-    I(0x0C, K(C_S,2), UI32(0x1F000501));
-    I(0x0E, K(C_S,2), UI32(0x1F000102));
-    I(0x0F, K(C_S,2), UI32(0x1F030101));
+    I(0x0B, K(C_S,2), FX_drum_del3_rel1_rep1);
+    I(0x0C, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x0E, K(C_S,2), FX_drum_del0_rel1_rep2);
+    I(0x0F, K(C_S,2), FX_drum_del3_rel1_rep1);
 
-    I(0x10, SNARE, K(C_S,1), UI32(0x1F000103));
+    I(0x10, SNARE, K(C_S,1), FX_drum_del0_rel1_rep3);
     I(0x12, K(C_S,2));
-    I(0x13, K(C_S,2), UI32(0x1F030101));
-    I(0x14, K(C_S,2), UI32(0x1F000501));
-    I(0x16, K(C_S,2), UI32(0x1F000105));
-    I(0x17, K(C_S,2), UI32(0x1F030101));
-    I(0x18, SNARE, K(C_S,1), UI32(0x1F000103));
+    I(0x13, K(C_S,2), FX_drum_del3_rel1_rep1);
+    I(0x14, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x16, K(C_S,2), FX_drum_del0_rel1_rep5);
+    I(0x17, K(C_S,2), FX_drum_del3_rel1_rep1);
+    I(0x18, SNARE, K(C_S,1), FX_drum_del0_rel1_rep3);
     I(0x1A, K(C_S,2));
-    I(0x1B, K(C_S,2), UI32(0x1F030101));
-    I(0x1C, K(C_S,2), UI32(0x1F000501));
-    I(0x1E, K(C_S,2), UI32(0x1F000102));
-    I(0x1F, K(C_S,2), UI32(0x1F030101));
+    I(0x1B, K(C_S,2), FX_drum_del3_rel1_rep1);
+    I(0x1C, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x1E, K(C_S,2), FX_drum_del0_rel1_rep2);
+    I(0x1F, K(C_S,2), FX_drum_del3_rel1_rep1);
 
-    I(0x20, SNARE, K(C_S,1), UI32(0x1F000103));
+    I(0x20, SNARE, K(C_S,1), FX_drum_del0_rel1_rep3);
     I(0x22, K(C_S,2));
-    I(0x23, K(C_S,2), UI32(0x1F030101));
-    I(0x24, K(C_S,2), UI32(0x1F000501));
-    I(0x26, K(C_S,2), UI32(0x1F000105));
-    I(0x27, K(C_S,2), UI32(0x1F030101));
-    I(0x28, SNARE, K(C_S,1), UI32(0x1F000103));
+    I(0x23, K(C_S,2), FX_drum_del3_rel1_rep1);
+    I(0x24, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x26, K(C_S,2), FX_drum_del0_rel1_rep5);
+    I(0x27, K(C_S,2), FX_drum_del3_rel1_rep1);
+    I(0x28, SNARE, K(C_S,1), FX_drum_del0_rel1_rep3);
     I(0x2A, K(C_S,2));
-    I(0x2B, K(C_S,2), UI32(0x1F030101));
-    I(0x2C, K(C_S,2), UI32(0x1F000501));
-    I(0x2E, K(C_S,2), UI32(0x1F000102));
-    I(0x2F, K(C_S,2), UI32(0x1F030101));
+    I(0x2B, K(C_S,2), FX_drum_del3_rel1_rep1);
+    I(0x2C, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x2E, K(C_S,2), FX_drum_del0_rel1_rep2);
+    I(0x2F, K(C_S,2), FX_drum_del3_rel1_rep1);
 
-    I(0x30, SNARE, K(C_S,1), UI32(0x1F000103));
+    I(0x30, SNARE, K(C_S,1), FX_drum_del0_rel1_rep3);
     I(0x32, K(C_S,2));
-    I(0x33, K(C_S,2), UI32(0x1F030101));
-    I(0x34, K(C_S,2), UI32(0x1F000501));
-    I(0x36, K(C_S,2), UI32(0x1F000105));
-    I(0x37, K(C_S,2), UI32(0x1F030101));
-    I(0x38, SNARE, K(C_S,1), UI32(0x1F000103));
+    I(0x33, K(C_S,2), FX_drum_del3_rel1_rep1);
+    I(0x34, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x36, K(C_S,2), FX_drum_del0_rel1_rep5);
+    I(0x37, K(C_S,2), FX_drum_del3_rel1_rep1);
+    I(0x38, SNARE, K(C_S,1), FX_drum_del0_rel1_rep3);
     I(0x3A, K(C_S,2));
-    I(0x3B, K(C_S,2), UI32(0x1F030101));
-    I(0x3C, K(C_S,2), UI32(0x1F000501));
-    I(0x3E, K(C_S,2), UI32(0x1F000102));
-    I(0x3F, K(C_S,2), UI32(0x1F030101));
+    I(0x3B, K(C_S,2), FX_drum_del3_rel1_rep1);
+    I(0x3C, K(C_S,2), FX_drum_del0_rel5_rep1);
+    I(0x3E, K(C_S,2), FX_drum_del0_rel1_rep2);
+    I(0x3F, K(C_S,2), FX_drum_del3_rel1_rep1);
 
     P(3,1,1); P(3,2,1); P(3,3,1); P(3,5,1);
 

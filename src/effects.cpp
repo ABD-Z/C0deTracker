@@ -165,8 +165,8 @@ namespace C0deTracker {
             return true;
         }
         if (FX(VIBRATO)) {
-            this->vibrato.speed = float(fx_val >> 4 * 3) / float(0x100);
-            this->vibrato.depth = float(fx_val & 0xFFF) / float(0x800);
+            this->vibrato.speed = float(fx_val >> 4 * 3) / float(0x00A);
+            this->vibrato.depth = float(fx_val & 0xFFF) / float(0x00A);
             this->vibrato.start_time = t;
             if (this->vibrato.speed == 0 || this->vibrato.depth == 0) {
                 this->vibrato.reset();

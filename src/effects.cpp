@@ -40,7 +40,7 @@ namespace C0deTracker {
     SpeedDepthFX::SpeedDepthFX(const float min) : MIN(min) {this->val = min;}
 
     void SpeedDepthFX::process(const double t, const float clock, const float speed) {
-        this->val = this->depth * sin(TWOPI * this->speed * (t - this->start_time))
+        this->val = this->depth * sin(TWOPI * this->speed / speed * (t - this->start_time))
                 + this->MIN * (1 - this->depth);
     }
 

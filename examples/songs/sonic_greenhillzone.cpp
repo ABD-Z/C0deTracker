@@ -52,6 +52,9 @@ void Sonic_GreenHillZoneTheme::load_data() {
     UI32 leadpitch   =  UI32(0x137C0000);
     UI32 accomppitch =  UI32(0x13840000);
 
+    //UI32 vibrato = 0x12036018;
+    UI32 vibrato = 0x1203600A;
+
     VOLM(0.3f);
     CHANL(SN3);
     PATRN(0x00);
@@ -584,7 +587,7 @@ void Sonic_GreenHillZoneTheme::load_data() {
     PATRN(0x05);
     I(0x00, K(B,5)); I(0x08, K(C,6));
     I(0x0C, K(B,5)); I(0x14, K(G,5));
-    I(0x18, UI32(0x124440A8));
+    I(0x18, vibrato);
 
     PATRN(0x06);
     I(0x0C, K(A,5), UI32(0x12000000));
@@ -601,7 +604,7 @@ void Sonic_GreenHillZoneTheme::load_data() {
     I(0x08, K(A,5));
     I(0x0C, K(G,5));
     I(0x14, K(C,5));
-    I(0x18, UI32(0x124440A8));
+    I(0x18, vibrato);
     PATRN(0x09);
     I(0x00, K(D,5));
     PATRN(0x0A);

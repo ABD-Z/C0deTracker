@@ -171,7 +171,7 @@ namespace C0deTracker {
             Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].key = key;
             uint_fast8_t size = Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx;
             Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects =
-                    new uint_fast32_t*[size];
+                    new uint_fast32_t*[size]{};
             if(effects.size() < size){
                 size =  effects.size();
             }

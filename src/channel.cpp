@@ -31,10 +31,9 @@ namespace C0deTracker {
     double Channel::getTime() const{return this->time;}
 
 void Channel::setTime(double time) {
-        if (!this->portamento.isActive() || (this->portamento.isActive() && this->isReleased())) {
-            this->time = time;
+        this->time = time;
+        if (!this->portamento.isActive() || (this->portamento.isActive() && this->isReleased()))
             this->oscillator.resetPhaseTimeOffset();
-        }
     }
 
     double Channel::getTimeRelease() const {return this->time_release;}

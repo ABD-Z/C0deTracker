@@ -190,12 +190,11 @@ namespace C0deTracker {
                 }
 
                 if (current_instruction->effects != nullptr && this->readFx) {
-                    for (int_fast8_t fx_indx = this->track_data->fx_per_chan[chan_number] - 1; fx_indx >= 0; --fx_indx) {
-                        if (current_instruction->effects[fx_indx] != nullptr) {
-                            if (!this->decode_fx(*current_instruction->effects[fx_indx], t)) {
-                                this->chans[i].decode_fx(*current_instruction->effects[fx_indx], t);
-                            }
-                        }
+                    for (int_fast8_t fx_indx = 0; fx_indx < this->track_data->fx_per_chan[chan_number]; ++fx_indx) {
+                        if (current_instruction->effects[fx_indx] == nullptr)
+                            break;
+                        if (!this->decode_fx(*current_instruction->effects[fx_indx], t))
+                            this->chans[i].decode_fx(*current_instruction->effects[fx_indx], t);
                     }
                 }
                 //check if channel is released because of release effect

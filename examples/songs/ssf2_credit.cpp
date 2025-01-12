@@ -14,19 +14,19 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     Track_Data::load_data();
 
     auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
-    instruments_data_bank[COWBELL].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 5.0f, 0.00f, 0.f),0.48f,0.f,.0105f,0.f);
+    instruments_data_bank[SHORTCRASH].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 3.0f, 0.00f, 0.f), 0.3f, C0deTracker::Notes::PITCHES_PER_OCTAVE*0.5, .0105f, 0.f);
     instruments_data_bank[CRASH].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 1.86f, 0.00f, 0.f), .45f, 0.f,0.0055f,0.f);
     instruments_data_bank[TRIANGLE].setData(C0deTracker::WHITENOISE2, C0deTracker::ADSR(100000.f, 2.66f, 0.00f, 2.f), 0.22f, 0.0f, 0.0025f, 0.0f);
     instruments_data_bank[WOOD].setData(C0deTracker::WHITENOISE2, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f), 0.85f, 0.0f, 0.1f, 0.0f);
-    instruments_data_bank[HITHAT].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100.f, 20.f, 0.0f, 0.f), 0.7f, 0.0f, 0.00337f, 0.0f);
-    instruments_data_bank[KICK].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f), 0.7f, 0.0f, 0.1f, 0.0f);
-    instruments_data_bank[TOM].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100000.f, 13.66f, 0.0f, 0.f), .75f, 0.0f, .2f, 0.0f);
-    instruments_data_bank[SNARE].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100000.f, 9.66f, 0.05f, 1.f), 1.f, 0.0f, 0.0025f, 0.0f);
+    instruments_data_bank[HITHAT].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100.f, 20.f, 0.0f, 0.f), 0.5f, 0.0f, 0.00337f, 0.0f);
+    instruments_data_bank[KICK].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f), 0.8f, 0.0f, 0.1f, 0.0f);
+    instruments_data_bank[TOM].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 7.f, 0.05f, 5.f), .5f, .0f, .6f, 0.0f);
+    instruments_data_bank[SNARE].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100000.f, 10.f, 0.05f, 1.f), 1.f, C0deTracker::Notes::PITCHES_PER_OCTAVE*0.45f, 0.0025f, 0.0f);
     instruments_data_bank[STRING].setData(C0deTracker::SAW, C0deTracker::ADSR(100.f, 20., 0.2, 6.0f), 1.f, 0.f, 0.5f, 0.0);
     instruments_data_bank[BASS].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(666.0f, 0.3f, 0.2f, 17.75f), 0.22f, 0.0f, 0.05f,0.5f);
     instruments_data_bank[BASSGUITAR].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(20.0f, 0.3f, 0.2f, 500.f), 0.15f, 0.0f, 0.66f, 0.0f);
     instruments_data_bank[MAIN2].setData(C0deTracker::SINUS, C0deTracker::ADSR(10,1,.25f,6), .78f, .0f, .13f, .0f);
-    instruments_data_bank[MAIN].setData(C0deTracker::SQUARE, C0deTracker::ADSR(24,6,.25f,6), .975f, .0f, .166f, 0.f);
+    instruments_data_bank[MAIN].setData(C0deTracker::SQUARE, C0deTracker::ADSR(24,6,.25f,6), 1.f, .0f, .166f, 0.f);
     this->setInstrumentsDataBank(instruments_data_bank, INSTRUMENTS);
 
     using namespace C0deTracker::Notes; using namespace C0deTracker;
@@ -48,36 +48,57 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     Editor::storePatterns(patterns); // store patterns in editor
     Editor::storePatternsIndices(pattern_indices); // store pattern indices in editor
 
-    PREP(patterns, 0, 0, KICK, 0.7f);
-    I(0, Key(A, 1));
-    I(24, Key(A, 1));
+    ui32 mainvibrato = (0x123C0006);
+    ui32 bassguitarvibrato = (0x1240000C);
+    ui32 releaseTOM = ui32(0x1F001000);
+    ui32 panrightTOM = 0x18A00000;
+    ui32 centered_pan = 0x187FFFFF;
+    ui32 cancel_slidedown = 0x11000000;
+    ui32 full_slidedown = 0x11FFFFFF;
+    ui32 portamento = 0x1B800000;
+    ui32 cancel_portamento = 0x1B000000;
+    ui32 release_snare = 0x1F0005FF;
+
+    auto tom1effects = {releaseTOM + 1, full_slidedown, panrightTOM};
+    auto tom2effects = {releaseTOM + 2, full_slidedown, panrightTOM};
+    auto cancelTOMeffects = {centered_pan, cancel_slidedown};
+
+    float strng_volm = 0.25f;
+    float main_volm = 0.3f;
+
+    CHAN_INDX(0);
+    PTRN_INDX(15);
+    INSTR_INDX(TOM);
+    VOLUME(0.7f);
+    I(0, k(A, 1), tom1effects);
+    I(8, ui32(0x0A001000));
+
+    PTRN_INDX(0);
+    I(0, KICK, Key(A, 1), cancelTOMeffects);
+    I(24, Key(A, 1), tom2effects);
     I(32, Key(A, 1));
-    I(40, Key(A, 1));
-    I(56, Key(A, 1));
+    I(40, KICK, Key(A, 1), cancelTOMeffects);
+    I(56, Key(A, 1), tom2effects);
     I(62, Key(A, 1));
 
-    PTRN_INDX(15);
-    I(0, k(F,1), ui32(0x1C040101));
-    I(6, ui32(0x0A001000));
-
     PTRN_INDX(1);
-    I(8, Key(A, 1));
-    I(24, Key(A, 1));
+    I(8, KICK, Key(A, 1), cancelTOMeffects);
+    I(24, Key(A, 1), tom2effects);
     I(32, Key(A, 1));
-    I(40, Key(A, 1));
-    I(46, Key(A, 1));
+    I(40, KICK, Key(A, 1), cancelTOMeffects);
+    I(46, Key(A, 1), tom1effects);
 
-    I(50, Key(A, 1));
-    //I(52, SNARE, Key(G_S, 2), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x1F0005FF)});
-    I(52, SNARE, Key(G_S, 2), ui32(0x1F0005FF));
+    INSTR_INDX(KICK);
+    I(50, Key(A, 1), cancelTOMeffects);
+    I(52, SNARE, Key(G_S, 2), release_snare);
     I(56, Key(A, 1));
     I(58, SNARE, Key(G_S, 2));
-    I(60, SNARE, Key(G_S, 3));
+    I(60, SNARE, Key(G_S, 2));
 
     PTRN_INDX(2);
+
     I(0, Key(A, 1));
-    //I(4, SNARE, Key(G_S, 2), new uint_fast32_t* [fx_per_chan[0]]{new uint_fast32_t(0x1F0005FF)});
-    I(4, SNARE, Key(G_S, 2), ui32(0x1F0005FF));
+    I(4, SNARE, Key(G_S, 2), release_snare);
     I(8, Key(A, 1));
     I(12, SNARE, Key(G_S, 2));
     I(16, Key(A, 1));
@@ -117,7 +138,7 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     I(52, SNARE, Key(G_S, 2));
     I(56, Key(A, 1));
     I(58, SNARE, Key(G_S, 2));
-    I(60, SNARE, Key(G_S, 3));
+    I(60, SNARE, Key(G_S, 2));
 
     PTRN_INDX(4);
     I(0, k(A,1));
@@ -160,7 +181,7 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     I(32 + 20, SNARE, Key(G_S, 2));
     I(32 + 24, k(A,1));
     I(58, SNARE, Key(G_S, 2));
-    I(32 + 28, SNARE, Key(G_S, 3));
+    I(32 + 28, SNARE, Key(G_S, 2));
     //I(62, k(A,1));
 
     PTRN_INDX(8);
@@ -273,13 +294,11 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     I(44, SNARE, Key(G_S, 2));
     I(46, k(A,1));
     I(50, k(A,1));
-    //I(52, SNARE, Key(G_S, 2));
 
     CHAN_INDX(1);
     PTRN_INDX(0);
     INSTR_INDX(MAIN2);
     VOLUME(0.16f);
-    //I(4, Key(F, 5), new uint_fast32_t* [fx_per_chan[1]]{new uint_fast32_t(0x189FFFFF)});
     I(4, Key(F, 5), ui32(0x189FFFFF));
     R(6);
     I(8, Key(D_S, 5));
@@ -401,15 +420,9 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     R(52);
 
     CHAN_INDX(2);
-    PTRN_INDX(15);
-    VOLUME(1.0f);
-    I(0, TOM, Key(C_S, 5),{0x1F060001,0x11200000});
-    I(4, ui32(0x11000000));
-
     PTRN_INDX(0);
     INSTR_INDX(STRING);
-    VOLUME(0.2f);
-    //I(0, k(G_S, 4), new uint_fast32_t* [fx_per_chan[2]]{new uint_fast32_t(0x13841111), new uint_fast32_t(0x18AA1111)});
+    VOLUME(strng_volm);
     I(0, k(G_S, 4), {0x13841111, 0x18AA1111});
     I(32, k(G_S, 4));
     R(60);
@@ -476,8 +489,8 @@ void SuperStreetFighterII_CreditTheme::load_data() {
 
     PTRN_INDX(8);
     INSTR_INDX(MAIN);
-    VOLUME(0.2f);
-    I(0, k(C_S,5));
+    VOLUME(main_volm);
+    I(0, k(C_S,5), mainvibrato);
     I(6, k(C_S,5));
     I(10,k(D_S,5));
     I(12,k(D_S,5));
@@ -485,8 +498,8 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     I(16,k(C,5));
     R(22);
     INSTR_INDX(STRING);
-    VOLUME(0.2f);
-    I(24,k(C,4));
+    VOLUME(strng_volm);
+    I(24,k(C,4), ui32(0x12000000));
     I(32,k(A_S,3));
     I(48,k(C,4));
     R(50);
@@ -495,15 +508,15 @@ void SuperStreetFighterII_CreditTheme::load_data() {
 
     PTRN_INDX(9);
     INSTR_INDX(MAIN);
-    VOLUME(0.2f);
-    I(0,k(C_S,5));
+    VOLUME(main_volm);
+    I(0,k(C_S,5), mainvibrato);
     R(4);
     I(10,k(D_S,5));
     I(16,k(C,5));
     R(28);
     INSTR_INDX(STRING);
-    VOLUME(0.2f);
-    I(32,k(C,4));
+    VOLUME(strng_volm);
+    I(32,k(C,4), ui32(0x12000000));
     I(34,k(C_S,4));
     I(50,k(C,4));
     R(52);
@@ -518,8 +531,8 @@ void SuperStreetFighterII_CreditTheme::load_data() {
 
     PTRN_INDX(11);
     INSTR_INDX(MAIN);
-    VOLUME(0.2f);
-    I(4,k(F,5));
+    VOLUME(main_volm);
+    I(4,k(F,5), mainvibrato);
     R(6);
     I(8,k(F,5));
     I(10,k(F,5));
@@ -534,8 +547,8 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     I(44,k(C,5));
     I(46,k(F,4));
     INSTR_INDX(STRING);
-    VOLUME(0.2f);
-    I(54,k(D_S,5));
+    VOLUME(strng_volm);
+    I(54,k(D_S,5), ui32(0x12000000));
     I(62,k(C_S,5));
     I(63,k(C,5));
 
@@ -553,8 +566,8 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     PTRN_INDX(13);
     I(0,k(F,3));
     INSTR_INDX(MAIN);
-    VOLUME(0.2f);
-    I(4,k(F,5));
+    VOLUME(main_volm);
+    I(4,k(F,5), mainvibrato);
     I(8,k(F,5));
     I(10,k(F,5));
     I(14,k(F,5));
@@ -565,8 +578,8 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     I(30,k(B,4));
     R(34);
     INSTR_INDX(STRING);
-    VOLUME(0.2f);
-    I(38,k(B,3));
+    VOLUME(strng_volm);
+    I(38,k(B,3), ui32(0x12000000));
     I(44,k(C_S,4));
     R(62);
 
@@ -1062,7 +1075,7 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     INSTR_INDX(WOOD);
     VOLUME(0.5f);
     R(14);
-    I(16, k(A,3));
+    I(16, k(A,3), ui32(0x12000000));
     I(18, k(A,3));
     I(48, k(A,3));
     I(54, k(A,3));
@@ -1073,22 +1086,21 @@ void SuperStreetFighterII_CreditTheme::load_data() {
 
     PTRN_INDX(4);
     INSTR_INDX(MAIN);
-    VOLUME(0.24f);
-    //I(4, k(F,5), new uint_fast32_t* [fx_per_chan[5]]{new uint_fast32_t(0x137AFFFF), new uint_fast32_t(0x12AFF004)});
-    I(0, k(A,4), 0, ui32(0x1B200000));
-    I(4, k(F,5), {(0x137AFFFF), (0x12AFF004)});
+    VOLUME(main_volm * 1.2f);
+    I(0, k(A,4), 0, portamento);
+    I(4, k(F,5), {(0x137AFFFF), mainvibrato});
     //I(8, k(F,5));
-    I(12, k(C_S,5), ui32(0x1B000000));
-    I(14, k(D_S,5), ui32(0x1B200000));
+    I(12, k(C_S,5), cancel_portamento);
+    I(14, k(D_S,5), portamento);
     I(22, k(G_S,4));
     R(30);
 
-    I(32 + 4, k(C_S,5), ui32(0x1B000000));
+    I(32 + 4, k(C_S,5), cancel_portamento);
     I(32 + 8, k(C,5));
     I(32 + 12, k(A_S,4));
-    I(32 + 14, k(C,5), ui32(0x1B200000));
+    I(32 + 14, k(C,5), portamento);
     I(32 + 22, k(F,4));
-    R(32 + 30,ui32(0x1B000000));
+    R(32 + 30,cancel_portamento);
 
     PTRN_INDX(5);
     I(4, k(A_S,4));
@@ -1106,9 +1118,9 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     R(32 + 30);
 
     PTRN_INDX(6);
-    I(4, k(G_S,4), ui32(0x1B200000));
+    I(4, k(G_S,4), portamento);
     I(8, k(F,5));
-    I(12, k(C_S,5),ui32(0x1B000000));
+    I(12, k(C_S,5), cancel_portamento);
     I(14, k(D_S,5));
     I(22, k(G_S,4));
     R(30);
@@ -1132,7 +1144,7 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     I(32 + 10, k(C, 5));
     I(32 + 12, k(C_S, 5));
     I(32 + 14, k(D_S, 5));
-    I(61, uint_fast32_t(0x0A009000)); // JUMP TO frame 8
+    I(61, ui32(0x0A009000)); // JUMP TO frame 8
 
     PTRN_INDX(8);
     I(0, k(F,5));
@@ -1154,11 +1166,11 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     PTRN_INDX(9);
     I(0, k(F,5));
     R(8);
-    I(10,k(F_S,5),ui32(0x1B200000));
+    I(10,k(F_S,5), portamento);
     I(16,k(D_S,5));
     R(24);
     I(28, k(G_S,5));
-    I(32, k(F_S,5),ui32(0x1B000000));
+    I(32, k(F_S,5), cancel_portamento);
     R(40);
 
     I(44,k(F,5));
@@ -1171,7 +1183,7 @@ void SuperStreetFighterII_CreditTheme::load_data() {
 
     PTRN_INDX(10);
     R(0);
-    I(5, uint_fast32_t(0x0A00C004)); // JUMP TO frame B row 4
+    I(5, ui32(0x0A00C004)); // JUMP TO frame B row 4
 
     PTRN_INDX(11);
     I(4, k(G_S,5));
@@ -1219,14 +1231,14 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     I(28, k(D_S,5));
     I(30, k(F,5));
     R(38);
-    I(42, k(F,5),ui32(0x1B200000));
+    I(42, k(F,5), portamento);
     I(44, k(F_S,5));
     I(46, k(G_S,5));
     I(48, k(A_S,5));
     I(52, k(G_S,5));
     I(54, k(F_S,5));
     R(56);
-    I(58, k(F,5),ui32(0x1B000000));
+    I(58, k(F,5), cancel_portamento);
     R(60);
 
     PTRN_INDX(14);
@@ -1246,13 +1258,13 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     I(42,k(C_S,5));
     I(44,k(C,5));
     I(46,k(C_S,5));
-    I(51, uint_fast32_t(0x0A003004));
+    I(51, ui32(0x0A003004));
 
     CHAN_INDX(6);
     PTRN_INDX(0);
     INSTR_INDX(TRIANGLE);
     VOLUME(0.3f);
-    I(0, k(A,2), uint_fast32_t(0x183FFFFF));
+    I(0, k(A,2), ui32(0x183FFFFF));
     I(6, k(A,2));
     I(12, k(A,2));
 
@@ -1312,16 +1324,22 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     I(44, k(A_S,2));
     VOLUME(0.55);
     I(46, k(C_S, 3));
-    INSTR_INDX(COWBELL);
+    INSTR_INDX(SHORTCRASH);
     VOLUME(0.55);
-    I(52, k(C_S,3));
+    I(52, k(C_S,3), panrightTOM);
     I(56, k(C_S,3));
+    INSTR_INDX(TOM);
+    VOLUME(0.7);
+    I(58, Key(A, 1), {releaseTOM + 2, full_slidedown});
+    I(60, Key(A, 1));
+    I(62, cancelTOMeffects);
+    VOLUME(0.55);
 
     PTRN_INDX(2);
     INSTR_INDX(CRASH);
-    I(0, k(C_S,3));
-    INSTR_INDX(COWBELL);
-    I(4, k(C_S,3));
+    I(0, k(C_S,3), centered_pan);
+    INSTR_INDX(SHORTCRASH);
+    I(4, k(C_S,3), panrightTOM);
     I(8, k(C_S,3));
     I(12, k(C_S,3));
     I(20, k(C_S,3));
@@ -1335,11 +1353,11 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     I(56, k(C_S,3));
     I(60, k(C_S,3));
     INSTR_INDX(CRASH);
-    I(62, k(C_S,3));
+    I(62, k(C_S,3), centered_pan);
 
     PTRN_INDX(3);
-    INSTR_INDX(COWBELL);
-    I(4, k(C_S,3));
+    INSTR_INDX(SHORTCRASH);
+    I(4, k(C_S,3), panrightTOM);
     I(8, k(C_S,3));
     I(12, k(C_S,3));
     I(20, k(C_S,3));
@@ -1350,14 +1368,20 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     I(40, k(C_S,3));
     I(44, k(C_S,3));
     INSTR_INDX(CRASH);
-    I(46, k(C_S,3));
-    INSTR_INDX(COWBELL);
-    I(52, k(C_S,3));
+    I(46, k(C_S,3), centered_pan);
+    INSTR_INDX(SHORTCRASH);
+    I(52, k(C_S,3), panrightTOM);
     I(56, k(C_S,3));
+    VOLUME(0.7);
+    INSTR_INDX(TOM);
+    I(58, Key(A, 1), {releaseTOM + 2, full_slidedown});
+    I(60, Key(A, 1));
+    I(62, cancelTOMeffects);
+    VOLUME(0.55);
 
     PTRN_INDX(4);
     INSTR_INDX(CRASH);
-    I(0, k(C_S,3));
+    I(0, k(C_S,3), centered_pan);
     INSTR_INDX(HITHAT);
     VOLUME(0.3);
     I(4, k(A,2)); I(6, k(A,2)); I(8, k(A,2)); I(10, k(A,2)); I(12, k(A,2)); I(14, k(A,2));
@@ -1408,18 +1432,18 @@ void SuperStreetFighterII_CreditTheme::load_data() {
 
     INSTR_INDX(HITHAT);
     VOLUME(0.5);
-    I(26+2, k(D,4), uint_fast32_t(0x1C030301));
-    I(28+2, k(D,4));
-    I(58+2, k(D,4), uint_fast32_t(0x1C030301));
-    I(60+2, k(D,4));
+    I(26+2, k(D,2), {ui32(0x1C030301), panrightTOM});
+    I(28+2, k(D,4), centered_pan);
+    I(58+2, k(D,2), {ui32(0x1C030301), panrightTOM});
+    I(60+2, k(D,4), centered_pan);
 
     PTRN_INDX(9);
     INSTR_INDX(HITHAT);
-    I(26+2, k(D,4),  uint_fast32_t(0x1C030301));
-    I(28+2, k(D,4));
+    I(26+2, k(D,2),  {ui32(0x1C030301), panrightTOM});
+    I(28+2, k(D,4), centered_pan);
     INSTR_INDX(CRASH);
     VOLUME(0.55);
-    I(0, k(C_S,3));
+    I(0, k(C_S,3), centered_pan);
     VOLUME(0.35);
     I(6, k(A_S,2));
     I(10, k(A_S,2));
@@ -1437,16 +1461,24 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     VOLUME(0.55);
     I(50, k(C_S,3));
     I(54, k(C_S,3));
+    VOLUME(0.7);
+    INSTR_INDX(TOM);
+    I(57, panrightTOM);
+    I(58, Key(A, 1), {releaseTOM + 3, full_slidedown});
+    I(60, Key(A, 1));
+    I(62, Key(A, 1));
 
     PTRN_INDX(10);
-    I(0, k(C_S,3));
+    VOLUME(0.55);
+    INSTR_INDX(CRASH);
+    I(0, k(C_S,3), cancelTOMeffects);
 
     PTRN_INDX(11);
     INSTR_INDX(CRASH);
     VOLUME(0.55);
     I(46, k(C_S,3));
-    INSTR_INDX(COWBELL);
-    I(4,k(C_S,3)); I(8,k(C_S,3)); I(12,k(C_S,3));
+    INSTR_INDX(SHORTCRASH);
+    I(4,k(C_S,3), panrightTOM); I(8,k(C_S,3)); I(12,k(C_S,3));
     I(16,k(C_S,3)); I(20,k(C_S,3)); I(24,k(C_S,3)); I(28,k(C_S,3));
     I(32,k(C_S,3)); I(36,k(C_S,3));I(40,k(C_S,3)); I(44,k(C_S,3));
     I(52,k(C_S,3)); I(56,k(C_S,3)); I(60 ,k(C_S,3));
@@ -1454,10 +1486,10 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     PTRN_INDX(12);
     INSTR_INDX(CRASH);
     VOLUME(0.55);
-    I(46, k(C_S,3));
+    I(46, k(C_S,3), centered_pan);
     I(62, k(A,3));
-    INSTR_INDX(COWBELL);
-    I(0,k(C_S,3)); I(4,k(C_S,3)); I(8,k(C_S,3)); I(12,k(C_S,3));
+    INSTR_INDX(SHORTCRASH);
+    I(0,k(C_S,3), panrightTOM); I(4,k(C_S,3)); I(8,k(C_S,3)); I(12,k(C_S,3));
     I(16,k(C_S,3)); I(20,k(C_S,3)); I(24,k(C_S,3)); I(28,k(C_S,3));
     I(32,k(C_S,3)); I(36,k(C_S,3));I(40,k(C_S,3)); I(44,k(C_S,3));
     I(52,k(C_S,3)); I(56,k(C_S,3)); I(60 ,k(C_S,3));
@@ -1465,10 +1497,10 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     PTRN_INDX(13);
     INSTR_INDX(CRASH);
     VOLUME(0.55);
-    I(0, k(C_S,3));
+    I(0, k(C_S,3), centered_pan);
     I(30, k(C_S,3));
-    INSTR_INDX(COWBELL);
-    I(8,k(C_S,3)); I(12,k(C_S,3));
+    INSTR_INDX(SHORTCRASH);
+    I(8,k(C_S,3), panrightTOM); I(12,k(C_S,3));
     I(16,k(C_S,3)); I(20,k(C_S,3)); I(24,k(C_S,3)); I(28,k(C_S,3));
     I(36,k(C_S,3));I(40,k(C_S,3)); I(44,k(C_S,3));
     I(48,k(C_S,3)); I(52,k(C_S,3)); I(56,k(C_S,3)); I(60 ,k(C_S,3));
@@ -1476,33 +1508,37 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     PTRN_INDX(14);
     INSTR_INDX(CRASH);
     VOLUME(0.33);
-    I(16, k(C_S,3));
+    I(16, k(C_S,3), centered_pan);
     VOLUME(0.33);
     I(32, k(A_S,2));
     I(36, k(A_S,2));
     VOLUME(0.55);
     I(46, k(C_S,3));
-    INSTR_INDX(COWBELL);
-    I(0,k(C_S,3)); I(4,k(C_S,3)); I(8,k(C_S,3)); I(12,k(C_S,3));
-
+    INSTR_INDX(SHORTCRASH);
+    I(0,k(C_S,3), panrightTOM); I(4,k(C_S,3)); I(8,k(C_S,3)); I(12,k(C_S,3));
+    VOLUME(0.7);
+    INSTR_INDX(TOM);
+    I(40, Key(A, 1), {releaseTOM + 3, full_slidedown});
+    I(42, Key(A, 1));
+    I(44, Key(A, 1));
+    I(46, cancelTOMeffects);
 
     CHAN_INDX(8);
     PTRN_INDX(0);
     INSTR_INDX(BASSGUITAR);
     VOLUME(1.f);
-    I(0, k(C_S, 2), ui32(0x13820000)); //R(31);
+    I(0, k(C_S, 2), ui32(0x13820000));
     I(32, k(B, 1)); R(60);
     I(62, k(A_S, 1));
 
     PTRN_INDX(1);
-    //R(31);
-    I(32, k(B, 1)); //R(45);
+    I(32, k(B, 1));
     I(46, k(G_S, 1)); R(58);
-    I(59, k(C_S, 2),0, ui32(0x1B100000));
+    I(59, k(C_S, 2),0, ui32(0x1B400000));
     I(60, k(G_S, 1));
 
     PTRN_INDX(2);
-    I(0, k(C_S, 2), ui32(0x1B000000)); //R(1);
+    I(0, k(C_S, 2), ui32(0x1B000000));
     I(32, k(B,1)); R(49);
     I(48, k(B,1)); R(59);
     I(50, k(B,1)); R(51);
@@ -1693,6 +1729,9 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     I(40, k(G_S,1));
     I(42, k(G_S,1));
     I(46, k(C_S,2));
+
+    PTRN_INDX(15);
+    I(0, bassguitarvibrato);
 
 #define EPI Editor::enterPatternIndice
 

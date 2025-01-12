@@ -123,12 +123,12 @@ private:
     static const uint_fast8_t ROWS = 64;
     static const uint_fast8_t FRAMES = 16;
     static const uint_fast8_t CHANNELS = 9;
-    constexpr static const uint_fast8_t FX_per_CHAN[CHANNELS] = {2,1,2,1,1,2,1,1,1};
+    constexpr static const uint_fast8_t FX_per_CHAN[CHANNELS] = {3,1,2,1,1,2,1,2,1};
     constexpr static const float CLOCK = 60.f;
-    constexpr static const float SPEED = 3.f;
+    constexpr static const float SPEED = 2.875f;
     constexpr static const float BASETIME = 2.f;
     static const uint_fast8_t INSTRUMENTS = 13;
-    enum instrument_name{KICK, SNARE, STRING, BASS, MAIN2, MAIN, TRIANGLE, WOOD, HITHAT, CRASH, COWBELL, BASSGUITAR, TOM};
+    enum instrument_name{KICK, SNARE, STRING, BASS, MAIN2, MAIN, TRIANGLE, WOOD, HITHAT, CRASH, SHORTCRASH, BASSGUITAR, TOM};
 public:
     SuperStreetFighterII_CreditTheme();
     void load_data() override;

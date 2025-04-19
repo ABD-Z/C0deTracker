@@ -68,175 +68,59 @@ namespace C0deTracker {
             this->frame_counter = 0;
         }
 
-        float s = 0.f;//generated signal
-        float a = 0.f;//amplitude
-        float p = 0.f;//pitch
-
         for (int_fast8_t i = this->track_data->channels - 1; i >= 0; --i) {
             if (this->chans[i].isEnable()) {
                 if(this->chans[i].getTrack() != nullptr){
                     this->chans[i].update_fx(t);
                 }
-                uint_fast8_t chan_number = i;
-                uint_fast8_t pattern_index = this->track_data->pattern_indices[chan_number * this->track_data->frames + this->frame_counter];
-                Pattern *pat = this->track_data->track_patterns[chan_number * (this->track_data->frames) + pattern_index];
+
+                uint_fast8_t pattern_index = this->track_data->pattern_indices[i * this->track_data->frames + this->frame_counter];
+                Pattern *pat = this->track_data->track_patterns[i * (this->track_data->frames) + pattern_index];
                 Instruction *current_instruction = &pat->instructions[this->row_counter];
 
-
-                if (current_instruction->instrument_index < this->track_data->instruments) {
+                if(this->isInstrumentValid(current_instruction->instrument_index)) {
                     if (this->readFx) {
                         this->chans[i].setLastInstructionAddress(current_instruction);
                         this->chans[i].setTime(t);
                         this->chans[i].setRelease(false);
 
                         this->chans[i].setTrack(this);
-                        if(this->chans[i].getInstructionState()->key.note == Notes::CONTINUE || this->chans[i].getInstructionState()->key.octave == Notes::CONTINUE){
-                            if(this->chans[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
-                                //delete chan[i].instrument;
-                                //chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
-                                this->chans[i].oscillator.setOscillatorParams(&this->track_data->instruments_data_bank[current_instruction->instrument_index]);
-                            }
-                            this->chans[i].setInstructionState(current_instruction);
-                        }else{
-                            if(!this->chans[i].portamento.isActive()){
-                                if(this->chans[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
-                                    //delete chan[i].instrument;
-                                    //chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
-                                    this->chans[i].oscillator.setOscillatorParams(&this->track_data->instruments_data_bank[current_instruction->instrument_index]);
-                                }
-                                this->chans[i].setInstructionState(current_instruction);
-                            }else{
-                                this->chans[i].portamento.time_step = t;
-                                if(this->chans[i].instruct_state.key.octave == Notes::CONTINUE){
-                                    this->chans[i].portamento.val = 0;
-                                }else{
-                                    float diffpitch = this->chans[i].portamento.getValue() +
-                                            Notes::key2pitch(current_instruction->key) - Notes::key2pitch(this->chans[i].instruct_state.key);
 
-                                    if (diffpitch > 0)
-                                        this->chans[i].portamento.sign = 1;
-                                    if (diffpitch < 0)
-                                        this->chans[i].portamento.sign = -1;
+                        this->chans[i].initFXs(current_instruction, t);
 
-                                    this->chans[i].portamento.val = abs(diffpitch);
-                                    //check if diff (val) is positiv -> portamento_bool.speed = abs(portamento_bool.speed)
-                                    //else if negativ ->portamento_bool.speed = - abs(portamento_bool.speed)
-                                }
+                        if (this->isNewInstrumentFromChannel(i, current_instruction)) {
+                            this->chans[i].setInstrumentParams(&this->track_data->instruments_data_bank[current_instruction->instrument_index]);
+                        }
 
-                                if(this->chans[i].getInstructionState()->instrument_index != current_instruction->instrument_index){
-                                    //delete chan[i].instrument;
-                                    //chan[i].instrument = this->instruments_bank[current_instruction->instrument_index]->clone();
-                                    this->chans[i].oscillator.setOscillatorParams(&this->track_data->instruments_data_bank[current_instruction->instrument_index]);
-                                }
-                                this->chans[i].setInstructionState(current_instruction);
-                            }
-                        }
-                        //chan[i].instrument->get_oscillator()->setRelease(false);
-                        this->chans[i].oscillator.setRelease(false);
-                        this->chans[i].pitch.val = 0;
-                        this->chans[i].pitch.time_step = t;
-                        this->chans[i].transpose.time_step = t;
-                        this->chans[i].transpose.semitones_counter = 0;
-                        this->chans[i].retrieg.time_step = t;
-                        this->chans[i].retrieg.counter = 0;
-                        /*this->chans[i].delrel_time_step = t;
-                        this->chans[i].release_counter = 0;
-                        this->chans[i].delay_counter = 0;*/
-
-                        this->chans[i].delay_release.delay.time_step = t;
-                        this->chans[i].delay_release.release.time_step = t;
-                        this->chans[i].delay_release.delay.counter = 0;
-                        this->chans[i].delay_release.release.counter = 0;
-
-                        this->chans[i].transpose.val = 0;
-                        if(this->chans[i].transpose.repeat > 0){
-                            --this->chans[i].transpose.repeat;
-                        }
-                        if(this->chans[i].retrieg.repeat > 0){
-                            --this->chans[i].retrieg.repeat;
-                        }
-                        if(this->chans[i].delay_release.delay.repeat){
-                            --this->chans[i].delay_release.delay.repeat;
-                        }
-                        if(this->chans[i].delay_release.release.repeat){
-                            --this->chans[i].delay_release.release.repeat;
-                        }
+                        this->chans[i].setInstructionState(current_instruction);
                     }
                 } else {
-                    if (this->chans[i].getLastInstructionAddress() != nullptr) {
-                        if (current_instruction->instrument_index == Notes::RELEASE &&
-                            this->chans[i].getInstructionState()->instrument_index < this->track_data->instruments) {
+                    if (this->chans[i].getLastInstructionAddress() != nullptr
+                        && this->isInstrumentValid(this->chans[i].getInstructionState()->instrument_index)) {
+                        if (this->isNoteReleased(current_instruction)) {
                             if (!this->chans[i].isReleased()) {
-                                this->chans[i].setRelease(true);
                                 this->chans[i].setTimeRelease(t);
                                 this->chans[i].setTrack(this);
-                                this->chans[i].oscillator.setRelease(true);
-                            }
-                            if (current_instruction->volume != Notes::CONTINUE &&
-                                ((0.f <= current_instruction->volume) &&
-                                 (current_instruction->volume <= MAX_VOLUME))) {
-                                this->chans[i].setVolumeInstructionState(current_instruction->volume);
                             }
                         }
-                        if (current_instruction->instrument_index == Notes::CONTINUE &&
-                            this->chans[i].getInstructionState()->instrument_index < this->track_data->instruments) {
-                            if (current_instruction->volume != Notes::CONTINUE &&
-                                ((0.f <= current_instruction->volume) &&
-                                 (current_instruction->volume <= MAX_VOLUME))) {
-                                this->chans[i].setVolumeInstructionState(current_instruction->volume);
-                            }
+
+                        if (this->isVolumeValid(current_instruction->volume)) {
+                            this->chans[i].setVolumeInstructionState(current_instruction->volume);
                         }
                     }
                 }
 
-                if (current_instruction->effects != nullptr && this->readFx) {
-                    for (int_fast8_t fx_indx = 0; fx_indx < this->track_data->fx_per_chan[chan_number]; ++fx_indx) {
-                        if (current_instruction->effects[fx_indx] == nullptr)
-                            break;
-                        if (!this->decode_fx(*current_instruction->effects[fx_indx], t))
-                            this->chans[i].decode_fx(*current_instruction->effects[fx_indx], t);
-                    }
-                }
-                //check if channel is released because of release effect
-                if(this->chans[i].isReleased()){
-                    this->chans[i].oscillator.setRelease(true);
-                }
+                this->decodeAllFXsFromChannel(i, current_instruction, t);
 
-                uint_fast8_t arpeggio = 0;
-                if(this->chans[i].arpeggio.isActive()){
-                    arpeggio = this->chans[i].arpeggio.getValue();
-                }
-
-                a =  this->chans[i].getVolume() * this->chans[i].tremolo.getValue() * this->chans[i].getInstructionState()->volume;
-                p = + this->pitch.getValue() + Notes::key2pitch(this->chans[i].getInstructionState()->key)  + this->chans[i].pitch.getValue()
-                        + arpeggio - this->chans[i].portamento.getValue()
-                        + this->chans[i].oscillator.getPitch()
-                        + this->chans[i].transpose.getValue();
-
-                if(t-this->chans[i].getTime() > 0)
-                    p += (this->vibrato.getValue() + this->chans[i].vibrato.getValue());///(t-this->chans[i].getTime());
-
-
-                if (this->chans[i].getLastInstructionAddress() != nullptr && this->chans[i].getTrack() != nullptr) {
-                    if (!this->chans[i].isReleased()) {
-                        //s = chan[i].instrument->play_pitch(a, p, t - chan[i].getTime());
-                        s = this->chans[i].play_pitch(a, p, t - this->chans[i].getTime());//new
-                    } else {
-                        //s = chan[i].instrument->play_pitch(a, p, t - chan[i].getTime(), t - chan[i].getTimeRelease());
-                        s = this->chans[i].play_pitch(a, p, t - this->chans[i].getTime(), t - this->chans[i].getTimeRelease());//new
-                    }
-                    res[0] += s * (1 - this->chans[i].panning.getValue());
-                    res[1] += s * this->chans[i].panning.getValue();
-                }
+                this->calcStereoSampleFromChannel(
+                        i,
+                        t,
+                        res
+                        );
             }
         }
 
-        res[0] *= this->volume.val * this->tremolo.val;
-        res[1] *=  this->volume.val * this->tremolo.val;
-
-        res[0] *= 4*(1 - this->panning.val);//left
-        res[1] *= 4*this->panning.val;//right
-
+        this->calcTracksStereoSample(res);
 
         this->readFx = false;
         return res;
@@ -278,5 +162,59 @@ namespace C0deTracker {
 
     float Track::getDuration() const {
         return this->duration;
+    }
+
+    void Track::calcStereoSampleFromChannel(uint_fast8_t index, double time, float* output) {
+        float s;
+        float amplitude = this->chans[index].calcAmplitude();
+        float pitch = this->chans[index].calcPitch(time)
+                + this->pitch.getValue()
+                + (time - this->chans[index].getTime() > 0 ? this->vibrato.getValue() : 0);
+        float panning = this->chans[index].getPanning();
+
+        if (this->chans[index].getLastInstructionAddress() != nullptr && this->chans[index].getTrack() != nullptr) { // if last instruction is not empty (null) and has a track
+            if (!this->chans[index].isReleased())
+                s = this->chans[index].play_pitch(amplitude, pitch, time - this->chans[index].getTime());// unreleased sample
+            else
+                s = this->chans[index].play_pitch(amplitude, pitch, time - this->chans[index].getTime(), time - this->chans[index].getTimeRelease());// released sample
+
+            output[0] += s * (1 - panning);
+            output[1] += s * panning;
+        }
+    }
+
+    void Track::decodeAllFXsFromChannel(int_fast8_t index, Instruction *current_instruction, double time) {
+        if (current_instruction->effects != nullptr && this->readFx) { // read and decode FX only when time is to read em (readFx to true) and ofc not null
+            for (int_fast8_t fx_indx = 0; fx_indx < this->track_data->fx_per_chan[index]; ++fx_indx) {
+                if (current_instruction->effects[fx_indx] == nullptr) // break instant at first empty FX (it means no more FXx)
+                    break;
+                if (!this->decode_fx(*current_instruction->effects[fx_indx], time))
+                    this->chans[index].decode_fx(*current_instruction->effects[fx_indx], time);
+            }
+        }
+    }
+
+    bool Track::isVolumeValid(float volume) {
+        return (volume != Notes::CONTINUE && ((0.f <= volume) && (volume <= MAX_VOLUME)));
+    }
+
+    bool Track::isNoteReleased(Instruction *instruction) {
+        return instruction->instrument_index == Notes::RELEASE;
+    }
+
+    void Track::calcTracksStereoSample(float *output) {
+        output[0] *= this->volume.val * this->tremolo.val;
+        output[1] *=  this->volume.val * this->tremolo.val;
+
+        output[0] *= 4*(1 - this->panning.val); //left
+        output[1] *= 4*this->panning.val; //right
+    }
+
+    bool Track::isInstrumentValid(uint_fast8_t instru_index) {
+        return instru_index < this->track_data->instruments;
+    }
+
+    bool Track::isNewInstrumentFromChannel(int_fast8_t chan_index, Instruction *instru) {
+        return this->chans[chan_index].getInstructionState()->instrument_index != instru->instrument_index;
     }
 }

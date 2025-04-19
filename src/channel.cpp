@@ -105,5 +105,71 @@ void Channel::setTime(double time) {
     void Channel::setTrack(Track *track) {this->track = track;}
     Track *Channel::getTrack() const {return this->track;}
 
+    void Channel::setInstrumentParams(Instrument_Data *instrument) {
+        this->oscillator.setOscillatorParams(instrument);
+    }
+
+    void Channel::initFXs(Instruction *instruction, double time) {
+        if (this->portamento.isActive()) { //init portamento
+            this->portamento.time_step = time;
+            //empty note
+            if (this->getInstructionState()->key.note == Notes::CONTINUE || this->getInstructionState()->key.octave == Notes::CONTINUE) {
+                this->portamento.val = 0;
+            } else {
+                float diffpitch = this->portamento.getValue() +
+                                  Notes::key2pitch(instruction->key) -
+                                  Notes::key2pitch(this->getInstructionState()->key);
+
+                this->portamento.sign = (diffpitch > 0) ? 1 : -1;
+                this->portamento.val = abs(diffpitch);
+                //check if diff (val) is positiv -> portamento = portamento.val
+                //else if negativ -> portamento = - portamento.val
+            }
+        }
+
+        this->oscillator.setRelease(false);
+        this->pitch.val = 0;
+        this->pitch.time_step = time;
+        this->transpose.time_step = time;
+        this->transpose.semitones_counter = 0;
+        this->retrieg.time_step = time;
+        this->retrieg.counter = 0;
+
+        this->delay_release.delay.time_step = time;
+        this->delay_release.release.time_step = time;
+        this->delay_release.delay.counter = 0;
+        this->delay_release.release.counter = 0;
+
+        this->transpose.val = 0;
+        if(this->transpose.repeat > 0){
+            --this->transpose.repeat;
+        }
+        if(this->retrieg.repeat > 0){
+            --this->retrieg.repeat;
+        }
+        if(this->delay_release.delay.repeat){
+            --this->delay_release.delay.repeat;
+        }
+        if(this->delay_release.release.repeat){
+            --this->delay_release.release.repeat;
+        }
+    }
+
+    float Channel::calcAmplitude() {
+        return this->getVolume() * this->getInstructionState()->volume * this->tremolo.getValue();
+    }
+
+    float Channel::calcPitch(double time) {
+        return Notes::key2pitch(this->getInstructionState()->key)  + this->pitch.getValue()
+                + (this->arpeggio.isActive() ? this->arpeggio.getValue() : 0)
+                - this->portamento.getValue()
+                + this->transpose.getValue()
+                + (time - this->getTime() > 0 ? this->vibrato.getValue() : 0);
+    }
+
+    float Channel::getPanning() const {
+        return this->panning.getValue();
+    }
+
 
 }

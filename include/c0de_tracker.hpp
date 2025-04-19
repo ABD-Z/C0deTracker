@@ -503,12 +503,11 @@ namespace C0deTracker {
 
         void resetState();
 
-        float getClock();
+        float getClock() const;
 
-        float getSpeed();
+        float getSpeed() const;
 
-        float getDuration();
-
+        float getDuration() const;
 
 
     private:

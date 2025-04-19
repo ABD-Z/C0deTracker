@@ -268,15 +268,15 @@ namespace C0deTracker {
         }
     }
 
-    float Track::getClock() {
+    float Track::getClock() const {
         return this->clk;
     }
 
-    float Track::getSpeed() {
+    float Track::getSpeed() const {
         return this->speed;
     }
 
-    float Track::getDuration() {
+    float Track::getDuration() const {
         return this->duration;
     }
 }

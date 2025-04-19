@@ -161,6 +161,7 @@ namespace C0deTracker {
     }
 
     float Osc::pitch2freq(float pitch, double time) {
+        pitch += this->getPitch();
         if(this->current_pitch == pitch) {
             return this->current_frequency;
         }

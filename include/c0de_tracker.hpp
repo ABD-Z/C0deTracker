@@ -530,6 +530,19 @@ namespace C0deTracker {
 
         bool stop = false;
 
+        void inline calcStereoSampleFromChannel(uint_fast8_t index, double time, float* output);
+
+        void inline decodeAllFXsFromChannel(int_fast8_t index, Instruction *current_instruction, double time);
+
+        static bool inline isVolumeValid(float volume);
+
+        static bool inline isNoteReleased(Instruction *instruction);
+
+        void inline calcTracksStereoSample(float *output);
+
+        bool inline isInstrumentValid(uint_fast8_t instru_index);
+
+        bool inline isNewInstrumentFromChannel(int_fast8_t chan_index, Instruction *instru);
     };
 
 
@@ -690,6 +703,17 @@ namespace C0deTracker {
         void resetState();
 
         friend float* Track::play(double t);
+
+        bool decode_fx(uint_fast32_t fx, double t);
+
+        void setInstrumentParams(Instrument_Data *instrument);
+
+        float calcAmplitude();
+
+        float calcPitch(double time);
+
+        float getPanning() const;
+
     private:
         Instruction* last_instruct_address = nullptr;
         Track* track = nullptr;
@@ -704,9 +728,10 @@ namespace C0deTracker {
         Osc oscillator = Osc();
         uint_fast8_t instrument_index = Notes::KeysUtilities::CONTINUE;
 
-        bool decode_fx(uint_fast32_t fx, double t);
-
         void update_fx(double t);
+
+        void initFXs(Instruction *instruction, double time);
+
     };
 
     /**

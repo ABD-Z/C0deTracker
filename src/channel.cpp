@@ -38,11 +38,11 @@ void Channel::setTime(double time) {
 
     double Channel::getTimeRelease() const {return this->time_release;}
 
-    void Channel::setTimeRelease(double time) {this->time_release = time;}
+    void Channel::setTimeRelease(double time) {this->time_release = time; this->setRelease(true);}
 
     bool Channel::isReleased() const {return this->released;}
 
-    void Channel::setRelease(bool r) {this->released = r;}
+    void Channel::setRelease(bool r) {this->released = r; this->oscillator.setRelease(r);}
 
     const Instruction *Channel::getInstructionState() const {return &this->instruct_state;}
 
@@ -70,7 +70,6 @@ void Channel::setTime(double time) {
 
         if (reldel_state == 2) { // release
             if (reldel_state != this->delay_release.getValue()) {
-                this->setRelease(true);
                 this->setTimeRelease(t);
             }
         }

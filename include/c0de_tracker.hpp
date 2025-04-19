@@ -363,8 +363,8 @@ namespace C0deTracker {
 
         virtual void process(const double t, const float clock, const float speed) = 0;
         virtual void reset() = 0;
-        virtual float getValue();
-        virtual bool isActive() = 0;
+        virtual float getValue() const;
+        virtual bool isActive() const = 0;
     };
 
     struct SlideFX : AbstractFX {
@@ -373,9 +373,9 @@ namespace C0deTracker {
         float slide = 0;
 
         SlideFX(const float min, const float max, const float init_val);
-        virtual void process(const double t, const float clock, const float speed);
-        virtual void reset();
-        virtual bool isActive();
+        void process(const double t, const float clock, const float speed) override;
+        void reset() override;
+        bool isActive() const override;
     };
 
     struct SpeedDepthFX : AbstractFX {
@@ -385,9 +385,9 @@ namespace C0deTracker {
         float depth = 0;
 
         SpeedDepthFX(const float min);
-        void process(const double t, const float clock, const float speed);
-        void reset();
-        bool isActive();
+        void process(const double t, const float clock, const float speed) override;
+        void reset() override;
+        bool isActive() const override;
     };
 
     struct TransposeFX : SlideFX {
@@ -397,16 +397,16 @@ namespace C0deTracker {
         uint_fast8_t delay = 0;
 
         TransposeFX(const float min, const float max, const float init_val);
-        void process(const double t, const float clock, const float speed);
-        bool isActive();
+        void process(const double t, const float clock, const float speed) override;
+        bool isActive() const override;
     };
 
     struct PortamentoFX : SlideFX {
         int_fast8_t sign = 0;
 
         PortamentoFX(const float min, const float max, const float init_val);
-        void reset();
-        float getValue();
+        void reset() override;
+        float getValue() const override;
     };
 
     struct ArpeggioFX : SlideFX {
@@ -414,8 +414,8 @@ namespace C0deTracker {
         uint_fast8_t tab[SIZE]{0, 0, 0, 0, 0, 0};
 
         ArpeggioFX(const float min, const float max, const float init_val);
-        void process(const double t, const float clock, const float speed);
-        float getValue();
+        void process(const double t, const float clock, const float speed) override;
+        float getValue() const override;
     };
 
     struct CountableRepeatableFX : AbstractFX {
@@ -426,23 +426,23 @@ namespace C0deTracker {
         uint_fast8_t counter = 0;
 
 
-        virtual void process(const double t, const float clock, const float speed);
-        virtual bool isActive();
-        void reset();
+        void process(const double t, const float clock, const float speed) override;
+        bool isActive() const override;
+        void reset() override;
     };
 
     struct RetriegFX : CountableRepeatableFX {
-        void process(const double t, const float clock, const float speed);
-        bool isActive();
+        void process(const double t, const float clock, const float speed) override;
+        bool isActive() const override;
     };
 
     struct DelayReleaseFX : AbstractFX {
         CountableRepeatableFX delay, release;
 
-        void process(const double t, const float clock, const float speed);
-        void reset();
-        float getValue();
-        bool isActive();
+        void process(const double t, const float clock, const float speed) override;
+        void reset() override;
+        float getValue() const override;
+        bool isActive() const override;
     };
 
     class GlobalFXs {
@@ -476,7 +476,7 @@ namespace C0deTracker {
         RetriegFX retrieg;
         DelayReleaseFX delay_release;
         enum fx_indices_channel{TRANSPOSE=GLOBAL_FXS, PORTAMENTO, ARPEGGIO, RETRIEG, DELAY_RELEASE};
-        virtual bool decode_fx(const uint_fast32_t fx, const double t);
+        bool decode_fx(const uint_fast32_t fx, const double t) override;
     };
 
     class Track : GlobalFXs {

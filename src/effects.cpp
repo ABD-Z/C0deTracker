@@ -6,7 +6,7 @@
 #define FX(f) fx_code == this->fx_codes[f]
 
 namespace C0deTracker {
-    float AbstractFX::getValue() {
+    float AbstractFX::getValue() const{
         return this->val;
     }
 
@@ -32,7 +32,7 @@ namespace C0deTracker {
         this->slide = 0;
     }
 
-    bool SlideFX::isActive() {
+    bool SlideFX::isActive() const {
         return this->slide != 0;
     }
 
@@ -49,7 +49,7 @@ namespace C0deTracker {
         this->speed = 0; this->depth = 0;
     }
 
-    bool SpeedDepthFX::isActive() {
+    bool SpeedDepthFX::isActive() const {
         return this->speed != 0 && this->depth != 0;
     }
 
@@ -63,7 +63,7 @@ namespace C0deTracker {
             ++this->semitones_counter;
     }
 
-    bool TransposeFX::isActive() {
+    bool TransposeFX::isActive() const {
         return this->semitones > 0 && this->repeat > 0 && this->semitones_counter < this->semitones;
     }
 
@@ -75,7 +75,7 @@ namespace C0deTracker {
         SlideFX::reset();
     }
 
-    float PortamentoFX::getValue() {
+    float PortamentoFX::getValue() const {
         return this->val * this->sign;
     }
 
@@ -87,7 +87,7 @@ namespace C0deTracker {
         this->val = uint_fast8_t(this->val) % ArpeggioFX::SIZE;
     }
 
-    float ArpeggioFX::getValue() {
+    float ArpeggioFX::getValue() const {
         return this->tab[uint_fast8_t(this->val)];
     }
 
@@ -104,7 +104,7 @@ namespace C0deTracker {
         this->repeat = 0; this->counter = 0; this->delay = 0; this->number = 0;
     }
 
-    bool CountableRepeatableFX::isActive() {
+    bool CountableRepeatableFX::isActive() const {
         return this->repeat > 0 && this->counter < this->number;
     }
 
@@ -114,7 +114,7 @@ namespace C0deTracker {
         if (this->counter > c)
             this->val = t;
     }
-    bool RetriegFX::isActive() {
+    bool RetriegFX::isActive() const {
         return this->repeat > 0  && this->counter < this->number;
     }
 
@@ -130,11 +130,11 @@ namespace C0deTracker {
         this->delay.reset(); this->release.reset();
     }
 
-    bool DelayReleaseFX::isActive() {
+    bool DelayReleaseFX::isActive() const {
         return this->delay.isActive() || this->release.isActive();
     }
 
-    float DelayReleaseFX::getValue() {
+    float DelayReleaseFX::getValue() const {
         if (this->delay.isActive())
             return 1;
         if (this->release.isActive())

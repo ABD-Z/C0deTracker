@@ -165,14 +165,13 @@ namespace C0deTracker {
     }
 
     void Track::calcStereoSampleFromChannel(uint_fast8_t index, double time, float* output) {
-        float s;
-        float amplitude = this->chans[index].calcAmplitude();
-        float pitch = this->chans[index].calcPitch(time)
-                + this->pitch.getValue()
-                + (time - this->chans[index].getTime() > 0 ? this->vibrato.getValue() : 0);
-        float panning = this->chans[index].getPanning();
-
         if (this->chans[index].getLastInstructionAddress() != nullptr && this->chans[index].getTrack() != nullptr) { // if last instruction is not empty (null) and has a track
+            float s;
+            float amplitude = this->chans[index].calcAmplitude();
+            float pitch = this->chans[index].calcPitch(time)
+                          + this->pitch.getValue()
+                          + (time - this->chans[index].getTime() > 0 ? this->vibrato.getValue() : 0);
+            float panning = this->chans[index].getPanning();
             if (!this->chans[index].isReleased())
                 s = this->chans[index].play_pitch(amplitude, pitch, time - this->chans[index].getTime());// unreleased sample
             else

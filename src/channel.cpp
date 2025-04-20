@@ -32,7 +32,7 @@ namespace C0deTracker {
 
 void Channel::setTime(double time) {
         this->time = time;
-        if (!this->portamento.isActive() || (this->portamento.isActive() && this->isReleased()))
+        if (!this->portamento.isActive() || this->isReleased())
             this->oscillator.resetPhaseTimeOffset();
     }
 

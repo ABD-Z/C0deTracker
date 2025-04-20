@@ -86,7 +86,6 @@ namespace C0deTracker {
     }
 
     float Osc::saw(float a, float f, double t, float dc, float FMfeed) {
-        double T = 1.f / f;
         //t-T*floor(t/T)  <=> mod(t,T)
         double frac_ft = f * t - floor( t / (1.f/f));
         double s = (frac_ft - dc < 0) ? t + FMfeed : 0.f + FMfeed;

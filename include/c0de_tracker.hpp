@@ -384,7 +384,7 @@ namespace C0deTracker {
         float speed = 0;
         float depth = 0;
 
-        SpeedDepthFX(const float min);
+        explicit SpeedDepthFX(const float min);
         void process(const double t, const float clock, const float speed) override;
         void reset() override;
         bool isActive() const override;
@@ -483,7 +483,7 @@ namespace C0deTracker {
     public:
         Track() = default;
 
-        Track(Track_Data* td);
+        explicit Track(Track_Data* td);
 
         /**
          * @brief free everything related to the track, patterns, patterns indices, instruments

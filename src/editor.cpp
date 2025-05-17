@@ -216,7 +216,7 @@ namespace C0deTracker {
         if(instruction_index < Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->rows){
             uint_fast8_t size = Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx;
             Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects =
-                    new uint_fast32_t*[size];
+                    new uint_fast32_t*[size]{};
             if(effects.size() < size){
                 size =  effects.size();
             }
@@ -281,7 +281,7 @@ namespace C0deTracker {
             uint_fast8_t size = Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->n_fx;
             Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].instrument_index = C0deTracker::Notes::RELEASE;
             Editor::pattern[Editor::chan_index * Editor::frames + Editor::pattern_index]->instructions[instruction_index].effects =
-                    new uint_fast32_t*[size];
+                    new uint_fast32_t*[size]{};
             if(effects.size() < size){
                 size =  effects.size();
             }

@@ -59,23 +59,58 @@ void Channel::setTime(double time) {
 
     void Channel::update_fx(double t) {
         float rv = this->retrieg.getValue();
-        uint_fast8_t reldel_state = this->delay_release.getValue();
+
+        bool relstate = this->release.isActive();
+        bool delstate = this->delay.isActive();
+
         ChannelFXs::update_fx(t, this->track->getClock(), this->track->getSpeed());
 
         if (rv != this->retrieg.getValue())
             this->setTime(t);
 
-        if (this->delay_release.getValue() == 1) //delay
-            this->setTime(t);
+        if (delstate) { // delay before update
+            if (!this->delay.isActive()) { // finished from processing delay (delay state switched to off)
+                this->setTime(t);
+                this->setRelease(false);
 
-        if (reldel_state == 2) { // release
-            if (reldel_state != this->delay_release.getValue()) {
-                this->setTimeRelease(t);
+                this->setInstructionState(delayed_instruct_address);
+                this->setInstrumentParams(this->delayed_instrument);
+                this->setLastInstructionAddress(delayed_instruct_address);
+
+                if (this->delayed_fx_counter > 0) {
+                    for (uint_fast8_t i = 0; i < delayed_fx_counter; ++i) {
+                        this->decode_fx(this->delayed_fxs[i], t);
+                    }
+                    this->delayed_fx_counter = 0;
+                }
+
+                this->delayed_instruct_address = nullptr;
+                this->delayed_instrument = nullptr;
+                this->release.time_step = t;
+                this->pitch.val = 0;
+                this->pitch.time_step = t;
+                this->transpose.val = 0;
+                this->transpose.semitones_counter = 0;
+                this->transpose.time_step = t;
+                this->retrieg.time_step = time;
+                this->retrieg.counter = 0;
             }
+        }
+
+        if (relstate) { // release before updates
+            if (!this->release.isActive()) // finished from processing release (release state switched to off)
+                this->setTimeRelease(t); // so time to set release time
         }
     }
 
     bool Channel::decode_fx(uint_fast32_t fx, double t) {
+        if(this->delay.isActive()) {
+            if (this->delayed_fx_counter < this->delayed_fxs_size) {
+                this->delayed_fxs[this->delayed_fx_counter] = fx;
+                ++this->delayed_fx_counter;
+            }
+            return true;
+        }
         return ChannelFXs::decode_fx(fx, t);
     }
 
@@ -100,6 +135,7 @@ void Channel::setTime(double time) {
          released = false;
          time_release = 0.0;
          instrument_index = Notes::KeysUtilities::CONTINUE;
+         delayed_instruct_address = nullptr;
     }
 
     void Channel::setTrack(Track *track) {this->track = track;}
@@ -110,7 +146,20 @@ void Channel::setTime(double time) {
     }
 
     void Channel::initFXs(Instruction *instruction, double time) {
-        if (this->portamento.isActive()) { //init portamento
+        if(this->transpose.repeat > 0 && time > this->transpose.time_step){
+            --this->transpose.repeat;
+        }
+        if(this->retrieg.repeat > 0 && time > this->retrieg.time_step){
+            --this->retrieg.repeat;
+        }
+        if(this->delay.repeat > 0 && time > this->delay.time_step){
+            --this->delay.repeat;
+        }
+        if(this->release.repeat > 0 && time > this->release.time_step/*&& !this->release.isActive()*/){
+            --this->release.repeat;
+        }
+
+        if (this->portamento.isActive()) { // init portamento
             this->portamento.time_step = time;
             //empty note
             if (this->getInstructionState()->key.note == Notes::CONTINUE || this->getInstructionState()->key.octave == Notes::CONTINUE) {
@@ -127,32 +176,19 @@ void Channel::setTime(double time) {
             }
         }
 
-        this->oscillator.setRelease(false);
         this->pitch.val = 0;
         this->pitch.time_step = time;
         this->transpose.time_step = time;
+        this->transpose.val = 0;
         this->transpose.semitones_counter = 0;
         this->retrieg.time_step = time;
         this->retrieg.counter = 0;
 
-        this->delay_release.delay.time_step = time;
-        this->delay_release.release.time_step = time;
-        this->delay_release.delay.counter = 0;
-        this->delay_release.release.counter = 0;
+        this->delay.time_step = time;
+        this->release.time_step = time;
 
-        this->transpose.val = 0;
-        if(this->transpose.repeat > 0){
-            --this->transpose.repeat;
-        }
-        if(this->retrieg.repeat > 0){
-            --this->retrieg.repeat;
-        }
-        if(this->delay_release.delay.repeat){
-            --this->delay_release.delay.repeat;
-        }
-        if(this->delay_release.release.repeat){
-            --this->delay_release.release.repeat;
-        }
+        this->delay.counter = 0;
+        this->release.counter = 0;
     }
 
     float Channel::calcAmplitude() {
@@ -170,6 +206,4 @@ void Channel::setTime(double time) {
     float Channel::getPanning() const {
         return this->panning.getValue();
     }
-
-
 }

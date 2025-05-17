@@ -436,15 +436,6 @@ namespace C0deTracker {
         bool isActive() const override;
     };
 
-    struct DelayReleaseFX : AbstractFX {
-        CountableRepeatableFX delay, release;
-
-        void process(const double t, const float clock, const float speed) override;
-        void reset() override;
-        float getValue() const override;
-        bool isActive() const override;
-    };
-
     class GlobalFXs {
     public:
         GlobalFXs();
@@ -469,13 +460,23 @@ namespace C0deTracker {
     class ChannelFXs : public GlobalFXs {
     public:
         ChannelFXs();
+        void initDelayedFXsBuffer(uint_fast8_t nFX);
+
+        virtual ~ChannelFXs();
+
     protected:
         TransposeFX transpose{MIN_PITCH, MAX_PITCH, 0};
         PortamentoFX portamento{0, MAX_PITCH - MIN_PITCH, 0};
         ArpeggioFX arpeggio{0, ArpeggioFX::SIZE, 0};
         RetriegFX retrieg;
-        DelayReleaseFX delay_release;
-        enum fx_indices_channel{TRANSPOSE=GLOBAL_FXS, PORTAMENTO, ARPEGGIO, RETRIEG, DELAY_RELEASE};
+        CountableRepeatableFX delay;
+        CountableRepeatableFX release;
+
+        uint_fast32_t* delayed_fxs = nullptr;
+        uint_fast8_t delayed_fx_counter = 0;
+        uint_fast8_t delayed_fxs_size = 0;
+
+        enum fx_indices_channel{TRANSPOSE=GLOBAL_FXS, PORTAMENTO, ARPEGGIO, RETRIEG, DELAY_RELEASE, RELEASE};
         bool decode_fx(const uint_fast32_t fx, const double t) override;
     };
 
@@ -593,7 +594,7 @@ namespace C0deTracker {
         Channel()=default;
 
 
-        ~Channel()=default;
+        ~Channel() override =default;
 
         /**
          * @return if the channel is enabled to play_single_channel sound
@@ -727,6 +728,9 @@ namespace C0deTracker {
         Instruction instruct_state{};
         Osc oscillator = Osc();
         uint_fast8_t instrument_index = Notes::KeysUtilities::CONTINUE;
+
+        Instruction* delayed_instruct_address = nullptr;
+        Instrument_Data* delayed_instrument = nullptr;
 
         void update_fx(double t);
 

@@ -8,6 +8,10 @@ namespace C0deTracker {
         this->track_data = td;
         this->chans = new C0deTracker::Channel[td->channels];
         this->clk = td->clk; this->speed = td->speed; this->step = td->step; this->duration = td->duration;
+
+        for (uint_fast8_t i = 0; i < td->channels; ++i) {
+            this->chans[i].initDelayedFXsBuffer(td->fx_per_chan[i]);
+        }
     }
 
     Track::Track(Track_Data* td){
@@ -70,29 +74,38 @@ namespace C0deTracker {
 
         for (int_fast8_t i = this->track_data->channels - 1; i >= 0; --i) {
             if (this->chans[i].isEnable()) {
-                if(this->chans[i].getTrack() != nullptr){
-                    this->chans[i].update_fx(t);
-                }
-
+                this->chans[i].setTrack(this);
                 uint_fast8_t pattern_index = this->track_data->pattern_indices[i * this->track_data->frames + this->frame_counter];
                 Pattern *pat = this->track_data->track_patterns[i * (this->track_data->frames) + pattern_index];
                 Instruction *current_instruction = &pat->instructions[this->row_counter];
 
+                this->decodeAllFXsFromChannel(i, current_instruction, t);
+
+                if (this->readFx && this->isInstrumentValid(current_instruction->instrument_index)
+                    && !this->chans[i].delay.isActive()) {
+                    this->chans[i].initFXs(current_instruction, t);
+                }
+
                 if(this->isInstrumentValid(current_instruction->instrument_index)) {
                     if (this->readFx) {
-                        this->chans[i].setLastInstructionAddress(current_instruction);
-                        this->chans[i].setTime(t);
-                        this->chans[i].setRelease(false);
+                        if (this->chans[i].delay.isActive() != true) {
 
-                        this->chans[i].setTrack(this);
+                            this->chans[i].setLastInstructionAddress(current_instruction);
 
-                        this->chans[i].initFXs(current_instruction, t);
+                            this->chans[i].setTime(t);
+                            this->chans[i].setRelease(false);
 
-                        if (this->isNewInstrumentFromChannel(i, current_instruction)) {
-                            this->chans[i].setInstrumentParams(&this->track_data->instruments_data_bank[current_instruction->instrument_index]);
+                            this->chans[i].setTrack(this);
+
+                            if (this->isNewInstrumentFromChannel(i, current_instruction)) {
+                                this->chans[i].setInstrumentParams(&this->track_data->instruments_data_bank[current_instruction->instrument_index]);
+                            }
+
+                            this->chans[i].setInstructionState(current_instruction);
+                        } else {
+                            this->chans[i].delayed_instruct_address = current_instruction;
+                            this->chans[i].delayed_instrument = &this->track_data->instruments_data_bank[current_instruction->instrument_index];
                         }
-
-                        this->chans[i].setInstructionState(current_instruction);
                     }
                 } else {
                     if (this->chans[i].getLastInstructionAddress() != nullptr
@@ -110,13 +123,11 @@ namespace C0deTracker {
                     }
                 }
 
-                this->decodeAllFXsFromChannel(i, current_instruction, t);
+                if(this->chans[i].getTrack() != nullptr){
+                    this->chans[i].update_fx(t);
+                }
 
-                this->calcStereoSampleFromChannel(
-                        i,
-                        t,
-                        res
-                        );
+                this->calcStereoSampleFromChannel(i, t, res);
             }
         }
 
@@ -187,8 +198,10 @@ namespace C0deTracker {
             for (int_fast8_t fx_indx = 0; fx_indx < this->track_data->fx_per_chan[index]; ++fx_indx) {
                 if (current_instruction->effects[fx_indx] == nullptr) // break instant at first empty FX (it means no more FXx)
                     break;
-                if (!this->decode_fx(*current_instruction->effects[fx_indx], time))
+                if (!this->decode_fx(*current_instruction->effects[fx_indx], time)) {
                     this->chans[index].decode_fx(*current_instruction->effects[fx_indx], time);
+                }
+
             }
         }
     }

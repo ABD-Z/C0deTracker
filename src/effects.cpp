@@ -79,7 +79,6 @@ namespace C0deTracker {
         return this->val * this->sign;
     }
 
-
     ArpeggioFX::ArpeggioFX(const float min, const float max, const float init_val) : SlideFX(min, max, init_val) {}
 
     void ArpeggioFX::process(const double t, const float clock, const float speed) {
@@ -93,7 +92,6 @@ namespace C0deTracker {
 
 
     void CountableRepeatableFX::process(const double t, const float clock, const float speed) {
-
         if(t - this->time_step >= double(this->delay) / clock){
             this->time_step += double(this->delay) / clock;
             ++this->counter;
@@ -116,31 +114,6 @@ namespace C0deTracker {
     }
     bool RetriegFX::isActive() const {
         return this->repeat > 0  && this->counter < this->number;
-    }
-
-    void DelayReleaseFX::process(const double t, const float clock, const float speed) {
-        if (this->delay.isActive())
-            this->delay.process(t, clock, speed);
-        else if (this->release.isActive()) {
-            this->release.process(t, clock, speed);
-        }
-    }
-
-    void DelayReleaseFX::reset() {
-        this->delay.reset(); this->release.reset();
-    }
-
-    bool DelayReleaseFX::isActive() const {
-        return this->delay.isActive() || this->release.isActive();
-    }
-
-    float DelayReleaseFX::getValue() const {
-        if (this->delay.isActive())
-            return 1;
-        if (this->release.isActive())
-            return 2;
-        else
-            return 0;
     }
 
     GlobalFXs::GlobalFXs() {
@@ -248,8 +221,16 @@ namespace C0deTracker {
         this->effects_table.push_back(&this->retrieg);
 
         this->fx_codes.push_back(0x1F); // Delay Release
-        this->effects_table.push_back(&this->delay_release);
+        this->effects_table.push_back(&this->delay);
 
+        this->fx_codes.push_back(0xFF); // Release Effect
+        this->effects_table.push_back(&this->release);
+
+    }
+
+    void ChannelFXs::initDelayedFXsBuffer(uint_fast8_t nFX) {
+        this->delayed_fxs = new uint_fast32_t [nFX];
+        this->delayed_fxs_size = nFX;
     }
 
     bool ChannelFXs::decode_fx(const uint_fast32_t fx, const double t) {
@@ -303,27 +284,58 @@ namespace C0deTracker {
             return true;
         }
         if (FX(DELAY_RELEASE)) {
-            this->delay_release.delay.delay = (fx_val >> 4 * 4);
-            this->delay_release.delay.time_step = t;
-            if(this->delay_release.delay.delay > 0) {
-                this->delay_release.delay.number = 1;
-                this->delay_release.delay.repeat = (fx_val & 0xFF);
+            this->delay.reset();
+            this->delay.delay = (fx_val >> 4 * 4);
+            this->delay.time_step = t;
+            if(this->delay.delay > 0) {
+                this->delay.number = 1;
+                this->delay.repeat = (fx_val & 0xFF);
             } else {
-                this->delay_release.delay.number = 0;
-                this->delay_release.delay.repeat = 0;
+                this->delay.reset();
+            }
+            if(this->delay.isActive()) {
+                uint_fast8_t rel_del = (fx_val & 0xFF00) >> 4 * 2;
+                if(rel_del > 0) {
+                    if (this->delayed_fx_counter< this->delayed_fxs_size) {
+                        this->delayed_fxs[this->delayed_fx_counter] = 0xFF000000 | (fx_val & 0x00FFFF);
+                        ++this->delayed_fx_counter;
+                    }
+                    return true;
+                }
             }
 
-            this->delay_release.release.delay = (fx_val & 0xFF00) >> 4 * 2;
-            this->delay_release.release.time_step = t;
+            this->release.reset();
+            this->release.delay = (fx_val & 0xFF00) >> 4 * 2;
+            this->release.time_step = t;
 
-            if (this->delay_release.release.delay > 0) {
-                this->delay_release.release.number = 1;
-                this->delay_release.release.repeat = (fx_val & 0xFF);
+            if (this->release.delay > 0) {
+                this->release.number = 1;
+                this->release.repeat = (fx_val & 0xFF);
             } else {
-                this->delay_release.release.number = 0;
-                this->delay_release.release.repeat = 0;
+                this->release.number = 0;
+                this->release.repeat = 0;
             }
+
+            return true;
+        }
+        if (FX(RELEASE)) {
+            this->release.reset();
+            this->release.delay = (fx_val & 0xFF00) >> 4 * 2;
+            this->release.time_step = t;
+
+            if (this->release.delay > 0) {
+                this->release.number = 1;
+                this->release.repeat = (fx_val & 0xFF);
+            } else {
+                this->release.number = 0;
+                this->release.repeat = 0;
+            }
+            return true;
         }
         return GlobalFXs::decode_fx(fx, t);
+    }
+
+    ChannelFXs::~ChannelFXs() {
+        delete this->delayed_fxs;
     }
 }

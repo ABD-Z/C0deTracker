@@ -1118,8 +1118,8 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     R(32 + 30);
 
     PTRN_INDX(6);
-    I(4, k(G_S,4), portamento);
-    I(8, k(F,5));
+    I(4, k(G_S,4));
+    I(8, k(F,5), portamento);
     I(12, k(C_S,5), cancel_portamento);
     I(14, k(D_S,5));
     I(22, k(G_S,4));
@@ -1381,7 +1381,7 @@ void SuperStreetFighterII_CreditTheme::load_data() {
 
     PTRN_INDX(4);
     INSTR_INDX(CRASH);
-    I(0, k(C_S,3), centered_pan);
+    I(0, k(C_S,3));
     INSTR_INDX(HITHAT);
     VOLUME(0.3);
     I(4, k(A,2)); I(6, k(A,2)); I(8, k(A,2)); I(10, k(A,2)); I(12, k(A,2)); I(14, k(A,2));
@@ -1534,8 +1534,8 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     PTRN_INDX(1);
     I(32, k(B, 1));
     I(46, k(G_S, 1)); R(58);
-    I(59, k(C_S, 2),0, ui32(0x1B400000));
-    I(60, k(G_S, 1));
+    I(59, k(C_S, 2),0, ui32(0x1B000000));
+    I(60, k(G_S, 1), ui32(0x1B400000));
 
     PTRN_INDX(2);
     I(0, k(C_S, 2), ui32(0x1B000000));

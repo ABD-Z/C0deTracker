@@ -42,8 +42,8 @@ void SuperMarioBros_OverworldTheme::load_data() {
 #define UI32 uint_fast32_t
 
     UI32 FX_global_del1_rel7 = 0x1F0108FF;
-    UI32 FX_del4_rel7 = 0x1F040B01;
-    UI32 FX_del7_rel7 = 0x1F070E01;
+    UI32 FX_del4_rel7 = 0x1F040801;
+    UI32 FX_del7_rel7 = 0x1F070801;
     UI32 FX_del1_rel7 = 0x1F010801;
 
     //square wave : O octave famitracker corresponds to O + 1 for C0deTracker
@@ -162,8 +162,8 @@ void SuperMarioBros_OverworldTheme::load_data() {
     P(1,9,4);
 
     UI32 FX_bass_global_del0_rel7 = 0x1F0008FF;
-    UI32 FX_bass_del3_rel7 = 0x1F030B01;
-    UI32 FX_bass_del6_rel7 = 0x1F060E01;
+    UI32 FX_bass_del3_rel7 = 0x1F030801;
+    UI32 FX_bass_del6_rel7 = 0x1F060801;
 
     CHANL(2);
     VOLM(1.0f);
@@ -231,7 +231,7 @@ void SuperMarioBros_OverworldTheme::load_data() {
     UI32 FX_drum_del0_rel1_rep2 = 0x1F000102;
     UI32 FX_drum_del0_rel1_rep5 = 0x1F000105;
     UI32 FX_drum_del0_rel1_rep1 = 0x1F000101;
-    UI32 FX_drum_del3_rel1_rep1 = 0x1F030401;
+    UI32 FX_drum_del3_rel1_rep1 = 0x1F030101;
 
     CHANL(3);
     PATRN(0);

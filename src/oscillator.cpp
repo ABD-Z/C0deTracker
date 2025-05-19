@@ -43,6 +43,8 @@ namespace C0deTracker {
                 return Osc::square(amp, frq, x, dc, FMfeed);
             case TRIANGLE:
                 return Osc::triangle(amp, frq, x, dc, FMfeed);
+            case TRIANGLE2:
+                return Osc::triangle2(amp, frq, x, dc, FMfeed);
             case SAW:
                 return Osc::saw(amp, frq, x, dc, FMfeed);
             case WHITENOISE:
@@ -79,18 +81,33 @@ namespace C0deTracker {
 
     float Osc::triangle(float a, float f, double t, float dc, float FMfeed) {
         //t-T*floor(t/T)  <=> mod(t,T)
-        double frac_ft = f * t - floor(t*f);
-        double s = (frac_ft - dc * .5 < 0) ? t + FMfeed : -t + FMfeed;
-        double frac_fs = f*s - floor(f*s);
-        return  float(double(a) * (std::fmax(1. - 2*frac_fs/dc, -0.) - 0.5));
+        double frac_ft = f * (t + FMfeed) - floor(f * (t + FMfeed));
+        float s;
+        if (frac_ft < 0.5f) {
+            s = (frac_ft - 0.5f*(1 - dc) > 0) ? (frac_ft - 0.5f*(1 - dc))/dc: 0;
+        } else{
+            s =  (-frac_ft + 0.5f*(1 + dc) > 0) ? (-frac_ft + 0.5f*(1 + dc))/dc: 0;
+        }
+        return 2 * a * (s - 0.25f);
+    }
+
+    float Osc::triangle2(float a, float f, double t, float dc, float FMfeed) {
+        //t-T*floor(t/T)  <=> mod(t,T)
+        float frac_ft = f * (t + FMfeed) - floor(f * (t + FMfeed));
+        float s;
+        if (frac_ft < 0.5f) {
+            s = (frac_ft - 0.5f*(1 - dc) > 0) ? frac_ft: 0;
+        } else{
+            s =  (-frac_ft + 0.5f*(1 + dc) > 0) ? -frac_ft+1: 0;
+        }
+        return 2 * a * (s - 0.25f);
     }
 
     float Osc::saw(float a, float f, double t, float dc, float FMfeed) {
         //t-T*floor(t/T)  <=> mod(t,T)
-        double frac_ft = f * t - floor( t / (1.f/f));
-        double s = (frac_ft - dc < 0) ? t + FMfeed : 0.f + FMfeed;
-        double frac_fs = f * s - floor( s / (1.f/f));
-        return  float(double(a) * ( frac_fs / (dc) - 0.5));
+        double frac_ft = f * (t + FMfeed) - floor(f * (t + FMfeed));
+        double s = (frac_ft - dc < 0) ? frac_ft/dc : 0.f;
+        return a * (s - 0.5f);
     }
 
     float Osc::whitenoise(float a, float f, double t, float dc, float FMfeed) {
@@ -153,8 +170,16 @@ namespace C0deTracker {
         this->setAttack(instrdata->amp_envelope.attack); this->setDecay(instrdata->amp_envelope.decay);
         this->setRelease(instrdata->amp_envelope.release); this->setSustain(instrdata->amp_envelope.sustain);
         this->setWavetype(instrdata->wavetype); this->setDutycycle(instrdata->duty_cycle);
-        this->setPhase(instrdata->phase); this->setVolume(instrdata->volume); this->setPitch(instrdata->pitch);
+        this->setVolume(instrdata->volume); this->setPitch(instrdata->pitch);
         this->current_envelope_amplitude = 0.0f;
+        switch (instrdata->wavetype) {
+            case TRIANGLE:
+            case TRIANGLE2:
+                this->setPhase(instrdata->phase - 0.25f);
+                break;
+            default:
+                this->setPhase(instrdata->phase);
+        }
         this->current_phase = this->getPhase();
         this->setRelease(false);
     }

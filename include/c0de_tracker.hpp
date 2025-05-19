@@ -163,7 +163,7 @@ namespace C0deTracker {
      * values in order to select the corresponding waveform function
      * @see C0deTracker::Oscillator
      */
-    enum Waveforms{SINUS, SQUARE, TRIANGLE, SAW, WHITENOISE, WHITENOISE2, WAVETYPES};
+    enum Waveforms{SINUS, SQUARE, TRIANGLE, TRIANGLE2, SAW, WHITENOISE, WHITENOISE2, WAVETYPES};
 
 
     /**
@@ -299,6 +299,7 @@ namespace C0deTracker {
         static float sinus(float a, float f, double t, float dc, float FMfeed);
         static float square(float a, float f, double t, float dc, float FMfeed);
         static float triangle(float a, float f, double t, float dc, float FMfeed);
+        static float triangle2(float a, float f, double t, float dc, float FMfeed);
         static float saw(float a, float f, double t, float dc, float FMfeed);
         static float whitenoise(float a, float f, double t, float dc, float FMfeed);
         static float whitenoise2(float a, float f, double t, float dc, float FMfeed);

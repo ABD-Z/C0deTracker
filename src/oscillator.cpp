@@ -178,7 +178,7 @@ namespace C0deTracker {
     }
 
     void Osc::resetPhaseTimeOffset() {
-        this->current_phase = 0;
+        this->current_phase = this->getPhase();
         this->time_offset = 0;
     }
 

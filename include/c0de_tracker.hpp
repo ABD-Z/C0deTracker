@@ -105,7 +105,9 @@ namespace C0deTracker {
          *  The other three values in the enumeration are used in function key2freq(uint8_t note, uint8_t octave). You don't have to use them.
          *  @note For each instrument bank, you can create in it (RELEASE -1) different instruments, or 243 maximum.
          */
-        enum KeysUtilities{C, C_S, D, D_S, E, F, F_S, G, G_S, A, A_S, B, PITCHES_PER_OCTAVE, OCTAVE_PITCH_OFFSET = 4, NOTE_PITCH_OFFSET = A, RELEASE = 244, CONTINUE};
+        enum KeysUtilities{C, C_S, D, D_S, E, F, F_S, G, G_S, A, A_S, B,
+                PITCHES_PER_OCTAVE, OCTAVE_PITCH_OFFSET = 4, NOTE_PITCH_OFFSET = A, RELEASE = 244, CONTINUE,
+                Do = C, Do_d, Re, Re_d, Mi, Fa, Fa_d, Sol, Sol_d, La, La_d, Si};
 
         /**
          * @param p pitch2freq

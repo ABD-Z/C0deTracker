@@ -70,54 +70,53 @@ namespace C0deTracker {
 
     float Osc::sinus(float a, float f, double t, float dc, float FMfeed) {
         double frac_ft = f * t - floor(t*f);
-        return (frac_ft - dc < 0) ? a * 0.5 * sinf(TWOPI * f * t + FMfeed) : - a * 0.5 *(sinf(TWOPI * f * t + FMfeed));
-        //return a * 0.5 * sinf(TWOPI * f * t + FMfeed);
+        return (frac_ft - dc < 0) ? a * sinf(TWOPI * f * t + FMfeed) : - a * (sinf(TWOPI * f * t + FMfeed));
     }
 
     float Osc::square(float a, float f, double t, float dc, float FMfeed) {
-        double frac_ft = f * t - floor(t/(1.f/f));
-        return (frac_ft -dc < 0) ?  a * .5f + FMfeed : a * -.5f + FMfeed;
+        float frac_ft = (f * t + FMfeed) - floor(f * t + FMfeed);
+        return (frac_ft -dc < 0) ?  a : -a;
     }
 
     float Osc::triangle(float a, float f, double t, float dc, float FMfeed) {
         //t-T*floor(t/T)  <=> mod(t,T)
-        double frac_ft = f * (t + FMfeed) - floor(f * (t + FMfeed));
+        float frac_ft = (f * t + FMfeed) - floor(f * t + FMfeed);
         float s;
         if (frac_ft < 0.5f) {
             s = (frac_ft - 0.5f*(1 - dc) > 0) ? (frac_ft - 0.5f*(1 - dc))/dc: 0;
         } else{
             s =  (-frac_ft + 0.5f*(1 + dc) > 0) ? (-frac_ft + 0.5f*(1 + dc))/dc: 0;
         }
-        return 2 * a * (s - 0.25f);
+        return a * (4 * s - 1);
     }
 
     float Osc::triangle2(float a, float f, double t, float dc, float FMfeed) {
         //t-T*floor(t/T)  <=> mod(t,T)
-        float frac_ft = f * (t + FMfeed) - floor(f * (t + FMfeed));
+        float frac_ft = (f * t + FMfeed) - floor(f * t + FMfeed);
         float s;
         if (frac_ft < 0.5f) {
             s = (frac_ft - 0.5f*(1 - dc) > 0) ? frac_ft: 0;
         } else{
             s =  (-frac_ft + 0.5f*(1 + dc) > 0) ? -frac_ft+1: 0;
         }
-        return 2 * a * (s - 0.25f);
+        return a * (4 * s - 1);
     }
 
     float Osc::saw(float a, float f, double t, float dc, float FMfeed) {
         //t-T*floor(t/T)  <=> mod(t,T)
-        double frac_ft = f * (t + FMfeed) - floor(f * (t + FMfeed));
+        float frac_ft = (f * t + FMfeed) - floor(f * t + FMfeed);
         double s = (frac_ft - dc < 0) ? frac_ft/dc : 0.f;
-        return a * (s - 0.5f);
+        return a * (2 * s - 1);
     }
 
     float Osc::whitenoise(float a, float f, double t, float dc, float FMfeed) {
-        float s = Osc::sinus(a, f, t, 0.f, FMfeed)/(dc*0.5);
-        return  a * (s - floor(s) - 0.5f);
+        float s = Osc::sinus(a*0.5f, f, t, 0.f, FMfeed)/(dc*0.5);
+        return  2*a * (s - floor(s) - 0.5f);
     }
 
     float Osc::whitenoise2(float a, float f, double t, float dc, float FMfeed) {
-        float s = Osc::sinus(a, f, t/(dc), 0.f, FMfeed);
-        return  a * (s - floor(s) - 0.5f);
+        float s = Osc::sinus(a*0.5f, f, t/(dc), 0.f, FMfeed);
+        return  2*a * (s - floor(s) - 0.5f);
     }
 
     const ADSR *Osc::getAmpEnvelope() {

@@ -218,8 +218,8 @@ namespace C0deTracker {
         output[0] *= this->volume.val * this->tremolo.val;
         output[1] *=  this->volume.val * this->tremolo.val;
 
-        output[0] *= 4*(1 - this->panning.val); //left
-        output[1] *= 4*this->panning.val; //right
+        output[0] *= 2*(1 - this->panning.val); //left
+        output[1] *= 2*this->panning.val; //right
     }
 
     bool Track::isInstrumentValid(uint_fast8_t instru_index) {

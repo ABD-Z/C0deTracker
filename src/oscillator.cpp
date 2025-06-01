@@ -14,6 +14,17 @@
 #include "../include/c0de_tracker.hpp"
 
 namespace C0deTracker {
+    uint_fast8_t Osc::custom_wave_counter = 0;
+
+    float (*Osc::wavefunctable[MAX_CUSTOM_WAVE]) (float, float, double, float, float) = {nullptr};
+
+    void Osc::registerCustomWaveFunc(uint_fast8_t id, float (*wave_func)(float, float, double, float, float)) {
+        if (Osc::custom_wave_counter < MAX_CUSTOM_WAVE && id - WAVETYPES < MAX_CUSTOM_WAVE) {
+            wavefunctable[id - WAVETYPES] = wave_func;
+            ++Osc::custom_wave_counter;
+        }
+    }
+
     void Osc::setWavetype(uint_fast8_t wavetype) { this->wavetype = wavetype;}
     uint_fast8_t Osc::getWavetype() const {return this->wavetype;}
 
@@ -52,6 +63,9 @@ namespace C0deTracker {
             case WHITENOISE2:
                 return this->getVolume() * Osc::whitenoise2(a, frq, x, dc, FMfeed);
             default:
+                if (this->wavetype >= WAVETYPES && this->wavetype - WAVETYPES  < Osc::custom_wave_counter) {
+                    return Osc::wavefunctable[this->wavetype - WAVETYPES](a, frq, x, dc, FMfeed);
+                }
                 return MIN_VOLUME;
         }
     }

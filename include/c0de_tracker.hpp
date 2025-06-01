@@ -48,6 +48,7 @@ namespace C0deTracker {
 #define MIN_VOLUME 0.f
 #define MIN_PITCH -57 // K(C, 0) = 16.352 Hz
 #define MAX_PITCH 50 // K(B, 8) = 7902.133 Hz
+#define MAX_CUSTOM_WAVE 0xFF
 
 
     struct Key;
@@ -276,6 +277,8 @@ namespace C0deTracker {
         static float whitenoise(float a, float f, double t, float dc, float FMfeed);
         static float whitenoise2(float a, float f, double t, float dc, float FMfeed);
 
+        static void registerCustomWaveFunc(uint_fast8_t id, float (*wave_func)(float, float, double, float, float));
+
 
     private:
         uint_fast8_t wavetype = SINUS; float dutycycle = 0.5f; float phase = 0.0f; float pitch = 0.0f;
@@ -287,6 +290,9 @@ namespace C0deTracker {
         float current_phase = 0.0f;
         float current_envelope_amplitude = 0.f; /**<Used to calculate envelope notably for release state*/
         double time_offset = 0;
+
+        static float (*wavefunctable[MAX_CUSTOM_WAVE]) (float, float, double, float, float);
+        static uint_fast8_t custom_wave_counter;
 
         /**
          * @brief Generates corresponding waveform selected.

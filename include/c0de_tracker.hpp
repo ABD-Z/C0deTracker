@@ -267,6 +267,16 @@ namespace C0deTracker {
         float pitch2freq(float pitch, double time);
 
         void resetPhaseTimeOffset();
+
+        static float sinus(float a, float f, double t, float dc, float FMfeed);
+        static float square(float a, float f, double t, float dc, float FMfeed);
+        static float triangle(float a, float f, double t, float dc, float FMfeed);
+        static float triangle2(float a, float f, double t, float dc, float FMfeed);
+        static float saw(float a, float f, double t, float dc, float FMfeed);
+        static float whitenoise(float a, float f, double t, float dc, float FMfeed);
+        static float whitenoise2(float a, float f, double t, float dc, float FMfeed);
+
+
     private:
         uint_fast8_t wavetype = SINUS; float dutycycle = 0.5f; float phase = 0.0f; float pitch = 0.0f;
         float volume = 1.0f;
@@ -297,14 +307,6 @@ namespace C0deTracker {
          * @return Signal amplitude at time t with the given duty cycle dc and phase p.
          */
         float oscillate(float a, float f, double t, double rt, float FMfeed);
-
-        static float sinus(float a, float f, double t, float dc, float FMfeed);
-        static float square(float a, float f, double t, float dc, float FMfeed);
-        static float triangle(float a, float f, double t, float dc, float FMfeed);
-        static float triangle2(float a, float f, double t, float dc, float FMfeed);
-        static float saw(float a, float f, double t, float dc, float FMfeed);
-        static float whitenoise(float a, float f, double t, float dc, float FMfeed);
-        static float whitenoise2(float a, float f, double t, float dc, float FMfeed);
         float handleAmpEnvelope(double t, double rt);
     };
 

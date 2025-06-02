@@ -225,6 +225,10 @@ namespace C0deTracker {
 
         float getPitch() const;
 
+        void setFeedbackLevel(float fb);
+
+        float getFeedbackLevel() const;
+
         /**
          * @brief Generates corresponding waveform selected.
          * @param a Amplitude
@@ -290,6 +294,8 @@ namespace C0deTracker {
         float current_phase = 0.0f;
         float current_envelope_amplitude = 0.f; /**<Used to calculate envelope notably for release state*/
         double time_offset = 0;
+        float feedback_val = 0;
+        float feedback_level = 0;
 
         static float (*wavefunctable[MAX_CUSTOM_WAVE]) (float, float, double, float, float);
         static uint_fast8_t custom_wave_counter;
@@ -321,6 +327,7 @@ namespace C0deTracker {
         uint_fast8_t wavetype = SINUS;
         ADSR amp_envelope = ADSR(100.f, 0.0f, 1.0f, 1.0f);
         float volume = 1.0f; float pitch = 0.0f; float duty_cycle = 0.5f; float phase = 0.0f;
+        float feedback_level = 0;
         Instrument_Data() = default;
         Instrument_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase);
         void setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase);

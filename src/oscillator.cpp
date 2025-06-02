@@ -40,6 +40,10 @@ namespace C0deTracker {
     void Osc::setVolume(float v) {this->volume = v;}
     float Osc::getVolume() const {return this->volume;}
 
+    void Osc::setFeedbackLevel(float fb) {this->feedback_level = fb;}
+    float Osc::getFeedbackLevel() const {return this->feedback_level;}
+
+
     float Osc::oscillate(float a, float f, double t, float FMfeed) {
         float amp = a * this->getVolume();
         if(amp == MIN_VOLUME){return MIN_VOLUME;}
@@ -79,7 +83,8 @@ namespace C0deTracker {
     }
 
     float Osc::oscillate(float a, float f, double t, double rt, float FMfeed) {
-        return this->handleAmpEnvelope(t, rt) * this->oscillate(a, f, t, FMfeed);
+        this->feedback_val =  this->oscillate(a, f, t, this->feedback_level*this->feedback_val + FMfeed);
+        return this->handleAmpEnvelope(t, rt) * this->feedback_val;
     }
 
     float Osc::sinus(float a, float f, double t, float dc, float FMfeed) {
@@ -184,7 +189,9 @@ namespace C0deTracker {
         this->setRelease(instrdata->amp_envelope.release); this->setSustain(instrdata->amp_envelope.sustain);
         this->setWavetype(instrdata->wavetype); this->setDutycycle(instrdata->duty_cycle);
         this->setVolume(instrdata->volume); this->setPitch(instrdata->pitch);
+        this->setFeedbackLevel(instrdata->feedback_level);
         this->current_envelope_amplitude = 0.0f;
+        this->feedback_val = 0.0f;
         switch (instrdata->wavetype) {
             case TRIANGLE:
             case TRIANGLE2:

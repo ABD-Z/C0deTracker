@@ -586,7 +586,7 @@ namespace C0deTracker {
     private:
         bool data_loaded;
         bool use_global_inst = false;
-        char* name = "_";
+        const char* name = "_";
         float clk = 60.f, basetime = 1.f, speed = 3.f, step;
         uint_fast8_t  rows = 0, frames = 0;
         uint_fast8_t channels = 0;

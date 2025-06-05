@@ -8,7 +8,7 @@ namespace C0deTracker {
         this->free_data();
     }
 
-    void Track_Data::setName(const char *name) { this->name = const_cast<char *>(name); }
+    void Track_Data::setName(const char *name) { this->name = name; }
 
     void Track_Data::setSizeDimensions(const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels, const uint_fast8_t *fx_per_chan) {
         this->rows = rows; this->frames = frames; this->channels = channels; this->fx_per_chan = fx_per_chan;

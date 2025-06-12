@@ -3,43 +3,31 @@
 //
 #include "examples.hpp"
 
-SuperMarioBros_OverworldTheme::SuperMarioBros_OverworldTheme() {
-    this->setName(NAME);
-    this->setSizeDimensions(ROWS,FRAMES,CHANNELS,fx_per_chan);
-    this->setTimeDimensions(CLOCK, SPEED, BASETIME);
-}
+SuperMarioBros_OverworldTheme::SuperMarioBros_OverworldTheme() : Track_Data(
+        NAME, CLOCK, BASETIME, SPEED, ROWS, FRAMES, CHANNELS, fx_per_chan, INSTRUMENTS
+        ) {}
 
 void SuperMarioBros_OverworldTheme::load_data() {
     Track_Data::load_data();
 
+#define SETINSTRDAT setInstrumentData
+#define VOLM selectVolume
+#define CHANL selectChannel
+#define PATRN selectPattern
+#define INSTR selectInstrument
+#define I enterInstruction
+#define R enterRelease
+#define P enterPatternIndex
+#define K Key
+#define UI32 uint_fast32_t
 
-    auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
-    instruments_data_bank[MAIN].setData(C0deTracker::SQUARE, C0deTracker::ADSR(100.f, 5.f, 0.f, 100.f), .128f, 0.f, .5f, 0.f);
-    instruments_data_bank[BASS].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(100.0f, 0.f, 0.0f, 100.f), 1.f, 0, 1.f, .5f);
-    instruments_data_bank[DRUMS].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100.f, 0.0f, 0.0f, 100.f), .32f, 0.f, .00377f, 0.f);
-    instruments_data_bank[SNARE].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100.f, 0.0f, 0.0f, 100.f), .384f, 0.f, .225f, 0.f);
-    this->setInstrumentsDataBank(instruments_data_bank, INSTRUMENTS);
-
-
-    using C0deTracker::Editor;
     using C0deTracker::Key;
     using namespace C0deTracker::Notes;
 
-    Editor::loadTrackProperties(ROWS, FRAMES, CHANNELS, fx_per_chan); //Load track propreties in the editor
-    auto **patterns = Editor::loadEmptyPatterns(); //generate empty patterns for song writing
-    auto *pattern_indices = Editor::loadEmptyPatternsIndices(); //generate empty patterns indices for patterns indexing
-    Editor::storePatterns(patterns); // store patterns in editor
-    Editor::storePatternsIndices(pattern_indices); // store pattern indices in editor
-
-#define VOLM Editor::storeVolume
-#define CHANL Editor::storeChannelIndex
-#define PATRN Editor::storePatternIndex
-#define INSTR Editor::storeInstrumentIndex
-#define I Editor::enterInstruction
-#define R Editor::release
-#define P Editor::enterPatternIndice
-#define K Key
-#define UI32 uint_fast32_t
+    SETINSTRDAT(MAIN, C0deTracker::SQUARE, C0deTracker::ADSR(100.f, 5.f, 0.f, 100.f), .128f, 0.f, .5f, 0.f);
+    SETINSTRDAT(BASS, C0deTracker::TRIANGLE, C0deTracker::ADSR(100.0f, 0.f, 0.0f, 100.f), 1.f, 0, 1.f, .5f);
+    SETINSTRDAT(DRUMS, C0deTracker::WHITENOISE, C0deTracker::ADSR(100.f, 0.0f, 0.0f, 100.f), .32f, 0.f, .00377f, 0.f);
+    SETINSTRDAT(SNARE, C0deTracker::WHITENOISE, C0deTracker::ADSR(100.f, 0.0f, 0.0f, 100.f), .384f, 0.f, .225f, 0.f);
 
     UI32 FX_global_del1_rel7 = 0x1F0108FF;
     UI32 FX_del4_rel7 = 0x1F040801;
@@ -72,7 +60,8 @@ void SuperMarioBros_OverworldTheme::load_data() {
     I(0x22, K(E,5)); I(0x23, K(D_S,5)); I(0x24, K(D,5)); I(0x25, K(B,4)); I(0x27, K(C,5));
     I(0x29, K(E,4)); I(0x2A, K(F,4)); I(0x2B, K(G,4)); I(0x2D, K(C,4)); I(0x2E, K(E,4)); I(0x2F, K(F,4));
     I(0x32, K(G_S,4)); I(0x35, K(F,4)); I(0x38, K(E,4));
-    P(0,3,2);
+
+    P(0, 3, 2);
 
     PATRN(3);
     I(0x00, K(G_S,4)); I(0x01, K(G_S,4)); I(0x03, K(G_S,4)); I(0x05, K(G_S,4)); I(0x06, K(A_S,4));
@@ -82,8 +71,8 @@ void SuperMarioBros_OverworldTheme::load_data() {
     I(0x28, K(G,4)); I(0x29, K(E,4)); I(0x2B, K(E,4)); I(0x2C, K(C,4));
     I(0x30, K(F_S, 4)); I(0x31, K(F_S, 4)); I(0x33, K(F_S, 4)); I(0x35, K(F_S, 4)); I(0x36, K(F_S, 4));
     I(0x38, K(B, 4));
-    P(0,4,3);
-    P(0,5,1);
+
+    P(0, 4, 3); P(0, 5, 1);
 
     PATRN(4);
     I(0x00, K(C,5)); I(0x01, K(A,4)); I(0x03, K(E,4)); I(0x06, K(E,4));
@@ -99,10 +88,7 @@ void SuperMarioBros_OverworldTheme::load_data() {
     I(0x35, K(C,5), FX_del4_rel7); I(0x36, K(B,4), FX_del7_rel7);
     I(0x38, K(C,5), FX_global_del1_rel7);
 
-    P(0,6,4);
-    P(0,7,4);
-    P(0,8,3);
-    P(0,9,4);
+    P(0, 6, 4); P(0, 7, 4); P(0, 8, 3); P(0, 9, 4);
 
     CHANL(1);
     PATRN(0);
@@ -127,7 +113,9 @@ void SuperMarioBros_OverworldTheme::load_data() {
     I(0x22, K(G,5)); I(0x23, K(F_S,5)); I(0x24, K(F,5)); I(0x25, K(D_S,5)); I(0x27, K(E,5));
     I(0x29, K(G_S,4)); I(0x2A, K(A,4)); I(0x2B, K(C,5)); I(0x2D, K(A,4)); I(0x2E, K(C,5)); I(0x2F, K(D,5));
     I(0x32, K(D_S,5)); I(0x35, K(D,5)); I(0x38, K(C,5));
-    P(1,3,2);
+
+    P(1, 3, 2);
+
     PATRN(3);
     I(0x00, K(C,5)); I(0x01, K(C,5)); I(0x03, K(C,5)); I(0x05, K(C,5)); I(0x06, K(D,5));
     I(0x08, K(E,5)); I(0x09, K(C,5)); I(0x0B, K(A,4)); I(0x0C, K(G,4));
@@ -138,8 +126,8 @@ void SuperMarioBros_OverworldTheme::load_data() {
 
     I(0x30, K(E, 5)); I(0x31, K(E, 5)); I(0x33, K(E, 5)); I(0x35, K(C, 5)); I(0x36, K(E, 5));
     I(0x38, K(G, 5)); I(0x3C, K(G,4));
-    P(1,4,3);
-    P(1,5,1);
+
+    P(1, 4, 3); P(1, 5, 1);
 
     PATRN(4);
     I(0x00, K(E,5)); I(0x01, K(C,4)); I(0x03, K(G,4)); I(0x06, K(G_S,4));
@@ -156,10 +144,7 @@ void SuperMarioBros_OverworldTheme::load_data() {
     I(0x38, K(G,4), FX_global_del1_rel7);
     I(0x39, K(E,4)); I(0x3B, K(E,4)); I(0x3C, K(C,4));
 
-    P(1,6,4);
-    P(1,7,4);
-    P(1,8,3);
-    P(1,9,4);
+    P(1, 6, 4); P(1, 7, 4); P(1, 8, 3); P(1, 9, 4);
 
     UI32 FX_bass_global_del0_rel7 = 0x1F0008FF;
     UI32 FX_bass_del3_rel7 = 0x1F030801;
@@ -192,7 +177,7 @@ void SuperMarioBros_OverworldTheme::load_data() {
     I(0x30, K(C,3)); I(0x32, K(G_S,3)); I(0x35, K(A_S, 3));
     I(0x38, K(C,4)); I(0x3B, K(G,3)); I(0x3C, K(G,3)); I(0x3E, K(C,3));
 
-    P(2,3,2);
+    P(2, 3, 2);
 
     PATRN(3);
     I(0x00, K(G_S,2)); I(0x03, K(D_S,3)); I(0x06, K(G_S,3));
@@ -203,8 +188,8 @@ void SuperMarioBros_OverworldTheme::load_data() {
     I(0x28, K(G,3)); I(0x2B, K(C,3)); I(0x2E, K(G,2));
     I(0x30, K(D, 3)); I(0x31, K(D, 3)); I(0x33, K(D, 3)); I(0x35, K(D, 3)); I(0x36, K(D, 3));
     I(0x38, K(G, 4)); I(0x3C, K(G, 3));
-    P(2,4,3);
-    P(2,5,1);
+
+    P(2, 4, 3); P(2, 5, 1);
 
     PATRN(4);
     I(0x00, K(C,3)); I(0x03, K(F_S,3)); I(0x04, K(G,3)); I(0x06, K(C,4));
@@ -218,11 +203,7 @@ void SuperMarioBros_OverworldTheme::load_data() {
     I(0x38, K(C, 4), FX_bass_global_del0_rel7);
     I(0x3A, K(G,3)); I(0x3C, K(C,3));
 
-    P(2,6,4);
-    P(2,7,4);
-    P(2,8,3);
-    P(2,9,4);
-
+    P(2, 6, 4); P(2, 7, 4); P(2, 8, 3); P(2, 9, 4);
 
     UI32 FX_drum_del0_rel5_rep1 = 0x1F000501;
     UI32 FX_drum_del0_rel1_rep4 = 0x1F000104;
@@ -266,7 +247,7 @@ void SuperMarioBros_OverworldTheme::load_data() {
     I(0x3D, K(C_S,2), FX_drum_del0_rel1_rep3);
     I(0x3E, K(C_S, 2)); I(0x3F, K(C_S, 2));
 
-    P(3,4,0); P(3,8,0);
+    P(3, 4, 0); P(3, 8, 0);
 
     PATRN(2);
     I(0x00, K(C_S,2), FX_drum_del0_rel1_rep2);
@@ -297,7 +278,8 @@ void SuperMarioBros_OverworldTheme::load_data() {
     I(0x38, K(C_S,2)); I(0x3B, K(C_S,2));
     I(0x3C, K(C_S,2), FX_drum_del0_rel5_rep1);
     I(0x3E, K(C_S,2), FX_drum_del0_rel1_rep1);
-    P(3,6,2); P(3,7,2); P(3,9,2);
+
+    P(3, 6, 2); P(3, 7, 2); P(3, 9, 2);
 
     PATRN(1);
     I(0x00, SNARE, K(C_S,1), FX_drum_del0_rel1_rep3);
@@ -352,14 +334,20 @@ void SuperMarioBros_OverworldTheme::load_data() {
     I(0x3E, K(C_S,2), FX_drum_del0_rel1_rep2);
     I(0x3F, K(C_S,2), FX_drum_del3_rel1_rep1);
 
-    P(3,1,1); P(3,2,1); P(3,3,1); P(3,5,1);
+    P(3, 1, 1); P(3, 2, 1); P(3, 3, 1); P(3, 5, 1);
 
     CHANL(4);
-    P(4,1,0); P(4,2,0); P(4,3,0); P(4,4,0); P(4,5,0); P(4,6,0); P(4,7,0); P(4,8,0); P(4,9,1);
+    P(4, 1, 0);
+    P(4, 2, 0);
+    P(4, 3, 0);
+    P(4, 4, 0);
+    P(4, 5, 0);
+    P(4, 6, 0);
+    P(4, 7, 0);
+    P(4, 8, 0);
+    P(4, 9, 1);
     PATRN(1);
     I(0x3F, UI32(0x0A001000));
 
-    this->setPatterns(patterns);
-    this->setPatternsIndices(pattern_indices);
 }
 

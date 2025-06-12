@@ -40,6 +40,7 @@
 #include <cstdio>
 #include <cstdint>
 #include <vector>
+#include <cassert>
 
 
 namespace C0deTracker {
@@ -60,7 +61,6 @@ namespace C0deTracker {
     class Track_Data;
     class Track;
     class Channel;
-    class Editor;
     class GlobalFXs;
     class ChannelFXs;
     struct SlideFX;
@@ -568,34 +568,86 @@ namespace C0deTracker {
     class Track_Data{
     public:
         Track_Data()=default;
+        Track_Data(const char* name, const float clk, const float basetime, const float speed, const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels,  const uint_fast8_t* fx_per_chan);
+        Track_Data(const char* name, const float clk, const float basetime, const float speed, const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels,  const uint_fast8_t* fx_per_chan, const uint_fast8_t instruments);
         virtual ~Track_Data();
         virtual void load_data();
         void free_data();
-        bool is_data_loaded();
+        bool is_data_loaded() const;
         const char* getName();
         friend Track;
     protected:
-        void setName(const char* name);
-        void setSizeDimensions(const uint_fast8_t rows, const uint_fast8_t frames, const uint_fast8_t channels,  const uint_fast8_t* fx_per_chan);
-        void setTimeDimensions(const float clk, const float basetime, const float speed);
-        void setInstrumentsDataBank(const Instrument_Data* instruments_data_bank, uint_fast8_t n_instr);
-        void setPatterns(const Pattern* const* patterns);
-        void setPatternsIndices(const uint_fast8_t* patterns_indices);
-        void useGlobalInstruments();
         void setGlobalInstrumentsDataBank(const Instrument_Data *global_instruments_data_bank, uint_fast8_t n_instr);
+        void setInstrumentData(uint_fast8_t instrument_index, uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase);
+
+        void selectChannel(uint_fast8_t channel_index);
+        void selectPattern(uint_fast8_t pattern_index);
+        void selectInstrument(uint_fast8_t instrument_index);
+        void selectVolume(float volume);
+
+        void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key);
+        void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key);
+        void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume);
+        void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, float volume);
+
+        void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, uint_fast32_t** effects);
+        void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, std::vector<uint_fast32_t> effects);
+        void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, uint_fast32_t effect);
+
+        void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, uint_fast32_t** effects);
+        void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, std::vector<uint_fast32_t> effects);
+        void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, uint_fast32_t effect);
+
+        void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume, uint_fast32_t** effects);
+        void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume, std::vector<uint_fast32_t> effects);
+        void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume, uint_fast32_t effect);
+
+        void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, float volume, uint_fast32_t** effects);
+        void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, float volume, std::vector<uint_fast32_t> effects);
+        void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, float volume, uint_fast32_t effect);
+
+        void enterInstruction(uint_fast8_t instruction_index, float volume);
+
+        void enterInstruction(uint_fast8_t instruction_index, uint_fast32_t** effects);
+        void enterInstruction(uint_fast8_t instruction_index, float volume, uint_fast32_t** effects);
+        void enterInstruction(uint_fast8_t instruction_index, std::vector<uint_fast32_t> effects);
+        void enterInstruction(uint_fast8_t instruction_index, float volume, std::vector<uint_fast32_t> effects);
+        void enterInstruction(uint_fast8_t instruction_index, uint_fast32_t effect);
+        void enterInstruction(uint_fast8_t instruction_index, float volume, uint_fast32_t effect);
+
+        void enterRelease(uint_fast8_t instruction_index);
+        void enterRelease(uint_fast8_t instruction_index, float volume);
+        void enterRelease(uint_fast8_t instruction_index, uint_fast32_t** effects);
+        void enterRelease(uint_fast8_t instruction_index, float volume, uint_fast32_t** effects);
+        void enterRelease(uint_fast8_t instruction_index, std::vector<uint_fast32_t> effects);
+        void enterRelease(uint_fast8_t instruction_index, float volume, std::vector<uint_fast32_t> effects);
+        void enterRelease(uint_fast8_t instruction_index, uint_fast32_t effect);
+        void enterRelease(uint_fast8_t instruction_index, float volume, uint_fast32_t effect);
+
+        void enterPatternIndex(uint_fast8_t channel, uint_fast8_t frame, uint_fast8_t pattern_index);
+
     private:
-        bool data_loaded;
+        void loadEmptyPatterns();
+        void loadDefaultPatternsIndices();
+        void loadEmptyInstrumentDataBank();
+
+        bool data_loaded = false;
         bool use_global_inst = false;
         const char* name = "_";
-        float clk = 60.f, basetime = 1.f, speed = 3.f, step;
+        float clk = 60.f, basetime = 1.f, speed = 3.f, step = 3/60;
         uint_fast8_t  rows = 0, frames = 0;
         uint_fast8_t channels = 0;
-        Instrument_Data* instruments_data_bank;
-        uint_fast8_t instruments;
-        Pattern** track_patterns;
-        uint_fast8_t* pattern_indices;//new uint_8[channels*frames]
+        uint_fast8_t instruments = 0;
+        Instrument_Data* instruments_data_bank{};
+        Pattern** patterns{};
+        uint_fast8_t* pattern_indices{};//new uint_8[channels*frames]
         float duration = 0;
-        const uint_fast8_t *fx_per_chan;
+        const uint_fast8_t *fx_per_chan{};
+
+        uint_fast8_t selected_channel{};
+        uint_fast8_t selected_pattern{};
+        uint_fast8_t selected_instrument{};
+        float selected_volume{};
     };
 
     /**
@@ -755,78 +807,6 @@ namespace C0deTracker {
         void initFXs(Instruction *instruction, double time);
 
     };
-
-    /**
-     * @brief Editor class is used to ease the user while writing his song.
-     * @note The user can create macros as shortcuts to the Editor's commands
-     * @see example.cpp
-     */
-    class Editor{
-    public:
-        static void loadTrackProperties(uint_fast8_t number_of_rows, uint_fast8_t number_of_frames, uint_fast8_t number_of_channels, const uint_fast8_t *effects_per_chan);
-        static Pattern** loadEmptyPatterns();
-        static void prepare(Pattern **p, uint_fast8_t chanindx,  uint_fast8_t patternindx, uint_fast8_t instrumentnindx, float volume);
-        static void prepare(uint_fast8_t chanindx, uint_fast8_t patternindx, uint_fast8_t instrumentnindx, float volume);
-        static void prepare(uint_fast8_t chanindx, uint_fast8_t patternindx, float volume);
-        static void storePatterns(Pattern **p);
-        static void storeChannelIndex(uint_fast8_t chanindx);
-        static void storePatternIndex(uint_fast8_t patternindx);
-        static void storeInstrumentIndex(uint_fast8_t instrumentnindx);
-        static void storeVolume(float volume);
-
-        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key);
-        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key);
-        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume);
-        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, float volume);
-
-        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, uint_fast32_t** effects);
-        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, std::vector<uint_fast32_t> effects);
-        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, uint_fast32_t effect);
-
-        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, uint_fast32_t** effects);
-        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, std::vector<uint_fast32_t> effects);
-        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, uint_fast32_t effect);
-
-        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume, uint_fast32_t** effects);
-        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume, std::vector<uint_fast32_t> effects);
-        static void enterInstruction(uint_fast8_t instruction_index, C0deTracker::Key key, float volume, uint_fast32_t effect);
-
-        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, float volume, uint_fast32_t** effects);
-        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, float volume, std::vector<uint_fast32_t> effects);
-        static void enterInstruction(uint_fast8_t instruction_index, uint_fast8_t instrument_index, C0deTracker::Key key, float volume, uint_fast32_t effect);
-
-        static void enterInstruction(uint_fast8_t instruction_index, float volume);
-
-        static void enterInstruction(uint_fast8_t instruction_index, uint_fast32_t** effects);
-        static void enterInstruction(uint_fast8_t instruction_index, float volume, uint_fast32_t** effects);
-        static void enterInstruction(uint_fast8_t instruction_index, std::vector<uint_fast32_t> effects);
-        static void enterInstruction(uint_fast8_t instruction_index, float volume, std::vector<uint_fast32_t> effects);
-        static void enterInstruction(uint_fast8_t instruction_index, uint_fast32_t effect);
-        static void enterInstruction(uint_fast8_t instruction_index, float volume, uint_fast32_t effect);
-
-        static void release(uint_fast8_t instruction_index);
-        static void release(uint_fast8_t instruction_index, float volume);
-        static void release(uint_fast8_t instruction_index, uint_fast32_t** effects);
-        static void release(uint_fast8_t instruction_index, float volume, uint_fast32_t** effects);
-        static void release(uint_fast8_t instruction_index, std::vector<uint_fast32_t> effects);
-        static void release(uint_fast8_t instruction_index, float volume, std::vector<uint_fast32_t> effects);
-        static void release(uint_fast8_t instruction_index, uint_fast32_t effect);
-        static void release(uint_fast8_t instruction_index, float volume, uint_fast32_t effect);
-
-        static void storePatternsIndices(uint_fast8_t* pi);
-        static uint_fast8_t* loadEmptyPatternsIndices();
-        static void enterPatternIndice(uint_fast8_t channel, uint_fast8_t frame, uint_fast8_t pattern_indice);
-
-    private:
-        static Pattern **pattern;
-        static uint_fast8_t* pattern_indices;
-        static uint_fast8_t chan_index, pattern_index, instrument_index, frames;
-        static float volume;
-        static uint_fast8_t rows;
-        static uint_fast8_t channels;
-        static const uint_fast8_t *fx_per_chan;
-    };
-
 
 }
 

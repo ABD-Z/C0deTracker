@@ -4,40 +4,31 @@
 
 #include "tutorial.hpp"
 
-TutoTrack::TutoTrack() {
-    this->setName(NAME);
-    this->setSizeDimensions(ROWS,FRAMES,CHANNELS,FX_per_CHAN);
-    this->setTimeDimensions(CLOCK, SPEED, BASETIME);
-}
+TutoTrack::TutoTrack() : Track_Data(
+        NAME, CLOCK, BASETIME, SPEED, ROWS, FRAMES, CHANNELS, FX_per_CHAN, INSTRUMENTS
+        ) {}
 
 void TutoTrack::load_data() {
     Track_Data::load_data();
-    auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
-    instruments_data_bank[MAIN].setData(C0deTracker::SQUARE, C0deTracker::ADSR(5.5f,5.5f,0.2f,1.f),0.1f,0.f,0.5f,0.0f);
-    instruments_data_bank[BASS].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(400.0f, 10.f, 0.0f, 10.f), 1.0f, 0.f,0.8f,0.5f);
-    instruments_data_bank[KICK].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f), 0.64f, 0.0f, 0.1f, 0.0f);
-    instruments_data_bank[SNARE].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100000.f, 9.66f, 0.0f, 1.f), 0.8f, 0.0f, 0.0025f, 0.0f);
-    this->setInstrumentsDataBank(instruments_data_bank, INSTRUMENTS);
 
-    using C0deTracker::Editor;
-    using C0deTracker::Key;
-    using namespace C0deTracker::Notes;
-    Editor::loadTrackProperties(ROWS, FRAMES, CHANNELS, FX_per_CHAN); //Load track propreties in the editor
-    auto** patterns = Editor::loadEmptyPatterns(); //generate empty patterns for song writing
-    auto* pattern_indices = Editor::loadEmptyPatternsIndices(); //generate empty patterns indices for patterns indexing
-
-    Editor::storePatterns(patterns); // store patterns in editor
-    Editor::storePatternsIndices(pattern_indices); // store pattern indices in editor
-
-#define VOLM Editor::storeVolume
-#define CHANL Editor::storeChannelIndex
-#define PATRN Editor::storePatternIndex
-#define INSTR Editor::storeInstrumentIndex
-#define I Editor::enterInstruction
-#define R Editor::release
-#define P Editor::enterPatternIndice
+#define SETINSTRDAT setInstrumentData
+#define VOLM selectVolume
+#define CHANL selectChannel
+#define PATRN selectPattern
+#define INSTR selectInstrument
+#define I enterInstruction
+#define R enterRelease
+#define P enterPatternIndex
 #define K Key
 #define UI32 uint_fast32_t
+
+    using C0deTracker::Key;
+    using namespace C0deTracker::Notes;
+
+    SETINSTRDAT(MAIN, C0deTracker::SQUARE, C0deTracker::ADSR(5.5f,5.5f,0.2f,1.f),0.1f,0.f,0.5f,0.0f);
+    SETINSTRDAT(BASS, C0deTracker::TRIANGLE, C0deTracker::ADSR(400.0f, 10.f, 0.0f, 10.f), 1.0f, 0.f,0.8f,0.5f);
+    SETINSTRDAT(KICK, C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f), 0.64f, 0.0f, 0.1f, 0.0f);
+    SETINSTRDAT(SNARE, C0deTracker::WHITENOISE, C0deTracker::ADSR(100000.f, 9.66f, 0.0f, 1.f), 0.8f, 0.0f, 0.0025f, 0.0f);
 
     CHANL(0);
     PATRN(0);
@@ -59,7 +50,7 @@ void TutoTrack::load_data() {
     I(24, K(B,5));
     R(26);
 
-    P(0,1,0); //frames 1 points to pattern 0
+    P(0, 1, 0); //frames 1 points to pattern 0
 
     PATRN(2);//dont forget to select the correct pattern
     I(2, K(B,5));
@@ -69,7 +60,7 @@ void TutoTrack::load_data() {
     I(10, K(C,5));
     R(18);
 
-    P(0,3,2);//frames 3 points to pattern 2
+    P(0, 3, 2);//frames 3 points to pattern 2
 
     CHANL(1);
     PATRN(0);
@@ -109,7 +100,7 @@ void TutoTrack::load_data() {
     I(16, K(G,1));
     I(18, K(G,1));
 
-    P(1,3,2);//repeating the pattern
+    P(1, 3, 2);//repeating the pattern
 
     CHANL(2);
     PATRN(0);
@@ -147,10 +138,7 @@ void TutoTrack::load_data() {
     I(14, K(A,1));
     I(17, SNARE, K(A,2));
     I(18, SNARE, K(A,2));
-    P(2,3,2);//repeating the pattern
 
-    this->setPatterns(patterns);
-    this->setPatternsIndices(pattern_indices);
-
+    P(2, 3, 2);//repeating the pattern
 
 }

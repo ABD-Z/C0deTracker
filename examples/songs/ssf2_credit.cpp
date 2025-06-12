@@ -4,49 +4,40 @@
 
 #include "examples.hpp"
 
-SuperStreetFighterII_CreditTheme::SuperStreetFighterII_CreditTheme() {
-    this->setName(NAME);
-    this->setSizeDimensions(ROWS,FRAMES,CHANNELS,FX_per_CHAN);
-    this->setTimeDimensions(CLOCK, SPEED, BASETIME);
-}
+SuperStreetFighterII_CreditTheme::SuperStreetFighterII_CreditTheme() : Track_Data(
+        NAME, CLOCK, BASETIME, SPEED, ROWS, FRAMES, CHANNELS, FX_per_CHAN, INSTRUMENTS
+        ) {}
 
 void SuperStreetFighterII_CreditTheme::load_data() {
     Track_Data::load_data();
 
-    auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
-    instruments_data_bank[SHORTCRASH].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 3.0f, 0.00f, 0.f), 0.3f, C0deTracker::Notes::PITCHES_PER_OCTAVE*0.5, .0105f, 0.f);
-    instruments_data_bank[CRASH].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 1.86f, 0.00f, 0.f), .45f, 0.f,0.0055f,0.f);
-    instruments_data_bank[TRIANGLE].setData(C0deTracker::WHITENOISE2, C0deTracker::ADSR(100000.f, 2.66f, 0.00f, 2.f), 0.22f, 0.0f, 0.0025f, 0.0f);
-    instruments_data_bank[WOOD].setData(C0deTracker::WHITENOISE2, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f), 0.85f, 0.0f, 0.1f, 0.0f);
-    instruments_data_bank[HITHAT].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100.f, 20.f, 0.0f, 0.f), 0.5f, 0.0f, 0.00337f, 0.0f);
-    instruments_data_bank[KICK].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f), 0.8f, 0.0f, 0.1f, 0.0f);
-    instruments_data_bank[TOM].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 7.f, 0.05f, 5.f), .5f, .0f, .6f, 0.0f);
-    instruments_data_bank[SNARE].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(100000.f, 10.f, 0.05f, 1.f), 1.f, C0deTracker::Notes::PITCHES_PER_OCTAVE*0.45f, 0.0025f, 0.0f);
-    instruments_data_bank[STRING].setData(C0deTracker::SAW, C0deTracker::ADSR(100.f, 20., 0.2, 6.0f), 1.f, 0.f, 0.5f, 0.0);
-    instruments_data_bank[BASS].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(666.0f, 0.3f, 0.2f, 17.75f), 0.22f, 0.0f, 0.05f,0.5f);
-    instruments_data_bank[BASSGUITAR].setData(C0deTracker::WHITENOISE, C0deTracker::ADSR(20.0f, 0.3f, 0.2f, 500.f), 0.15f, 0.0f, 0.66f, 0.0f);
-    instruments_data_bank[MAIN2].setData(C0deTracker::SINUS, C0deTracker::ADSR(10,1,.25f,6), .78f, .0f, .13f, .0f);
-    instruments_data_bank[MAIN].setData(C0deTracker::SQUARE, C0deTracker::ADSR(24,6,.25f,6), 1.f, .0f, .166f, 0.f);
-    this->setInstrumentsDataBank(instruments_data_bank, INSTRUMENTS);
-
-    using namespace C0deTracker::Notes; using namespace C0deTracker;
-#define PREP Editor::prepare
-#define PTRN Editor::storePatterns
-#define PTRN_INDX Editor::storePatternIndex
-#define CHAN_INDX Editor::storeChannelIndex
-#define INSTR_INDX Editor::storeInstrumentIndex
-#define VOLUME Editor::storeVolume
-#define I Editor::enterInstruction
-#define R Editor::release
+#define SETINSTRDAT setInstrumentData
+#define PTRN_INDX selectPattern
+#define CHAN_INDX selectChannel
+#define INSTR_INDX selectInstrument
+#define EPI enterPatternIndex
+#define VOLUME selectVolume
+#define I enterInstruction
+#define R enterRelease
 #define k Key
 #define ui32 uint_fast32_t
 
-    Editor::loadTrackProperties(ROWS, FRAMES, CHANNELS, FX_per_CHAN); //Load track propreties in the editor
-    auto** patterns = Editor::loadEmptyPatterns(); //generate empty patterns for song writing
-    auto* pattern_indices = Editor::loadEmptyPatternsIndices(); //generate empty patterns indices for patterns indexing
+    using C0deTracker::Key;
+    using namespace C0deTracker::Notes;
 
-    Editor::storePatterns(patterns); // store patterns in editor
-    Editor::storePatternsIndices(pattern_indices); // store pattern indices in editor
+    SETINSTRDAT(SHORTCRASH, C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 3.0f, 0.00f, 0.f), 0.3f, C0deTracker::Notes::PITCHES_PER_OCTAVE*0.5, .0105f, 0.f);
+    SETINSTRDAT(CRASH, C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 1.86f, 0.00f, 0.f), .45f, 0.f,0.0055f,0.f);
+    SETINSTRDAT(TRIANGLE, C0deTracker::WHITENOISE2, C0deTracker::ADSR(100000.f, 2.66f, 0.00f, 2.f), 0.22f, 0.0f, 0.0025f, 0.0f);
+    SETINSTRDAT(WOOD, C0deTracker::WHITENOISE2, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f), 0.85f, 0.0f, 0.1f, 0.0f);
+    SETINSTRDAT(HITHAT, C0deTracker::WHITENOISE, C0deTracker::ADSR(100.f, 20.f, 0.0f, 0.f), 0.5f, 0.0f, 0.00337f, 0.0f);
+    SETINSTRDAT(KICK, C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 50.75f, 0.0f, 0.f), 0.8f, 0.0f, 0.1f, 0.0f);
+    SETINSTRDAT(TOM, C0deTracker::WHITENOISE, C0deTracker::ADSR(10000.f, 7.f, 0.05f, 5.f), .5f, .0f, .6f, 0.0f);
+    SETINSTRDAT(SNARE, C0deTracker::WHITENOISE, C0deTracker::ADSR(100000.f, 10.f, 0.05f, 1.f), 1.f, C0deTracker::Notes::PITCHES_PER_OCTAVE*0.45f, 0.0025f, 0.0f);
+    SETINSTRDAT(STRING, C0deTracker::SAW, C0deTracker::ADSR(100.f, 20., 0.2, 6.0f), 1.f, 0.f, 0.5f, 0.0);
+    SETINSTRDAT(BASS, C0deTracker::TRIANGLE, C0deTracker::ADSR(666.0f, 0.3f, 0.2f, 17.75f), 0.22f, 0.0f, 0.05f,0.5f);
+    SETINSTRDAT(BASSGUITAR, C0deTracker::WHITENOISE, C0deTracker::ADSR(20.0f, 0.3f, 0.2f, 500.f), 0.15f, 0.0f, 0.66f, 0.0f);
+    SETINSTRDAT(MAIN2, C0deTracker::SINUS, C0deTracker::ADSR(10,1,.25f,6), .78f, .0f, .13f, .0f);
+    SETINSTRDAT(MAIN, C0deTracker::SQUARE, C0deTracker::ADSR(24,6,.25f,6), 1.f, .0f, .166f, 0.f);
 
     ui32 mainvibrato = (0x123C0006);
     ui32 bassguitarvibrato = (0x1240000C);
@@ -1733,50 +1724,35 @@ void SuperStreetFighterII_CreditTheme::load_data() {
     PTRN_INDX(15);
     I(0, bassguitarvibrato);
 
-#define EPI Editor::enterPatternIndice
+    EPI(0, 0, 15); EPI(0, 1, 0); EPI(0, 2, 1); EPI(0, 3, 2); EPI(0, 4, 3); EPI(0, 5, 4);
+    EPI(0, 6, 4); EPI(0, 7, 4); EPI(0, 8, 5); EPI(0, 9, 8); EPI(0, 10, 9); EPI(0, 11, 10);
+    EPI(0, 12, 11); EPI(0, 13, 12); EPI(0, 14, 12); EPI(0, 15, 14);
 
-    EPI(0,0,15); EPI(0,1,0); EPI(0,2,1); EPI(0,3,2); EPI(0,4,3); EPI(0,5,4);
-    EPI(0,6,4); EPI(0,7,4); EPI(0,8,5); EPI(0,9,8); EPI(0,10,9); EPI(0,11,10);
-    EPI(0,12,11); EPI(0,13,12); EPI(0,14,12); EPI(0,15,14);
+    EPI(1, 0, 15); EPI(1, 1, 0); EPI(1, 2, 1); EPI(1, 3, 0); EPI(1, 4, 1); EPI(1, 5, 4);
+    EPI(1, 6, 5); EPI(1, 7, 4); EPI(1, 8, 5); EPI(1, 9, 8); EPI(1, 10, 9); EPI(1, 11, 10);
+    EPI(1, 12, 4); EPI(1, 13, 5); EPI(1, 14, 13); EPI(1, 15, 14);
 
-    EPI(1,0,15); EPI(1,1,0); EPI(1,2,1);EPI(1,3,0); EPI(1,4,1); EPI(1,5,4);
-    EPI(1,6,5); EPI(1,7,4); EPI(1,8,5); EPI(1,9,8); EPI(1,10,9); EPI(1,11,10);
-    EPI(1,12,4); EPI(1,13,5); EPI(1,14,13); EPI(1,15,14);
+    EPI(2, 0, 15); EPI(2, 1, 0); EPI(2, 2, 1); EPI(2, 3, 0); EPI(2, 4, 1); EPI(2, 5, 4); EPI(2, 6, 5);
+    EPI(2, 7, 6); EPI(2, 8, 7); EPI(2, 9, 8); EPI(2, 10, 9); EPI(2, 11, 10); EPI(2, 12, 11); EPI(2, 13, 12);
+    EPI(2, 14, 13); EPI(2, 15, 14);
 
-    EPI(2,0,15); EPI(2,1,0); EPI(2,2,1); EPI(2,3,0); EPI(2,4,1); EPI(2,5,4);
-    EPI(2,6,5); EPI(2,7,6); EPI(2,8,7); EPI(2,9,8); EPI(2,10,9); EPI(2,11,10);
-    EPI(2,12,11); EPI(2,13,12); EPI(2,14,13); EPI(2,15,14);
+    EPI(3, 0, 15); EPI(3, 1, 0); EPI(3, 2, 1); EPI(3, 3, 2); EPI(3, 4, 3); EPI(3, 5, 4);
+    EPI(3, 6, 5); EPI(3, 7, 4); EPI(3, 8, 5); EPI(3, 9, 8); EPI(3, 10, 9); EPI(3, 11, 10);
+    EPI(3, 12, 11); EPI(3, 13, 12); EPI(3, 14, 13); EPI(3, 15, 14);
 
+    EPI(4, 0, 15); EPI(4, 1, 0); EPI(4, 2, 1); EPI(4, 3, 0); EPI(4, 4, 1); EPI(4, 5, 4); EPI(4, 6, 5); EPI(4, 7, 4);
+    EPI(4, 8, 5); EPI(4, 9, 8); EPI(4, 10, 9); EPI(4, 11, 10); EPI(4, 12, 4); EPI(4, 13, 5); EPI(4, 14, 13); EPI(4, 15, 14);
 
-    EPI(3,0,15); EPI(3,1,0); EPI(3,2,1); EPI(3,3,2); EPI(3,4,3); EPI(3,5,4);
-    EPI(3,6,5); EPI(3,7,4); EPI(3,8,5); EPI(3,9,8); EPI(3,10,9); EPI(3,11,10);
-    EPI(3,12,11); EPI(3,13,12); EPI(3,14,13); EPI(3,15,14);
+    EPI(5, 0, 15); EPI(5, 1, 0); EPI(5, 2, 1); EPI(5, 3, 0); EPI(5, 4, 0); EPI(5, 5, 4); EPI(5, 6, 5); EPI(5, 7, 6);
+    EPI(5, 8, 7); EPI(5, 9, 8); EPI(5, 10, 9); EPI(5, 11, 10); EPI(5, 12, 11); EPI(5, 13, 12); EPI(5, 14, 13); EPI(5, 15, 14);
 
-    EPI(4,0,15); EPI(4,1,0); EPI(4,2,1); EPI(4,3,0); EPI(4,4,1); EPI(4,5,4);
-    EPI(4,6,5); EPI(4,7,4); EPI(4,8,5); EPI(4,9,8); EPI(4,10,9); EPI(4,11,10);
-    EPI(4,12,4); EPI(4,13,5); EPI(4,14,13); EPI(4,15,14);
+    EPI(6, 0, 15); EPI(6, 1, 0); EPI(6, 2, 0); EPI(6, 3, 0); EPI(6, 4, 0); EPI(6, 5, 4); EPI(6, 6, 5); EPI(6, 7, 6);
+    EPI(6, 8, 7); EPI(6, 9, 8); EPI(6, 10, 8); EPI(6, 11, 10); EPI(6, 12, 11); EPI(6, 13, 12); EPI(6, 14, 13); EPI(6, 15, 14);
 
+    EPI(7, 0, 15); EPI(7, 1, 0); EPI(7, 2, 1); EPI(7, 3, 2); EPI(7, 4, 3); EPI(7, 5, 4); EPI(7, 6, 5); EPI(7, 7, 5);
+    EPI(7, 8, 7); EPI(7, 9, 8); EPI(7, 10, 9); EPI(7, 11, 10); EPI(7, 12, 11); EPI(7, 13, 12); EPI(7, 14, 13); EPI(7, 15, 14);
 
-    EPI(5,0,15); EPI(5,1,0); EPI(5,2,1);  EPI(5,3,0); EPI(5,4,0); EPI(5,5,4);
-    EPI(5,6,5); EPI(5,7,6); EPI(5,8,7); EPI(5,9,8); EPI(5,10,9); EPI(5,11,10);
-    EPI(5,12,11); EPI(5,13,12); EPI(5,14,13); EPI(5,15,14);
+    EPI(8, 0, 15); EPI(8, 1, 0); EPI(8, 2, 1); EPI(8, 3, 2); EPI(8, 4, 3); EPI(8, 5, 4); EPI(8, 6, 5); EPI(8, 7, 4);
+    EPI(8, 8, 5); EPI(8, 9, 8); EPI(8, 10, 9); EPI(8, 11, 10); EPI(8, 12, 11); EPI(8, 13, 12); EPI(8, 14, 13); EPI(8, 15, 14);
 
-    EPI(6,0,15); EPI(6,1,0); EPI(6,2,0); EPI(6,3,0); EPI(6,4,0); EPI(6,5,4);
-    EPI(6,6,5); EPI(6,7,6); EPI(6,8,7); EPI(6,9,8); EPI(6,10,8); EPI(6,11,10);
-    EPI(6,12,11); EPI(6,13,12); EPI(6,14,13); EPI(6,15,14);
-
-    EPI(7,0,15); EPI(7,1,0); EPI(7,2,1); EPI(7,3,2); EPI(7,4,3); EPI(7,5,4);
-    EPI(7,6,5); EPI(7,7,5); EPI(7,8,7); EPI(7,9,8); EPI(7,10,9); EPI(7,11,10);
-    EPI(7,12,11); EPI(7,13,12); EPI(7,14,13); EPI(7,15,14);
-
-
-    EPI(8,0,15); EPI(8,1,0); EPI(8,2,1); EPI(8,3,2); EPI(8,4,3); EPI(8,5,4);
-    EPI(8,6,5); EPI(8,7,4); EPI(8,8,5); EPI(8,9,8); EPI(8,10,9); EPI(8,11,10);
-    EPI(8,12,11); EPI(8,13,12); EPI(8,14,13); EPI(8,15,14);
-
-    this->setPatterns(patterns);
-    this->setPatternsIndices(pattern_indices);
 }
-
-
-

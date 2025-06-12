@@ -76,7 +76,7 @@ namespace C0deTracker {
             if (this->chans[i].isEnable()) {
                 this->chans[i].setTrack(this);
                 uint_fast8_t pattern_index = this->track_data->pattern_indices[i * this->track_data->frames + this->frame_counter];
-                Pattern *pat = this->track_data->track_patterns[i * (this->track_data->frames) + pattern_index];
+                Pattern *pat = this->track_data->patterns[i * (this->track_data->frames) + pattern_index];
                 Instruction *current_instruction = &pat->instructions[this->row_counter];
 
                 this->decodeAllFXsFromChannel(i, current_instruction, t);

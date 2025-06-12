@@ -3,39 +3,27 @@
 //
 #include "examples.hpp"
 
-FrereJacques::FrereJacques() {
-    this->setName(NAME);
-    this->setSizeDimensions(ROWS, FRAMES, CHANNELS, fx_per_chan);
-    this->setTimeDimensions(CLOCK, SPEED, BASETIME);
-}
+FrereJacques::FrereJacques() : Track_Data(NAME, CLOCK, BASETIME, SPEED, ROWS, FRAMES, CHANNELS, fx_per_chan, INSTRUMENTS) {}
 
 void FrereJacques::load_data() {
     Track_Data::load_data();
 
-    auto *instruments_data_bank = new C0deTracker::Instrument_Data[INSTRUMENTS];
-    instruments_data_bank[MAIN].setData(C0deTracker::TRIANGLE, C0deTracker::ADSR(4.66f,2.f,0.5f,4.f),0.6f,0.f,1.0f,0.5f);
-    instruments_data_bank[BASS].setData(C0deTracker::SINUS, C0deTracker::ADSR(1000.0f, 2.f, 0.2f, 5.33f), 1.0f, 0.f,0.5f,0.f);
-    this->setInstrumentsDataBank(instruments_data_bank, INSTRUMENTS);
+#define SETINSTRDAT setInstrumentData
+#define VOLM selectVolume
+#define CHANL selectChannel
+#define PATRN selectPattern
+#define INSTR selectInstrument
+#define I enterInstruction
+#define R enterRelease
+#define P enterPatternIndex
+#define K Key
+#define UI32 uint_fast32_t
 
-    using C0deTracker::Editor;
     using C0deTracker::Key;
     using namespace C0deTracker::Notes;
 
-    Editor::loadTrackProperties(ROWS, FRAMES, CHANNELS, fx_per_chan); //Load track propreties in the editor
-    auto** patterns = Editor::loadEmptyPatterns(); //generate empty patterns for song writing
-    auto* pattern_indices = Editor::loadEmptyPatternsIndices(); //generate empty patterns indices for patterns indexing
-    Editor::storePatterns(patterns); // store patterns in editor
-    Editor::storePatternsIndices(pattern_indices); // store pattern indices in editor
-
-#define VOLM Editor::storeVolume
-#define CHANL Editor::storeChannelIndex
-#define PATRN Editor::storePatternIndex
-#define INSTR Editor::storeInstrumentIndex
-#define I Editor::enterInstruction
-#define R Editor::release
-#define P Editor::enterPatternIndice
-#define K Key
-#define UI32 uint_fast32_t
+    setInstrumentData(MAIN, C0deTracker::TRIANGLE, C0deTracker::ADSR(4.66f,2.f,0.5f,4.f),0.6f,0.f,1.0f,0.5f);
+    setInstrumentData(BASS, C0deTracker::SINUS, C0deTracker::ADSR(1000.0f, 2.f, 0.2f, 5.33f), 1.0f, 0.f,0.5f,0.f);
 
     CHANL(0);
     PATRN(0);
@@ -50,7 +38,7 @@ void FrereJacques::load_data() {
     R(11);
     I(12,K(D,4));
     R(15);
-    P(0,1,0);//frames 1 points to pattern 0
+    P(0, 1, 0);//frames 1 points to pattern 0
 
     PATRN(2);
     I(0,K(D,4));
@@ -59,7 +47,7 @@ void FrereJacques::load_data() {
     R(7);
     I(8,K(F_S,4));
     R(15);
-    P(0,3,2);//frames 3 points to pattern 2
+    P(0, 3, 2);//frames 3 points to pattern 2
 
     PATRN(4);
     I(0,K(A,4));
@@ -94,7 +82,6 @@ void FrereJacques::load_data() {
     I(8, K(D, 4));
     PATRN(8);
     R(0);
-
 
     CHANL(1);
     VOLM(0.33);
@@ -146,7 +133,7 @@ void FrereJacques::load_data() {
     R(7);
     I(8, K(A, 2));
     R(15);
-    P(2, 5,4);
+    P(2, 5, 4);
 
     PATRN(6);
     I(0, K(E, 2));
@@ -158,7 +145,4 @@ void FrereJacques::load_data() {
     P(2, 7, 6);
     PATRN(8);
     R(0);
-
-    this->setPatterns(patterns);
-    this->setPatternsIndices(pattern_indices);
 }

@@ -10,20 +10,18 @@
 
 #ifndef CODETRACKER_CUSTOM_SFML_STREAM_HPP
 #define CODETRACKER_CUSTOM_SFML_STREAM_HPP
-#define SAMPLE_RATE 48000.
-#define BUFFER_LENGTH_S 0.075
-#define PANNING 2
-#define BITS_16 0xFFFF
+
 class C0deTrackerStream : public sf::SoundStream {
 public:
     double time = 0;
     bool init(C0deTracker::Track *t);
     void changeTrack(C0deTracker::Track *t);
+    ~C0deTrackerStream() override;
 
 private:
     C0deTracker::Track *track = nullptr;
     sf::Mutex mutex;
-    sf::Int16 smpls[static_cast<int>(SAMPLE_RATE * BUFFER_LENGTH_S * PANNING)]{0};
+    sf::Int16* smpls;
 
     bool onGetData(Chunk &data) override;
 

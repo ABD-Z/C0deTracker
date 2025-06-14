@@ -14,6 +14,58 @@
 
 namespace  C0deTracker{
 
+    AudioConfig::AudioConfig(uint_fast16_t sampleRate) : sampleRate(sampleRate) {
+        this->bufferSize = AudioConfig::calcBufferSize(sampleRate, bufferDuration, this->getPanning());
+    }
+
+    AudioConfig::AudioConfig(uint_fast16_t sampleRate, float bufferLength) : sampleRate(sampleRate), bufferDuration(bufferLength) {
+        this->bufferSize = AudioConfig::calcBufferSize(sampleRate, bufferDuration, this->getPanning());
+    }
+
+    AudioConfig::AudioConfig(uint_fast16_t sampleRate, float bufferLength, bool stereo) : sampleRate(sampleRate), bufferDuration(bufferLength), stereo(stereo) {
+        this->bufferSize = AudioConfig::calcBufferSize(sampleRate, bufferDuration, this->getPanning());
+    }
+
+    AudioConfig::AudioConfig(float bufferLength) : bufferDuration(bufferLength) {
+        this->bufferSize = AudioConfig::calcBufferSize(sampleRate, bufferDuration, this->getPanning());
+    }
+
+    AudioConfig::AudioConfig(float bufferLength, bool stereo) : bufferDuration(bufferLength), stereo(stereo) {
+        this->bufferSize = AudioConfig::calcBufferSize(sampleRate, bufferDuration, this->getPanning());
+    }
+
+    AudioConfig::AudioConfig(bool stereo) : stereo(stereo) {
+        this->bufferSize = AudioConfig::calcBufferSize(sampleRate, bufferDuration, this->getPanning());
+    }
+
+    AudioConfig::AudioConfig(uint_fast16_t sampleRate, bool stereo) : sampleRate(sampleRate), stereo(stereo) {
+        this->bufferSize = AudioConfig::calcBufferSize(sampleRate, bufferDuration, this->getPanning());
+    }
+
+    uint_fast16_t AudioConfig::getSampleRate() const {
+        return this->sampleRate;
+    }
+
+    float AudioConfig::getBufferDuration() const {
+        return this->bufferDuration;
+    }
+
+    bool AudioConfig::isStereo() const {
+        return this->stereo;
+    }
+
+    uint_fast8_t AudioConfig::getPanning() const {
+        return 1 + this->stereo;
+    }
+
+    uint_fast32_t AudioConfig::getBufferSize() const {
+        return this->bufferSize;
+    }
+
+    inline uint_fast32_t AudioConfig::calcBufferSize(uint_fast16_t sr, float bd, uint_fast8_t panning) {
+        return static_cast<uint_fast32_t>(sr * bd * panning);
+    }
+
     Key::Key(float n, float o) { this->note = n; this->octave = o;}
 
     Key::Key(){this->note = Notes::CONTINUE; this->octave = Notes::CONTINUE;}

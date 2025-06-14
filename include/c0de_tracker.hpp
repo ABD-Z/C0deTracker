@@ -51,7 +51,7 @@ namespace C0deTracker {
 #define MAX_PITCH 50 // K(B, 8) = 7902.133 Hz
 #define MAX_CUSTOM_WAVE 0xFF
 
-
+    class AudioConfig;
     struct Key;
     struct ADSR;
     class Osc;
@@ -67,6 +67,36 @@ namespace C0deTracker {
     struct SpeedDepthFX;
     struct TransposeFX;
     struct PortamentoFX;
+
+
+    class AudioConfig {
+    public:
+        AudioConfig() = default;
+
+        AudioConfig(uint_fast16_t sampleRate);
+        AudioConfig(uint_fast16_t sampleRate, float bufferLength);
+        AudioConfig(uint_fast16_t sampleRate, float bufferLength, bool stereo);
+
+        AudioConfig(float bufferLength);
+        AudioConfig(float bufferLength, bool stereo);
+
+        AudioConfig(bool stereo);
+        AudioConfig(uint_fast16_t sampleRate, bool stereo);
+
+        uint_fast16_t getSampleRate() const;
+        float getBufferDuration() const;
+        bool isStereo() const;
+        uint_fast8_t getPanning() const;
+        uint_fast32_t getBufferSize() const;
+
+    private:
+        inline static uint_fast32_t calcBufferSize(uint_fast16_t sr, float bd, uint_fast8_t panning);
+        uint_fast16_t sampleRate = 48000;
+        float bufferDuration = 0.1f;
+        bool stereo = true;
+        uint_fast32_t bufferSize = calcBufferSize(this->sampleRate, this->bufferDuration, this->getPanning());
+    };
+
 
     /**
      * @brief This structure represents a piano key which is represented by its note (C, C#, D, D#, E, F, F#, G, G#, A, A#, B ; see Notes enumeration)
@@ -502,12 +532,16 @@ namespace C0deTracker {
     public:
         Track() = default;
 
+        explicit Track(const AudioConfig cfg);
+
         explicit Track(Track_Data* td);
 
         /**
          * @brief free everything related to the track, patterns, patterns indices, instruments
          */
         ~Track();
+
+        AudioConfig* getConfig();
 
         /**
          * @brief main function called at each time to calculate the corresponding sample of the track
@@ -530,6 +564,7 @@ namespace C0deTracker {
 
 
     private:
+        AudioConfig config;
         void setTrack_Data(Track_Data* td);
         bool decode_fx(uint_fast32_t fx, double t);
         Track_Data* track_data = nullptr;

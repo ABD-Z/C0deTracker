@@ -28,6 +28,12 @@ namespace C0deTracker {
         delete[] this->chans;
     }
 
+    AudioConfig *Track::getConfig() {
+        return &this->config;
+    }
+
+    Track::Track(const AudioConfig cfg) : config(cfg){}
+
     void Track::resetState() {
         this->reset_fxs();
         row_counter = 0; frame_counter = 0;

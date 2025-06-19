@@ -92,16 +92,16 @@ int main() {
 
         std::cout << "time ; pitch ; frequency" << std::endl;
 
-        unsigned int number_of_samples = 1 * SAMPLE_RATE * track_processor.getDuration() * PANNING;
+        unsigned int number_of_samples = 1 * track_processor.getConfig()->getSampleRate() * track_processor.getDuration() * track_processor.getConfig()->getPanning();
         samples.reserve(number_of_samples);
 
         for (uint_fast64_t i = 0; i < number_of_samples; ++++i) {
-            float* s = track_processor.play(0.5 * double(i) / SAMPLE_RATE);
+            float* s = track_processor.play(0.5 * double(i) / track_processor.getConfig()->getSampleRate());
             samples.push_back((s[0]) * BITS_16*0.5);//left speaker
             samples.push_back((s[1]) * BITS_16*0.5);//right speaker
         }
 
-        buffer.loadFromSamples(&samples[0], samples.size(), PANNING, SAMPLE_RATE);
+        buffer.loadFromSamples(&samples[0], samples.size(), track_processor.getConfig()->getPanning(), track_processor.getConfig()->getSampleRate());
         buffer.saveToFile(FILENAME);
         std::cout << "End sampling " << td->getName() << std::endl;
 

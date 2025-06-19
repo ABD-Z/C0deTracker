@@ -11,6 +11,8 @@
 #ifndef CODETRACKER_CUSTOM_SFML_STREAM_HPP
 #define CODETRACKER_CUSTOM_SFML_STREAM_HPP
 
+#define BITS_16 0xFFFF
+
 class C0deTrackerStream : public sf::SoundStream {
 public:
     double time = 0;

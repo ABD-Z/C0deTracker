@@ -3,8 +3,6 @@
 //
 #include "custom_sfml_stream.hpp"
 
-#define BITS_16 0xFFFF
-
 bool C0deTrackerStream::init(C0deTracker::Track *t) {
     this->time = 0;
     printf("SAMPLE RATE = %u Hz\nBUFFER LENGTH = %f second\n", t->getConfig()->getSampleRate(),

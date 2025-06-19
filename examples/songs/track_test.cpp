@@ -94,11 +94,19 @@ void Track_Test::load_data() {
                 }
             });
 
+    C0deTracker::Osc::registerCustomWaveFunc(
+            MATH,
+            [](double x) -> float {
+                return std::pow(x, 10) * std::pow(10,x) * std::cos(x);
+            },
+            -7.8, 0.2
+            );
+
     if(!IS_GLOBAL_INSTRUMENTS_BANK_INITIALISED)
         initGlobalInstruments();
 
-    GLOBAL_INSTRUMENTS_BANK[SQUARE_WAVE].setData(XYLOPHONE, C0deTracker::ADSR(1000, 4, 0.f, 5), 1.0f, 0.0, 1.f, 0.f);
-    //GLOBAL_INSTRUMENTS_BANK[SQUARE_WAVE].feedback_level = 0.1f;
+    GLOBAL_INSTRUMENTS_BANK[SQUARE_WAVE].setData(MATH, C0deTracker::ADSR(1000, 5, 0.f, 5), 1.0f, 0.0, 1.f, 0.f);
+    //GLOBAL_INSTRUMENTS_BANK[SQUARE_WAVE].feedback_level = .15f;
 
     this->setGlobalInstrumentsDataBank(GLOBAL_INSTRUMENTS_BANK, GLOBAL_NUMBER_OF_INSTRUMENTS);
 

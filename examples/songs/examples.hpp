@@ -17,7 +17,8 @@ private:
     constexpr static const float CLOCK = 60.f;
     constexpr static const float SPEED = 9.f;
     constexpr static const float BASETIME = 1.f;
-    enum custom_wave{QUADRA_SAW=C0deTracker::WAVETYPES, QUARTER_SAW, CUVETTE, BOOBS, MOUNTAINS, XYLOPHONE, SLAP_BASS, NOKIA3310};
+    enum custom_wave{QUADRA_SAW=C0deTracker::WAVETYPES, QUARTER_SAW, CUVETTE, BOOBS, MOUNTAINS, XYLOPHONE, SLAP_BASS,
+            NOKIA3310, MATH};
 public:
     Track_Test();
     void load_data() override;

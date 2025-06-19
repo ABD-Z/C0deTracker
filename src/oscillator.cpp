@@ -16,12 +16,44 @@
 namespace C0deTracker {
     uint_fast8_t Osc::custom_wave_counter = 0;
 
-    float (*Osc::wavefunctable[MAX_CUSTOM_WAVE]) (float, float, double, float, float) = {nullptr};
+    //float (*Osc::wavefunctable[MAX_CUSTOM_WAVE]) (float, float, double, float, float) = {nullptr};
+    Osc::WaveCallback Osc::wavefunctable[MAX_CUSTOM_WAVE] = {nullptr};
 
-    void Osc::registerCustomWaveFunc(uint_fast8_t id, float (*wave_func)(float, float, double, float, float)) {
+    void Osc::registerCustomWaveFunc(uint_fast8_t id, WaveCallback wave_func) {
         if (Osc::custom_wave_counter < MAX_CUSTOM_WAVE && id - WAVETYPES < MAX_CUSTOM_WAVE) {
-            wavefunctable[id - WAVETYPES] = wave_func;
+            Osc::wavefunctable[id - WAVETYPES] = wave_func;
             ++Osc::custom_wave_counter;
+        }
+    }
+
+    void Osc::registerCustomWaveFunc(uint_fast8_t id, MathFxCallback fx, double bound0, double bound1) {
+        if (Osc::custom_wave_counter < MAX_CUSTOM_WAVE && id - WAVETYPES < MAX_CUSTOM_WAVE) {
+            float m = FLT_MAX;
+            float M = FLT_MIN;
+
+            assert(bound1 > bound0 && "bound1 must be greater than bound0");
+
+            double bounddif = bound1 - bound0;
+            double steps = 100000;
+            for(int i = 0; i <= steps; ++i) {
+                float r = fx((i/steps) * bounddif + bound0);
+                if (r < m)
+                    m = r;
+                if (r > M)
+                    M = r;
+            }
+
+            assert(M > m && "The portion of function must have different values of minimum and maximum");
+
+            float num = (M + m)/2;
+            float denom = (M - m) / 2;
+
+            Osc::registerCustomWaveFunc(id,
+                                        [fx, bound0, bounddif, num, denom](float a, float f, double t, float dc, float FMfeed) -> float {
+                double frac_ft = f * t + FMfeed - floor(f * t + FMfeed);
+                return a * (fx(frac_ft * bounddif + bound0) - num) / denom;
+            });
+
         }
     }
 

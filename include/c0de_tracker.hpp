@@ -41,6 +41,7 @@
 #include <cstdint>
 #include <vector>
 #include <cassert>
+#include <functional>
 
 
 namespace C0deTracker {
@@ -311,7 +312,10 @@ namespace C0deTracker {
         static float whitenoise(float a, float f, double t, float dc, float FMfeed);
         static float whitenoise2(float a, float f, double t, float dc, float FMfeed);
 
-        static void registerCustomWaveFunc(uint_fast8_t id, float (*wave_func)(float, float, double, float, float));
+        using WaveCallback = std::function<float(float, float, double, float, float)>;
+        using MathFxCallback = std::function<float(double)>;
+        static void registerCustomWaveFunc(uint_fast8_t id, WaveCallback wave_func);
+        static void registerCustomWaveFunc(uint_fast8_t id, MathFxCallback fx, double bound0, double bound1);
 
 
     private:
@@ -327,7 +331,8 @@ namespace C0deTracker {
         float feedback_val = 0;
         float feedback_level = 0;
 
-        static float (*wavefunctable[MAX_CUSTOM_WAVE]) (float, float, double, float, float);
+        //static float (*wavefunctable[MAX_CUSTOM_WAVE]) (float, float, double, float, float);
+        static WaveCallback wavefunctable[MAX_CUSTOM_WAVE];
         static uint_fast8_t custom_wave_counter;
 
         /**

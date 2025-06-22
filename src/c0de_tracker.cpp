@@ -74,7 +74,7 @@ namespace  C0deTracker{
 
 
     namespace Notes {
-        float pitch2freq(float p){return pow(1.059460646483f, p) * 440.0f;}
+        float pitch2freq(float p){return pow(2, p/12.f) * 440.0f;}
 
         float key2pitch(Key k){
             return key2pitch(k.note, k.octave);

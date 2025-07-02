@@ -19,35 +19,35 @@ float quarter_pow_saw(float a, float f, double t, float dc, float FMfeed) {
 }
 
 float cuvette(float a, float f, double t, float dc, float FMfeed) {
-    return a * ( 2*std::pow(C0deTracker::Osc::saw(1.f, f, t, dc, FMfeed), 2)-1);
+    return a * ( 2*std::pow(C0deTracker::Oscillator::saw(1.f, f, t, dc, FMfeed), 2) - 1);
 }
 
 float boobs(float a, float f, double t, float dc, float FMfeed) {
-    return a * (  2 * std::pow(C0deTracker::Osc::triangle(1.f, f, t, dc, FMfeed), 4) -1);
+    return a * (  2 * std::pow(C0deTracker::Oscillator::triangle(1.f, f, t, dc, FMfeed), 4) - 1);
 }
 
 float mountains(float a, float f, double t, float dc, float FMfeed) {
-    return a * ( std::pow(C0deTracker::Osc::triangle(1.f, f, t, dc, FMfeed), 3));
+    return a * ( std::pow(C0deTracker::Oscillator::triangle(1.f, f, t, dc, FMfeed), 3));
 }
 
 float xylo(float a, float f, double t, float dc, float FMfeed) {
-    float op1 = C0deTracker::Osc::sinus(1.f, f * 13, t, dc, FMfeed);
-    float op2 = C0deTracker::Osc::sinus(0.5f , f * 33, t, dc, op1);
-    float op3 = C0deTracker::Osc::sinus(1, f, t, dc, op2);
+    float op1 = C0deTracker::Oscillator::sinus(1.f, f * 13, t, dc, FMfeed);
+    float op2 = C0deTracker::Oscillator::sinus(0.5f , f * 33, t, dc, op1);
+    float op3 = C0deTracker::Oscillator::sinus(1, f, t, dc, op2);
     return a*op3;
 }
 
 float slap_bass(float a, float f, double t, float dc, float FMfeed) {
-    float op1 = C0deTracker::Osc::sinus(1.1f, f *.5f, t, dc, FMfeed);
+    float op1 = C0deTracker::Oscillator::sinus(1.1f, f * .5f, t, dc, FMfeed);
 
     for (int i = 0; i < 5; ++i) {
-        op1 = C0deTracker::Osc::sinus(1.1f, f * 0.5f, t, dc, op1);
+        op1 = C0deTracker::Oscillator::sinus(1.1f, f * 0.5f, t, dc, op1);
     }
 
-    float op2 = C0deTracker::Osc::sinus(3.4f, f * 0.5f, t, dc, op1);
-    float op3 = C0deTracker::Osc::sinus(3.7f, f * 0.5f, t, dc, op2);
+    float op2 = C0deTracker::Oscillator::sinus(3.4f, f * 0.5f, t, dc, op1);
+    float op3 = C0deTracker::Oscillator::sinus(3.7f, f * 0.5f, t, dc, op2);
 
-    float op4 = C0deTracker::Osc::sinus(a, f * 0.5f, t, dc, op3 + op1);
+    float op4 = C0deTracker::Oscillator::sinus(a, f * 0.5f, t, dc, op3 + op1);
 
     return op4;
 }

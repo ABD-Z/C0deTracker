@@ -79,6 +79,7 @@ namespace  C0deTracker{
         float key2pitch(Key k){
             return key2pitch(k.note, k.octave);
         }
+
         float key2pitch(float note, float octave){
             return float(PITCHES_PER_OCTAVE
                          * (octave - OCTAVE_PITCH_OFFSET)
@@ -141,4 +142,41 @@ namespace  C0deTracker{
         }
         delete[] this->instructions;
     }
+
+    Oscillator_Data::Oscillator_Data(uint_fast8_t wavetype, ADSR amp_envelope) {this->setData(wavetype, amp_envelope);}
+
+    Oscillator_Data::Oscillator_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume) {this->setData(wavetype, amp_envelope, volume);}
+
+    Oscillator_Data::Oscillator_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch) {this->setData(wavetype, amp_envelope, volume, pitch);}
+
+    Oscillator_Data::Oscillator_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle)
+        {this->setData(wavetype, amp_envelope, volume, pitch, duty_cycle);}
+
+    Oscillator_Data::Oscillator_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase)
+        {this->setData(wavetype, amp_envelope, volume, pitch, duty_cycle, phase);}
+
+    Oscillator_Data::Oscillator_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase, float feedback_level)
+        {this->setData(wavetype, amp_envelope, volume, pitch, duty_cycle, phase, feedback_level);}
+
+    Oscillator_Data::Oscillator_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase, float feedback_level, float mul_freq)
+        {this->setData(wavetype, amp_envelope, volume, pitch, duty_cycle, phase, feedback_level, mul_freq);}
+
+    void Oscillator_Data::setData(uint_fast8_t wavetype, ADSR amp_envelope) { this->wavetype = wavetype; this->amp_envelope = amp_envelope;}
+
+    void Oscillator_Data::setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume) {this->setData(wavetype, amp_envelope); this->volume = volume;}
+
+    void Oscillator_Data::setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch) {this->setData(wavetype, amp_envelope, volume); this->pitch = pitch;}
+
+    void Oscillator_Data::setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle)
+        {this->setData(wavetype, amp_envelope, volume, pitch); this->duty_cycle = duty_cycle;}
+
+    void Oscillator_Data::setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase)
+        {this->setData(wavetype, amp_envelope, volume, pitch, duty_cycle); this->phase = phase;}
+
+    void Oscillator_Data::setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase, float feedback_level)
+        {this->setData(wavetype, amp_envelope, volume, pitch, duty_cycle, phase); this->feedback_level = feedback_level;}
+
+    void Oscillator_Data::setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase, float feedback_level, float mul_freq)
+        {this->setData(wavetype, amp_envelope, volume, pitch, duty_cycle, phase, feedback_level); this->mul_freq = mul_freq;}
+
 }

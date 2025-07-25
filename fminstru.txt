@@ -1,0 +1,99 @@
+Soft triangle :
+{
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 0, 1., 5), .2f, 0, 0.f, 0, 0, 2.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 5, 0.75, 5), 1.f, 0, 0.f, 0, 0, 1.f)
+}
+FM(OSC(0), OSC(1))
+
+Soft square :
+{
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 0, 1., 5), 0.7f, 0, 1.f, 0, 0, 2.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 5, 0.75, 5), 1.f, 0, 1.f, 0, 0, 1.f)
+}
+FM(OSC(0), OSC(1))
+
+Rounder Sinus :
+{
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 0, 1., 5), .2f, 0, 1.f, 0, 0, 2.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 5, 0.75, 5), 1.f, 0, 1.f, 0, 0, 1.f)
+}
+FM(OSC(0), OSC(1))
+
+Soft Saw :
+{
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 0, 1., 5), 0.5f, 0, 1.f, 0, 1., 1.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 5, 0.75, 5), 1.f, 0, 1.f, 0, 0.7, 1.f)
+}
+FM(OSC(0), OSC(1))
+
+Xylo geen hill intro 
+{
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 8., .0, 1000), .8f, 0, 1.f, 0, 2.0, 15.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 2., 0.0, 1000), .7f, 0, 1.f, 0, 0., 1.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 1.5, .0, 1000), .15f, 0, 1.f, 0, 0, 1.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, .7, 0, 1000), .15f, 0, 1.f, 0, 0., 1.f)
+}
+ADD( ADD( FM(OSC(0), OSC(1)), OSC(2)), OSC(3))
+
+Deflemask default bass (osc0 and 1 enoughn, 2 and 3 for bg bass sound):
+{
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 1, .0, 2), 10.f, 0, 1.f, 0, 0.105, 1.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 1, 0.0, 2), .85f, 0, 1.f, 0, 0., 1.f),                    
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 1, .0, 2), 5.5f, 0, 1.f, 0, 0.0, 1.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 1, 0, 2), .55f, 0, 1.f, 0, 0., .5f)
+}
+ADD( FM(OSC(0), OSC(1)), FM(OSC(2), OSC(3)) )
+
+
+Cool bass : 
+{
+C0deTracker::Oscillator_Data(C0deTracker::TRIANGLE, C0deTracker::ADSR(1000, 1, .0, 2), 15.f, 0, 1.f, 0, 0.0075, .5f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 1, 0.0, 2), .35f, 0, 1.f, 0, 0., .5f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 0, 1., 5), .2f, 0, 0.f, 0, 0, 1.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 0.9, 0, 1.85), 1.f, 0, 0.f, 0, 0, .5f)
+}
+or more bassy :
+{
+C0deTracker::Oscillator_Data(C0deTracker::TRIANGLE, C0deTracker::ADSR(1000, 1, .0, 2), 15.f, 0, 1.f, 0, 0.0075, .25f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 1, 0.0, 2), .35f, 0, 1.f, 0, 0., .25f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 0, 1., 5), .2f, 0, 0.f, 0, 0, .25f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 0.9, 0, 1.85), 1.f, 0, 0.f, 0, 0, .5f)
+}
+ADD( FM(OSC(0), OSC(1)), FM(OSC(2), OSC(3)) )
+
+
+CPS1 slap bass style : 
+{
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(10000, 1.2, .0, 2), 1.7f, 0, 1.f, -1, 0.15, 6.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 1.2, 0.0, 2), .9f, 0, 1.f, -1, 0., 5.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, .6, 0., 4), 3.f, 0, 1.f, -1.f, 0, .5f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, .6, 0, 4), 1.f, 0, 1.f, -1.f, 0, 1.f)
+}
+FM(FM( FM(OSC(0), OSC(1)), OSC(2) ), OSC(3))
+
+KEN Theme main instru :
+{
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 6., .2, 2), 1.7f, 0.02, 1.f, 0, .35, 2.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(60, 0., 1., 10), 4.7f, 0, 1.f, 0, 0., 1.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(60, 6., 0.1, 2), 1.7f, 0, 1.f, 0.f, 0, 1.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 0.4, 0, 10), 1.f, 0.02, 1.f, 0.f, 0, 1.f)
+}
+FM( ADD( FM(OSC(0), OSC(1)), OSC(2) ), OSC(3))
+
+Overdrive guitar :
+{
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 0., 1., 4.), .1f, 0.02, 1.f, 0, 0, 8.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 0., 1., 4.), 8.f, 0.02, 1.f, 0, 0., 3.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 0., 1, 4.), 10.f, 0, 1.f, 0.f, 0, .5f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(70, 0., 1., 3.), 1.f, 0.0, 1.f, 0.f, 0, 2.f)
+}
+FM( ADD( FM(OSC(0), OSC(1)), OSC(2) ), OSC(3))
+
+DX piano 1 : 
+{
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 2.5, 0., 5.), .125f, 0.025, 1.f, 0, 0, 9.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 2.5, 0., 5.), .125f, -0.025, 1.f, 0, 0., 9.f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, 1., 0, 5.), 2.2f, 0, 1.f, 0.f, 0, .5f),
+C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(1000, .75, 0., 5.), 1.f, 0.0, 1.f, 0.f, 0, .5f)
+}
+FM( FM( ADD(OSC(0), OSC(1)), OSC(2) ), OSC(3))

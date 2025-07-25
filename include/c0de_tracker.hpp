@@ -51,12 +51,14 @@ namespace C0deTracker {
 #define MIN_PITCH -57 // K(C, 0) = 16.352 Hz
 #define MAX_PITCH 50 // K(B, 8) = 7902.133 Hz
 #define MAX_CUSTOM_WAVE 0xFF
+#define MAX_OSCILLATORS 0xF
 
     class AudioConfig;
     struct Key;
     struct ADSR;
-    class Osc;
+    class Oscillator;
     struct Instrument_Data;
+    struct Oscillator_Data;
     struct Instruction;
     struct Pattern;
     class Track_Data;
@@ -91,7 +93,7 @@ namespace C0deTracker {
         uint_fast32_t getBufferSize() const;
 
     private:
-        inline static uint_fast32_t calcBufferSize(uint_fast16_t sr, float bd, uint_fast8_t panning);
+        static inline uint_fast32_t calcBufferSize(uint_fast16_t sr, float bd, uint_fast8_t panning);
         uint_fast16_t sampleRate = 48000;
         float bufferDuration = 0.1f;
         bool stereo = true;
@@ -181,6 +183,85 @@ namespace C0deTracker {
         float key2freq(Key key);
     }
 
+    namespace SynthSystem {
+        struct SynthAlgoGraph; // container of nodes
+
+        struct SynthNode; // Abstract
+        struct NodeOfTwo; // Abstract
+
+        struct OSCNode;
+        struct ADDNode;
+        struct SUBNode;
+        struct AMNode;
+        struct FMNode;
+
+        inline SynthNode* OSC(uint_fast8_t oscillator_index);
+        inline SynthNode* ADD(SynthNode* n1, SynthNode* n2);
+        inline SynthNode* SUB(SynthNode* n1, SynthNode* n2);
+        inline SynthNode* AM(SynthNode* n1, SynthNode* n2);
+        inline SynthNode* FM(SynthNode* modulator, SynthNode* carrier);
+
+        struct SynthAlgoGraph {
+            SynthNode* root = OSC(0);
+
+            SynthAlgoGraph() = default;
+
+            explicit SynthAlgoGraph(SynthNode* node);
+            float operator()(Oscillator* oscillators, uint_fast8_t oscillators_count, float a, float p, double t, double rt, float FMfeed) const;
+            void setAlgo(SynthNode* algo);
+
+            ~SynthAlgoGraph();
+        };
+
+        struct SynthNode {
+            virtual float process(Oscillator* oscillators, uint_fast8_t oscillators_count, float a, float p, double t, double rt, float FMfeed) const = 0;
+            virtual ~SynthNode() = default;
+        };
+
+        struct NodeOfTwo : SynthNode {
+            SynthNode* input1;
+            SynthNode* input2;
+
+            NodeOfTwo(SynthNode* i1, SynthNode* i2);
+            ~NodeOfTwo() override;
+        };
+
+        struct OSCNode : SynthNode {
+            uint_fast8_t index;
+
+            explicit OSCNode(uint_fast8_t index);
+            float process(Oscillator* oscillators, uint_fast8_t oscillators_count, float a, float p, double t, double rt, float FMfeed) const override;
+
+        };
+
+        struct ADDNode : NodeOfTwo {
+            ADDNode(SynthNode *i1, SynthNode *i2);
+            float process(Oscillator* oscillators, uint_fast8_t oscillators_count, float a, float p, double t, double rt, float FMfeed) const override;
+        };
+
+        struct SUBNode : NodeOfTwo {
+            SUBNode(SynthNode *i1, SynthNode *i2);
+            float process(Oscillator* oscillators, uint_fast8_t oscillators_count, float a, float p, double t, double rt, float FMfeed) const override;
+        };
+
+        struct AMNode : NodeOfTwo {
+            AMNode(SynthNode *i1, SynthNode *i2);
+            float process(Oscillator* oscillators, uint_fast8_t oscillators_count, float a, float p, double t, double rt, float FMfeed) const override;
+        };
+
+        struct FMNode : NodeOfTwo {
+            FMNode(SynthNode *modulator, SynthNode *carrier);
+            float process(Oscillator* oscillators, uint_fast8_t oscillators_count, float a, float p, double t, double rt, float FMfeed) const override;
+        };
+
+        inline SynthNode* OSC(uint_fast8_t oscillator_index) { return new OSCNode(oscillator_index); }
+        inline SynthNode* ADD(SynthNode* n1, SynthNode* n2) { return new ADDNode(n1, n2); }
+        inline SynthNode* SUB(SynthNode* n1, SynthNode* n2) { return new SUBNode(n1, n2); }
+        inline SynthNode* AM(SynthNode* n1, SynthNode* n2) { return new AMNode(n1, n2); }
+        inline SynthNode* FM(SynthNode* modulator, SynthNode* carrier) { return new FMNode(modulator, carrier); }
+
+    }
+
     /**
      * @brief ADSR structure contains attack, decay, sustain and release components (all in float) used to manipulates waveform's
      * envelope (mainly for amplitude).
@@ -207,12 +288,13 @@ namespace C0deTracker {
      * @note This class should not be instantiated. PSG class is one of its specialization.
      * @see C0deTracker::PSG, C0deTracker::Waveforms
      */
-    class Osc{
+    class Oscillator{
     public :
-        explicit Osc() = default;
-        ~Osc() = default;
+        explicit Oscillator() = default;
 
-        void setOscillatorParams(Instrument_Data* instrdata);
+        ~Oscillator() = default;
+
+        void setOscillatorData(const Oscillator_Data* oscd);
 
         /**
          * @brief set the wavetype of the oscillator to generate the corresponding waveform
@@ -263,20 +345,20 @@ namespace C0deTracker {
         /**
          * @brief Generates corresponding waveform selected.
          * @param a Amplitude
-         * @param f Frequency
+         * @param p Pitch
          * @param t Time
          * @return Signal amplitude at time t with the given duty cycle dc and phase p.
          */
-        float oscillate(float a, float f, double t);
+        float oscillate(float a, float p, double t);
         /**
          * @brief Same as previous oscillate, but with release time to handle release envelope. This function is fully abstract, it is implemented in PSG.
          * @param a Amplitude
-         * @param f Frequency
+         * @param p Pitch
          * @param rt Release time
          * @param t Time
          * @return Signal amplitude at time t with the given duty cycle dc and phase p.
          */
-        float oscillate(float a, float f, double t, double rt);
+        float oscillate(float a, float p, double t, double rt);
 
         void setAttack(float A);
         void setDecay(float D);
@@ -317,9 +399,29 @@ namespace C0deTracker {
         static void registerCustomWaveFunc(uint_fast8_t id, WaveCallback wave_func);
         static void registerCustomWaveFunc(uint_fast8_t id, MathFxCallback fx, double bound0, double bound1);
 
+        /**
+         * @brief Generates corresponding waveform selected.
+         * @param a Amplitude
+         * @param p Pitch
+         * @param t Time
+         * @param FMfeed signal feeding for FM
+         * @return Signal amplitude at time t with the given duty cycle dc and phase p.
+         */
+        float oscillate(float a, float p, double t, float FMfeed);
+        /**
+         * @brief Same as previous oscillate, but with release time to handle release envelope. This function is fully abstract, it is implemented in PSG.
+         * @param a Amplitude
+         * @param p Pitch
+         * @param rt Release time
+         * @param t Time
+         * @param FMfeed signal feeding for FM
+         * @return Signal amplitude at time t with the given duty cycle dc and phase p.
+         */
+        float oscillate(float a, float p, double t, double rt, float FMfeed);
+
 
     private:
-        uint_fast8_t wavetype = SINUS; float dutycycle = 0.5f; float phase = 0.0f; float pitch = 0.0f;
+        uint_fast8_t wavetype = SINUS; float dutycycle = 1.f; float phase = 0.0f; float pitch = 0.0f;
         float volume = 1.0f;
         ADSR amp_envelope = ADSR(100.f, 0.0f, 1.0f, 1.0f);
         bool release = false;
@@ -331,41 +433,73 @@ namespace C0deTracker {
         float feedback_val = 0;
         float feedback_level = 0;
 
-        //static float (*wavefunctable[MAX_CUSTOM_WAVE]) (float, float, double, float, float);
         static WaveCallback wavefunctable[MAX_CUSTOM_WAVE];
         static uint_fast8_t custom_wave_counter;
 
-        /**
-         * @brief Generates corresponding waveform selected.
-         * @param a Amplitude
-         * @param f Frequency
-         * @param t Time
-         * @param FMfeed signal feeding for FM
-         * @return Signal amplitude at time t with the given duty cycle dc and phase p.
-         */
-        float oscillate(float a, float f, double t, float FMfeed);
-        /**
-         * @brief Same as previous oscillate, but with release time to handle release envelope. This function is fully abstract, it is implemented in PSG.
-         * @param a Amplitude
-         * @param f Frequency
-         * @param rt Release time
-         * @param t Time
-         * @param FMfeed signal feeding for FM
-         * @return Signal amplitude at time t with the given duty cycle dc and phase p.
-         */
-        float oscillate(float a, float f, double t, double rt, float FMfeed);
         float handleAmpEnvelope(double t, double rt);
+
+        void setMulFreq(float mul_f);
+
+        float mul_freq = 1.0f;
     };
 
 
     struct Instrument_Data{
+        Oscillator_Data* oscillators_data;
+        SynthSystem::SynthAlgoGraph *algo = new SynthSystem::SynthAlgoGraph(SynthSystem::OSC(0));
+
+        uint_fast8_t getOscillatorsCount();
+
+        Instrument_Data();
+
+        Instrument_Data(uint_fast8_t wavetype, ADSR amp_envelope);
+        Instrument_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume);
+        Instrument_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch);
+        Instrument_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle);
+        Instrument_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase);
+        Instrument_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase, float feedback_level);
+        Instrument_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase, float feedback_level, float mul_freq);
+
+        void setData(uint_fast8_t wavetype, ADSR amp_envelope);
+        void setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume);
+        void setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch);
+        void setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle);
+        void setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase);
+        void setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase, float feedback_level);
+        void setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase, float feedback_level, float mul_freq);
+
+        void setData(std::vector<Oscillator_Data> oscillators);
+
+        ~Instrument_Data();
+
+    private:
+        uint_fast8_t  oscillators_count = 0;
+    };
+
+    struct Oscillator_Data {
         uint_fast8_t wavetype = SINUS;
         ADSR amp_envelope = ADSR(100.f, 0.0f, 1.0f, 1.0f);
-        float volume = 1.0f; float pitch = 0.0f; float duty_cycle = 0.5f; float phase = 0.0f;
-        float feedback_level = 0;
-        Instrument_Data() = default;
-        Instrument_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase);
+        float volume = 1.0f; float pitch = 0.0f; float duty_cycle = 1.0f; float phase = 0.0f;
+        float feedback_level = 0.0f;
+        float mul_freq = 1.0f;
+
+        Oscillator_Data() = default;
+
+        Oscillator_Data(uint_fast8_t wavetype, ADSR amp_envelope);
+        Oscillator_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume);
+        Oscillator_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch);
+        Oscillator_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle);
+        Oscillator_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase);
+        Oscillator_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase, float feedback_level);
+        Oscillator_Data(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase, float feedback_level, float mul_freq);
+
+        void setData(uint_fast8_t wavetype, ADSR amp_envelope);
+        void setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume);
+        void setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch);
+        void setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle);
         void setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase);
+        void setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase, float feedback_level);
+        void setData(uint_fast8_t wavetype, ADSR amp_envelope, float volume, float pitch, float duty_cycle, float phase, float feedback_level, float mul_freq);
     };
 
     /**
@@ -674,11 +808,11 @@ namespace C0deTracker {
         bool data_loaded = false;
         bool use_global_inst = false;
         const char* name = "_";
-        float clk = 60.f, basetime = 1.f, speed = 3.f, step = 3/60;
+        float clk = 60.f, basetime = 1.f, speed = 3.f, step = 3.f/60.f;
         uint_fast8_t  rows = 0, frames = 0;
         uint_fast8_t channels = 0;
         uint_fast8_t instruments = 0;
-        Instrument_Data* instruments_data_bank{};
+        Instrument_Data* instruments_data_bank;
         Pattern** patterns{};
         uint_fast8_t* pattern_indices{};//new uint_8[channels*frames]
         float duration = 0;
@@ -836,7 +970,10 @@ namespace C0deTracker {
         bool released = false;
         double time_release = 0.0;
         Instruction instruct_state{};
-        Osc oscillator = Osc();
+
+        Oscillator oscillators[MAX_OSCILLATORS];
+        uint_fast8_t oscillators_count = 0;
+
         uint_fast8_t instrument_index = Notes::KeysUtilities::CONTINUE;
 
         Instruction* delayed_instruct_address = nullptr;
@@ -846,6 +983,7 @@ namespace C0deTracker {
 
         void initFXs(Instruction *instruction, double time);
 
+        SynthSystem::SynthAlgoGraph* algorithm;
     };
 
 }

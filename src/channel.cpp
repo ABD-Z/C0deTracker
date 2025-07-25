@@ -26,14 +26,16 @@ namespace C0deTracker {
     void Channel::setPitch(float pitch) {this->pitch.val = pitch;}
 
     Instruction* Channel::getLastInstructionAddress() const {return this->last_instruct_address;}
-    void Channel::setLastInstructionAddress(Instruction *lastInstructionAddress) { this->last_instruct_address = lastInstructionAddress;}
+    void Channel::setLastInstructionAddress(Instruction *lastInstructionAddress) {this->last_instruct_address = lastInstructionAddress;}
 
     double Channel::getTime() const{return this->time;}
 
 void Channel::setTime(double time) {
         this->time = time;
-        if (!this->portamento.isActive() || this->isReleased())
-            this->oscillator.resetPhaseTimeOffset();
+        if (!this->portamento.isActive() || this->isReleased()) {
+            for (uint_fast8_t i = 0; i < this->oscillators_count; ++i)
+                this->oscillators[i].resetPhaseTimeOffset();
+        }
     }
 
     double Channel::getTimeRelease() const {return this->time_release;}
@@ -42,7 +44,11 @@ void Channel::setTime(double time) {
 
     bool Channel::isReleased() const {return this->released;}
 
-    void Channel::setRelease(bool r) {this->released = r; this->oscillator.setRelease(r);}
+    void Channel::setRelease(bool r) {
+        this->released = r;
+        for (uint_fast8_t i = 0; i < this->oscillators_count; ++i)
+            this->oscillators[i].setRelease(r);
+    }
 
     const Instruction *Channel::getInstructionState() const {return &this->instruct_state;}
 
@@ -115,13 +121,11 @@ void Channel::setTime(double time) {
     }
 
     float Channel::play_pitch(float a, float p, double t) {
-        float f = this->oscillator.pitch2freq(p, t);
-        return this->oscillator.oscillate(a, f, t);
+        return (*this->algorithm)(this->oscillators, this->oscillators_count, a,p,t,-1,0);
     }
 
     float Channel::play_pitch(float a, float p, double t, double rt) {
-        float f = this->oscillator.pitch2freq(p, t);
-        return this->oscillator.oscillate(a, f, t, rt);
+        return (*this->algorithm)(this->oscillators, this->oscillators_count, a,p,t,rt,0);
     }
 
     void Channel::resetState() {
@@ -142,7 +146,11 @@ void Channel::setTime(double time) {
     Track *Channel::getTrack() const {return this->track;}
 
     void Channel::setInstrumentParams(Instrument_Data *instrument) {
-        this->oscillator.setOscillatorParams(instrument);
+        for(uint_fast8_t i = 0; i < instrument->getOscillatorsCount(); ++i)
+            this->oscillators[i].setOscillatorData(&instrument->oscillators_data[i]);
+
+        this->algorithm = instrument->algo;
+        this->oscillators_count = instrument->getOscillatorsCount();
     }
 
     void Channel::initFXs(Instruction *instruction, double time) {

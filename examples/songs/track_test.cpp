@@ -52,6 +52,16 @@ float slap_bass(float a, float f, double t, float dc, float FMfeed) {
     return op4;
 }
 
+float soft_square(float a, float f, double t, float dc, float FMfeed) {
+    float L = 0.7;
+    float M = 2;
+
+    float op1 = C0deTracker::Oscillator::sinus(L, f*M, t, dc, FMfeed);
+    float op2 = C0deTracker::Oscillator::sinus(1, f, t, dc, op1);
+
+    return op2;
+}
+
 Track_Test::Track_Test() : Track_Data(
         NAME, CLOCK, BASETIME, SPEED, ROWS, FRAMES, CHANNELS, FX_per_CHAN
         ) {}
@@ -60,24 +70,24 @@ Track_Test::Track_Test() : Track_Data(
 void Track_Test::load_data() {
     Track_Data::load_data();
 
-    C0deTracker::Osc::registerCustomWaveFunc(
+    C0deTracker::Oscillator::registerCustomWaveFunc(
             QUADRA_SAW, quadra_saw);
-    C0deTracker::Osc::registerCustomWaveFunc(
+    C0deTracker::Oscillator::registerCustomWaveFunc(
             QUARTER_SAW, quarter_pow_saw);
-    C0deTracker::Osc::registerCustomWaveFunc(
+    C0deTracker::Oscillator::registerCustomWaveFunc(
             CUVETTE, cuvette);
-    C0deTracker::Osc::registerCustomWaveFunc(
+    C0deTracker::Oscillator::registerCustomWaveFunc(
             BOOBS, boobs);
-    C0deTracker::Osc::registerCustomWaveFunc(
+    C0deTracker::Oscillator::registerCustomWaveFunc(
             MOUNTAINS, mountains);
 
-    C0deTracker::Osc::registerCustomWaveFunc(
+    C0deTracker::Oscillator::registerCustomWaveFunc(
             XYLOPHONE, xylo);
 
-    C0deTracker::Osc::registerCustomWaveFunc(
+    C0deTracker::Oscillator::registerCustomWaveFunc(
             SLAP_BASS, slap_bass);
 
-    C0deTracker::Osc::registerCustomWaveFunc(
+    C0deTracker::Oscillator::registerCustomWaveFunc(
             NOKIA3310,
             [](float a, float f, double t, float dc, float FMfeed) -> float {
                 double p = 0.1;
@@ -94,7 +104,7 @@ void Track_Test::load_data() {
                 }
             });
 
-    C0deTracker::Osc::registerCustomWaveFunc(
+    C0deTracker::Oscillator::registerCustomWaveFunc(
             MATH,
             [](double x) -> float {
                 return std::pow(x, 10) * std::pow(10,x) * std::cos(x);
@@ -102,13 +112,38 @@ void Track_Test::load_data() {
             -7.8, 0.2
             );
 
+    C0deTracker::Oscillator::registerCustomWaveFunc(SOFT_SQUARE, soft_square);
+
     if(!IS_GLOBAL_INSTRUMENTS_BANK_INITIALISED)
         initGlobalInstruments();
 
-    GLOBAL_INSTRUMENTS_BANK[SQUARE_WAVE].setData(MATH, C0deTracker::ADSR(1000, 5, 0.f, 5), 1.0f, 0.0, 1.f, 0.f);
-    //GLOBAL_INSTRUMENTS_BANK[SQUARE_WAVE].feedback_level = .15f;
+    using namespace C0deTracker::SynthSystem;
+
+    auto osc_list = {C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 10, 0.75, 5), 0, 0, 1, 0, 0, 1.5f),
+                     C0deTracker::Oscillator_Data(C0deTracker::SQUARE, C0deTracker::ADSR(100, 5, 0.75, 5), 0.5f, 0, 0.5f, 0, 0, 0.5f)};
+
+    GLOBAL_INSTRUMENTS_BANK[SQUARE_WAVE].setData(SOFT_SQUARE, C0deTracker::ADSR(100, 5, 0.75f, 5), 1.0f, 0.0, 1.f, 0.f);
+    //GLOBAL_INSTRUMENTS_BANK[SQUARE_WAVE].oscillators_data[0].feedback_level = 0;
+    //GLOBAL_INSTRUMENTS_BANK[SQUARE_WAVE].oscillators_data[0].mul_freq = 2.f;
+    GLOBAL_INSTRUMENTS_BANK[SQUARE_WAVE].setData(
+            {
+                    C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 6., .2, 2), 1.7f, 0.02, 1.f, 0, .35, 2.f),
+                    C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(60, 0., 1., 10), 4.7f, 0, 1.f, 0, 0., 1.f),
+                    C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(60, 6., 0.1, 2), 1.7f, 0, 1.f, 0.f, 0, 1.f),
+                    C0deTracker::Oscillator_Data(C0deTracker::SINUS, C0deTracker::ADSR(100, 0.4, 0, 10), 1.f, 0.02, 1.f, 0.f, 0, 1.f)
+            }
+            );
+
+    GLOBAL_INSTRUMENTS_BANK[SQUARE_WAVE].algo->setAlgo(OSC(3));
+            //FM(OSC(0), OSC(1)));
+   GLOBAL_INSTRUMENTS_BANK[SQUARE_WAVE].algo->setAlgo(
+           FM( ADD( FM(OSC(0), OSC(1)), OSC(2) ), OSC(3))
+    );
+    //GLOBAL_INSTRUMENTS_BANK[SQUARE_WAVE].algo->setAlgo(FM(OSC(2), OSC(3)));
 
     this->setGlobalInstrumentsDataBank(GLOBAL_INSTRUMENTS_BANK, GLOBAL_NUMBER_OF_INSTRUMENTS);
+
+    uint_fast8_t  oct = 4;
 
     using namespace C0deTracker::Notes;
     using namespace C0deTracker;
@@ -246,8 +281,8 @@ vibrato = 0x12018008;
     I(0x12, K(E,4), FX_bass_del6_rel7); I(0x14, K(F,4), FX_bass_global_del0_rel7);
     I(0x16, K(D,4)); I(0x17, K(E,4));*/
 
-    uint_fast8_t  oct = 4;
-    I(0, K(Do, oct));
+
+    /*I(0, K(Do, oct));
     R(2);
     I(3, K(Re, oct));
     R(5);
@@ -261,7 +296,54 @@ vibrato = 0x12018008;
     R(17);
     I(18, K(Si, oct));
     R(20);
-    I(21, K(Do, oct+1));
+    I(21, K(Do, oct+1));*/
+
+    I(0, K(C, 4));
+
+    /*I(4, K(F, 4));
+
+    I(8, K(A_S, 4));
+    I(10, K(G_S, 4));
+
+    I(14, K(G, 4));
+    I(16, K(F, 4));
+
+    I(22, K(D_S, 4));*/
+    R(24);
+
+   // I(26, K(F, 4));
+    //R(28);
+
+    P(0, 1, 0);
+
+    PATRN(2);
+    I(0, K(C, 4));
+
+    I(4, K(F, 4));
+
+    I(8, K(A_S, 4));
+    I(10, K(C, 5));
+
+    I(14, K(C_S, 5));
+    I(16, K(C, 5));
+    I(18, K(A_S, 4));
+
+    I(22, K(G_S, 4));
+    I(24, K(A_S, 4));
+    I(26, K(C, 5));
+
+    PATRN(3);
+    I(2, K(A_S, 4));
+
+    I(8, K(G_S, 4));
+
+    I(12, K(G, 4));
+    R(14);
+    I(16, K(F,4));
+    I(18, K(E,4));
+
+    R(26);
+
 
     /*I(0x20, K(G,3), {0x1F020802, 0x1C000000});
 
@@ -281,11 +363,11 @@ vibrato = 0x12018008;
     auto tom2effects = {releaseTOM + 2, full_slidedown, panrightTOM};
     auto cancelTOMeffects = {centered_pan, cancel_slidedown};
     INSTR(TOM);
-    I(0x20, Key(A, 1), tom2effects);
+    /*I(0x20, Key(A, 1), tom2effects);
     I(0x21, Key(A, 1));
     I(0x23, cancelTOMeffects);
     INSTR(CRASH);
-    I(0x25, K(C_S,3));
+    I(0x25, K(C_S,3));*/
 
 
 

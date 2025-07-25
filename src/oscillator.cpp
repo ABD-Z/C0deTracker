@@ -14,20 +14,19 @@
 #include "../include/c0de_tracker.hpp"
 
 namespace C0deTracker {
-    uint_fast8_t Osc::custom_wave_counter = 0;
+    uint_fast8_t Oscillator::custom_wave_counter = 0;
 
-    //float (*Osc::wavefunctable[MAX_CUSTOM_WAVE]) (float, float, double, float, float) = {nullptr};
-    Osc::WaveCallback Osc::wavefunctable[MAX_CUSTOM_WAVE] = {nullptr};
+    Oscillator::WaveCallback Oscillator::wavefunctable[MAX_CUSTOM_WAVE] = {nullptr};
 
-    void Osc::registerCustomWaveFunc(uint_fast8_t id, WaveCallback wave_func) {
-        if (Osc::custom_wave_counter < MAX_CUSTOM_WAVE && id - WAVETYPES < MAX_CUSTOM_WAVE) {
-            Osc::wavefunctable[id - WAVETYPES] = wave_func;
-            ++Osc::custom_wave_counter;
+    void Oscillator::registerCustomWaveFunc(uint_fast8_t id, WaveCallback wave_func) {
+        if (Oscillator::custom_wave_counter < MAX_CUSTOM_WAVE && id - WAVETYPES < MAX_CUSTOM_WAVE) {
+            Oscillator::wavefunctable[id - WAVETYPES] = std::move(wave_func);
+            ++Oscillator::custom_wave_counter;
         }
     }
 
-    void Osc::registerCustomWaveFunc(uint_fast8_t id, MathFxCallback fx, double bound0, double bound1) {
-        if (Osc::custom_wave_counter < MAX_CUSTOM_WAVE && id - WAVETYPES < MAX_CUSTOM_WAVE) {
+    void Oscillator::registerCustomWaveFunc(uint_fast8_t id, MathFxCallback fx, double bound0, double bound1) {
+        if (Oscillator::custom_wave_counter < MAX_CUSTOM_WAVE && id - WAVETYPES < MAX_CUSTOM_WAVE) {
             float m = FLT_MAX;
             float M = FLT_MIN;
 
@@ -48,8 +47,8 @@ namespace C0deTracker {
             float num = (M + m)/2;
             float denom = (M - m) / 2;
 
-            Osc::registerCustomWaveFunc(id,
-                                        [fx, bound0, bounddif, num, denom](float a, float f, double t, float dc, float FMfeed) -> float {
+            Oscillator::registerCustomWaveFunc(id,
+                                               [fx, bound0, bounddif, num, denom](float a, float f, double t, float dc, float FMfeed) -> float {
                 double frac_ft = f * t + FMfeed - floor(f * t + FMfeed);
                 return a * (fx(frac_ft * bounddif + bound0) - num) / denom;
             });
@@ -57,79 +56,79 @@ namespace C0deTracker {
         }
     }
 
-    void Osc::setWavetype(uint_fast8_t wavetype) { this->wavetype = wavetype;}
-    uint_fast8_t Osc::getWavetype() const {return this->wavetype;}
+    void Oscillator::setWavetype(uint_fast8_t wavetype) { this->wavetype = wavetype;}
+    uint_fast8_t Oscillator::getWavetype() const {return this->wavetype;}
 
-    void Osc::setDutycycle(float dc) { this->dutycycle = dc;}
-    float Osc::getDutycycle() const {return this->dutycycle;}
+    void Oscillator::setDutycycle(float dc) { this->dutycycle = dc;}
+    float Oscillator::getDutycycle() const {return this->dutycycle;}
 
-    void Osc::setPhase(float p) { this->phase = p;}
-    float Osc::getPhase() const {return this->phase;}
+    void Oscillator::setPhase(float p) { this->phase = p;}
+    float Oscillator::getPhase() const {return this->phase;}
 
-    void Osc::setPitch(float p){this->pitch = p;}
-    float Osc::getPitch() const {return this->pitch;}
+    void Oscillator::setPitch(float p){ this->pitch = p;}
+    float Oscillator::getPitch() const {return this->pitch;}
 
-    void Osc::setVolume(float v) {this->volume = v;}
-    float Osc::getVolume() const {return this->volume;}
+    void Oscillator::setVolume(float v) { this->volume = v;}
+    float Oscillator::getVolume() const {return this->volume;}
 
-    void Osc::setFeedbackLevel(float fb) {this->feedback_level = fb;}
-    float Osc::getFeedbackLevel() const {return this->feedback_level;}
+    void Oscillator::setFeedbackLevel(float fb) { this->feedback_level = fb;}
+    float Oscillator::getFeedbackLevel() const {return this->feedback_level;}
 
 
-    float Osc::oscillate(float a, float f, double t, float FMfeed) {
+    float Oscillator::oscillate(float a, float p, double t, float FMfeed) {
         float amp = a * this->getVolume();
         if(amp == MIN_VOLUME){return MIN_VOLUME;}
-        float frq = f;
+        float frq = this->pitch2freq(p, t) * this->mul_freq;
         float dc = this->getDutycycle();
         float phs = this->current_phase;
         double x = t - this->time_offset - phs*1./frq;
         switch(this->wavetype){
             case SINUS:
-                return Osc::sinus(amp, frq, x, dc, FMfeed);
+                return Oscillator::sinus(amp, frq, x, dc, FMfeed);
             case SQUARE:
-                return Osc::square(amp, frq, x, dc, FMfeed);
+                return Oscillator::square(amp, frq, x, dc, FMfeed);
             case TRIANGLE:
-                return Osc::triangle(amp, frq, x, dc, FMfeed);
+                return Oscillator::triangle(amp, frq, x, dc, FMfeed);
             case TRIANGLE2:
-                return Osc::triangle2(amp, frq, x, dc, FMfeed);
+                return Oscillator::triangle2(amp, frq, x, dc, FMfeed);
             case SAW:
-                return Osc::saw(amp, frq, x, dc, FMfeed);
+                return Oscillator::saw(amp, frq, x, dc, FMfeed);
             case WHITENOISE:
-                return this->getVolume() * Osc::whitenoise(a, frq, x, dc, FMfeed);
+                return this->getVolume() * Oscillator::whitenoise(a, frq, x, dc, FMfeed);
             case WHITENOISE2:
-                return this->getVolume() * Osc::whitenoise2(a, frq, x, dc, FMfeed);
+                return this->getVolume() * Oscillator::whitenoise2(a, frq, x, dc, FMfeed);
             default:
-                if (this->wavetype >= WAVETYPES && this->wavetype - WAVETYPES  < Osc::custom_wave_counter) {
-                    return Osc::wavefunctable[this->wavetype - WAVETYPES](a, frq, x, dc, FMfeed);
+                if (this->wavetype >= WAVETYPES && this->wavetype - WAVETYPES < Oscillator::custom_wave_counter) {
+                    return Oscillator::wavefunctable[this->wavetype - WAVETYPES](a, frq, x, dc, FMfeed);
                 }
                 return MIN_VOLUME;
         }
     }
 
-    float Osc::oscillate(float a, float f, double t) {
-        return this->oscillate(a,f,t,-1,0);
+    float Oscillator::oscillate(float a, float p, double t) {
+        return this->oscillate(a,p,t,-1,0);
     }
 
-    float Osc::oscillate(float a, float f, double t, double rt) {
-        return this->oscillate(a,f,t,rt,0);
+    float Oscillator::oscillate(float a, float p, double t, double rt) {
+        return this->oscillate(a,p,t,rt,0);
     }
 
-    float Osc::oscillate(float a, float f, double t, double rt, float FMfeed) {
-        this->feedback_val = this->handleAmpEnvelope(t, rt) * this->oscillate(a, f, t, this->feedback_level*this->feedback_val + FMfeed);
+    float Oscillator::oscillate(float a, float p, double t, double rt, float FMfeed) {
+        this->feedback_val = this->handleAmpEnvelope(t, rt) * this->oscillate(a, p, t, this->feedback_level*this->feedback_val + FMfeed);
         return this->feedback_val;
     }
 
-    float Osc::sinus(float a, float f, double t, float dc, float FMfeed) {
+    float Oscillator::sinus(float a, float f, double t, float dc, float FMfeed) {
         double frac_ft = f * t - floor(t*f);
         return (frac_ft - dc < 0) ? a * sinf(TWOPI * f * t + FMfeed) : - a * (sinf(TWOPI * f * t + FMfeed));
     }
 
-    float Osc::square(float a, float f, double t, float dc, float FMfeed) {
+    float Oscillator::square(float a, float f, double t, float dc, float FMfeed) {
         float frac_ft = (f * t + FMfeed) - floor(f * t + FMfeed);
         return (frac_ft -dc < 0) ?  a : -a;
     }
 
-    float Osc::triangle(float a, float f, double t, float dc, float FMfeed) {
+    float Oscillator::triangle(float a, float f, double t, float dc, float FMfeed) {
         //t-T*floor(t/T)  <=> mod(t,T)
         float frac_ft = (f * t + FMfeed) - floor(f * t + FMfeed);
         float s;
@@ -141,7 +140,7 @@ namespace C0deTracker {
         return a * (4 * s - 1);
     }
 
-    float Osc::triangle2(float a, float f, double t, float dc, float FMfeed) {
+    float Oscillator::triangle2(float a, float f, double t, float dc, float FMfeed) {
         //t-T*floor(t/T)  <=> mod(t,T)
         float frac_ft = (f * t + FMfeed) - floor(f * t + FMfeed);
         float s;
@@ -153,52 +152,52 @@ namespace C0deTracker {
         return a * (4 * s - 1);
     }
 
-    float Osc::saw(float a, float f, double t, float dc, float FMfeed) {
+    float Oscillator::saw(float a, float f, double t, float dc, float FMfeed) {
         //t-T*floor(t/T)  <=> mod(t,T)
         float frac_ft = (f * t + FMfeed) - floor(f * t + FMfeed);
         double s = (frac_ft - dc < 0) ? frac_ft/dc : 0.f;
         return a * (2 * s - 1);
     }
 
-    float Osc::whitenoise(float a, float f, double t, float dc, float FMfeed) {
-        float s = Osc::sinus(a*0.5f, f, t, 0.f, FMfeed)/(dc*0.5);
+    float Oscillator::whitenoise(float a, float f, double t, float dc, float FMfeed) {
+        float s = Oscillator::sinus(a * 0.5f, f, t, 0.f, FMfeed) / (dc * 0.5);
         return  2*a * (s - floor(s) - 0.5f);
     }
 
-    float Osc::whitenoise2(float a, float f, double t, float dc, float FMfeed) {
-        float s = Osc::sinus(a*0.5f, f, t/(dc), 0.f, FMfeed);
+    float Oscillator::whitenoise2(float a, float f, double t, float dc, float FMfeed) {
+        float s = Oscillator::sinus(a * 0.5f, f, t / (dc), 0.f, FMfeed);
         return  2*a * (s - floor(s) - 0.5f);
     }
 
-    const ADSR *Osc::getAmpEnvelope() {
+    const ADSR *Oscillator::getAmpEnvelope() {
         return &this->amp_envelope;
     }
 
-    void Osc::setAttack(float A) {
+    void Oscillator::setAttack(float A) {
         this->amp_envelope.attack = A;
     }
 
-    void Osc::setDecay(float D) {
+    void Oscillator::setDecay(float D) {
         this->amp_envelope.decay = D;
     }
 
-    void Osc::setSustain(float S) {
+    void Oscillator::setSustain(float S) {
         this->amp_envelope.sustain = S;
     }
 
-    void Osc::setRelease(float R) {
+    void Oscillator::setRelease(float R) {
         this->amp_envelope.release = R;
     }
 
-    void Osc::setRelease(bool r) {
+    void Oscillator::setRelease(bool r) {
         this->release = r;
     }
 
-    bool Osc::isReleased() const {
+    bool Oscillator::isReleased() const {
         return this->release;
     }
 
-    float Osc::handleAmpEnvelope(double t, double rt) {
+    float Oscillator::handleAmpEnvelope(double t, double rt) {
         float output = MAX_VOLUME;
         float attacktime = MAX_VOLUME / this->amp_envelope.attack;
         float attack_amp = fmin(MAX_VOLUME, t * this->amp_envelope.attack);
@@ -216,27 +215,26 @@ namespace C0deTracker {
         return output;
     }
 
-    void Osc::setOscillatorParams(Instrument_Data *instrdata) {
-        this->setAttack(instrdata->amp_envelope.attack); this->setDecay(instrdata->amp_envelope.decay);
-        this->setRelease(instrdata->amp_envelope.release); this->setSustain(instrdata->amp_envelope.sustain);
-        this->setWavetype(instrdata->wavetype); this->setDutycycle(instrdata->duty_cycle);
-        this->setVolume(instrdata->volume); this->setPitch(instrdata->pitch);
-        this->setFeedbackLevel(instrdata->feedback_level);
+    void Oscillator::setOscillatorData(const Oscillator_Data* oscd) {
         this->current_envelope_amplitude = 0.0f;
-        this->feedback_val = 0.0f;
-        switch (instrdata->wavetype) {
+        this->amp_envelope = oscd->amp_envelope;
+        this->setWavetype(oscd->wavetype); this->setDutycycle(oscd->duty_cycle);
+        this->setVolume(oscd->volume); this->setPitch(oscd->pitch);
+        this->setFeedbackLevel(oscd->feedback_level);
+        this->setMulFreq(oscd->mul_freq);
+        switch (oscd->wavetype) {
             case TRIANGLE:
             case TRIANGLE2:
-                this->setPhase(instrdata->phase - 0.25f);
+                this->setPhase(oscd->phase - 0.25f);
                 break;
             default:
-                this->setPhase(instrdata->phase);
+                this->setPhase(oscd->phase);
         }
         this->current_phase = this->getPhase();
         this->setRelease(false);
     }
 
-    float Osc::pitch2freq(float pitch, double time) {
+    float Oscillator::pitch2freq(float pitch, double time) {
         pitch += this->getPitch();
         if(this->current_pitch == pitch) {
             return this->current_frequency;
@@ -254,10 +252,13 @@ namespace C0deTracker {
         }
     }
 
-    void Osc::resetPhaseTimeOffset() {
+    void Oscillator::resetPhaseTimeOffset() {
         this->current_phase = this->getPhase();
         this->time_offset = 0;
     }
 
+    void Oscillator::setMulFreq(float mul_f) {
+        this->mul_freq = mul_f;
+    }
 
 }

@@ -55,7 +55,7 @@ namespace C0deTracker {
         if(this->data_loaded){
             delete[] this->pattern_indices;
             for (uint_fast32_t i = 0; i < this->channels * this->frames; ++i) {delete this->patterns[i];}
-            if(!this->use_global_inst){delete this->instruments_data_bank;}
+            if(!this->use_global_inst) {delete[] this->instruments_data_bank;}
             delete[] this->patterns;
             this->data_loaded = false;
         }

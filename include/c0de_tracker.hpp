@@ -42,6 +42,7 @@
 #include <vector>
 #include <cassert>
 #include <functional>
+#include <cfloat>
 
 
 namespace C0deTracker {

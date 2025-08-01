@@ -3,12 +3,12 @@
 #include <thread>
 #include <chrono>
 
-#include "../songs/tutorial.hpp"//include your song
+#include "../songs/tutorial.hpp" // include your tracks
 #include "../songs/examples.hpp"
 
 #define REALTIME
-#define NUMBER_OF_TRACKS 1
-//#define NUMBER_OF_TRACKS 8
+//#define NUMBER_OF_TRACKS 1
+#define NUMBER_OF_TRACKS 8
 
 void clear_console(){
 #ifdef __linux__
@@ -25,10 +25,10 @@ int main() {
     initGlobalInstruments();
     int index = 0;
 
-    C0deTracker::Track_Data *tracks_data[] = {new Track_Test, /*new TutoTrack, new FrereJacques(),
+    C0deTracker::Track_Data *tracks_data[] = {new Track_Test, new TutoTrack, new FrereJacques(),
                                               new FZERO_MenuTheme(), new SuperMarioBros_OverworldTheme(),
                                               new KirbysDreamland_GreenGreensTheme(), new Sonic_GreenHillZoneTheme(),
-                                              new SuperStreetFighterII_CreditTheme()*/
+                                              new SuperStreetFighterII_CreditTheme()
     };
 
     //Method to play sound in real time with the custom stream
@@ -92,7 +92,7 @@ int main() {
 
         std::cout << "time ; pitch ; frequency" << std::endl;
 
-        unsigned int number_of_samples = 1 * track_processor.getConfig()->getSampleRate() * track_processor.getDuration() * track_processor.getConfig()->getPanning();
+        unsigned int number_of_samples = track_processor.getConfig()->getSampleRate() * track_processor.getDuration() * track_processor.getConfig()->getPanning();
         samples.reserve(number_of_samples);
 
         for (uint_fast64_t i = 0; i < number_of_samples; ++++i) {
@@ -106,10 +106,8 @@ int main() {
         std::cout << "End sampling " << td->getName() << std::endl;
 
         delete td;
-        printf("Td delted \n");
     }
 #endif
 
-    printf("exiting program\n");
     return 0;
 }

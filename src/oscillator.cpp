@@ -174,19 +174,19 @@ namespace C0deTracker {
     }
 
     void Oscillator::setAttack(float A) {
-        this->amp_envelope.attack = A;
+        this->amp_envelope.A.speed = A;
     }
 
     void Oscillator::setDecay(float D) {
-        this->amp_envelope.decay = D;
+        this->amp_envelope.D.speed = D;
     }
 
     void Oscillator::setSustain(float S) {
-        this->amp_envelope.sustain = S;
+        this->amp_envelope.S = S;
     }
 
     void Oscillator::setRelease(float R) {
-        this->amp_envelope.release = R;
+        this->amp_envelope.R.speed = R;
     }
 
     void Oscillator::setRelease(bool r) {
@@ -198,21 +198,33 @@ namespace C0deTracker {
     }
 
     float Oscillator::handleAmpEnvelope(double t, double rt) {
-        float output = MAX_VOLUME;
-        float attacktime = MAX_VOLUME / this->amp_envelope.attack;
-        float attack_amp = fmin(MAX_VOLUME, t * this->amp_envelope.attack);
-        if(this->release && rt >= 0.f){//release
-            output *= fmax(MIN_VOLUME, this->current_envelope_amplitude - (rt) * this->amp_envelope.release);
-        }else{
-            if(attack_amp < MAX_VOLUME){//attack
-                output *= attack_amp;
-                this->current_envelope_amplitude = output;
-            }else{//decay sustain
-                output *= fmax(this->amp_envelope.sustain, MAX_VOLUME - (t - attacktime) * this->amp_envelope.decay);
-                this->current_envelope_amplitude = output;
+        if (this->release && rt >= 0) {
+            // Release state
+            float R = this->amp_envelope.R.speed;
+            float ceildlvl = (ceil(this->current_envelope_amplitude*100))/100;
+            return (rt <= ceildlvl/R) ? fmax(MIN_VOLUME, this->current_envelope_amplitude - this->amp_envelope.R.easing(rt * R * 1/ceildlvl) * ceildlvl) : MIN_VOLUME;
+        } else {
+
+            float A = this->amp_envelope.A.speed;
+            double A_end = MAX_VOLUME/A;
+
+            if (t < A_end) {
+                // Attack phase
+                this->current_envelope_amplitude = fmin(MAX_VOLUME, this->amp_envelope.A.easing(t * A));
+            } else {
+                float D = this->amp_envelope.D.speed;
+                float S = this->amp_envelope.S;
+                double D_end = A_end + (MAX_VOLUME - S)/D;
+                if (t < D_end) {
+                    // Decay phase
+                    this->current_envelope_amplitude = fmax(S, MAX_VOLUME - this->amp_envelope.D.easing((t - A_end) * D * 1/(MAX_VOLUME - S)) * (MAX_VOLUME - S));
+                } else {
+                    // Sustain phase
+                    return S;
+                }
             }
         }
-        return output;
+        return this->current_envelope_amplitude;
     }
 
     void Oscillator::setOscillatorData(const Oscillator_Data* oscd) {

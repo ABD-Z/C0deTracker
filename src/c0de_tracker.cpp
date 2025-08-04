@@ -70,8 +70,13 @@ namespace  C0deTracker{
 
     Key::Key(){this->note = Notes::CONTINUE; this->octave = Notes::CONTINUE;}
 
-    ADSR::ADSR(float A, float D, float S, float R) { this->attack = A; this->decay = D; this->sustain = S; this->release = R;}
+    ADRComponent::ADRComponent(float speed, Easing::CallbackType easFunction) : speed(speed), easing(easFunction) {}
 
+    ADRComponent::ADRComponent(float speed) : speed(speed) {}
+
+    ADSR::ADSR(float A, float D, float S, float R) : A(A), D(D), S(S), R(R) {}
+
+    ADSR::ADSR(ADRComponent A, ADRComponent D, float S, ADRComponent R) : A(A), D(D), S(S), R(R) {}
 
     namespace Notes {
         float pitch2freq(float p){return pow(2, p/12.f) * 440.0f;}

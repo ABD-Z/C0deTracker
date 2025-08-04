@@ -56,6 +56,7 @@ namespace C0deTracker {
 
     class AudioConfig;
     struct Key;
+    struct ADRComponent;
     struct ADSR;
     class Oscillator;
     struct Instrument_Data;
@@ -263,15 +264,60 @@ namespace C0deTracker {
 
     }
 
+    namespace Easing {
+        typedef double (*CallbackType)(double);
+
+        inline double linear(double x) { return x; }
+
+        inline double quadIn(double x) { return x * x; }
+        inline double quadOut(double x) { return x * (2 - x); }
+        inline double quadInOut(double x) { return (x < .5) ?  2 * x * x : -1 + (4 - 2 * x) * x; }
+
+        inline double cubicIn(double x) { return x * x * x; }
+        inline double cubicOut(double x) { return (--x) * x * x + 1; }
+        inline double cubicInOut(double x) { return (x < .5) ? 4 * x * x * x : (x - 1) * (2 * x - 2) * (2 * x - 2) + 1; }
+
+        inline double quartIn(double x) { return x * x * x * x; }
+        inline double quartOut(double x) { return 1 - (--x) * x * x * x; }
+        inline double quartInOut(double x) { return (x < .5) ? 8 * x * x * x * x : 1 - 8 * (--x) * x * x * x; }
+
+        inline double quintIn(double x) { return x * x * x * x * x; }
+        inline double quintOut(double x) { return 1 + (--x) * x * x * x * x; }
+        inline double quintInOut(double x) { return (x < .5) ? 16 * x * x * x * x * x : 1 + 16 * (--x) * x * x * x * x; }
+
+        inline double expoIn(double x) { return (x == 0) ? 0 : pow(2, 10 * x -10); }
+        inline double expoOut(double x) { return (x == 1) ? 1 : 1 - pow(2, -10 * x); }
+        inline double expoInOut(double x) { return (x == 0) ? 0 : (x == 1) ? 1 : (x < .5) ? pow(2, 20 * x - 10) / 2 : (2 - pow(2, -20 * x + 10)) / 2; }
+
+        inline double sineIn(double x) { return 1 - cos(0.5 * TWOPI * x / 2); }
+        inline double sineOut(double x) { return sin(0.5 * TWOPI * x / 2); }
+        inline double sineInOut(double x) { return - (cos(0.5 * TWOPI * x) - 1) / 2; }
+
+        inline double circleIn(double x) { return 1 - sqrt(1 - x * x); }
+        inline double circleOut(double x) { return sqrt(1 - (x - 1) * (x - 1)); }
+        inline double circleInOut(double x) { return (x < .5) ? (1 - sqrt(1 - 4 * x * x)) / 2 : (sqrt(1 - pow(-2 * x + 2, 2)) + 1) / 2;}
+    }
+
+    struct ADRComponent {
+        float speed = 1;
+        Easing::CallbackType easing = Easing::linear;
+
+        ADRComponent(float speed);
+        ADRComponent(float speed, Easing::CallbackType easFunction);
+    };
+
     /**
      * @brief ADSR structure contains attack, decay, sustain and release components (all in float) used to manipulates waveform's
      * envelope (mainly for amplitude).
      *
      * @see C0deTracker::Oscillator
      */
-    struct ADSR{
+    struct ADSR {
+        ADRComponent A, D, R;
+        float S = 0;
+
         ADSR(float A, float D, float S, float R);
-        float attack, decay, sustain, release;
+        ADSR(ADRComponent A, ADRComponent D, float S, ADRComponent R);
     };
 
     /**

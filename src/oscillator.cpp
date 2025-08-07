@@ -78,7 +78,7 @@ namespace C0deTracker {
     float Oscillator::oscillate(float a, float p, double t, float FMfeed) {
         float amp = a * this->getVolume();
         if(amp == MIN_VOLUME){return MIN_VOLUME;}
-        float frq = this->pitch2freq(p, t) * this->mul_freq;
+        float frq = this->pitch2freq(p, t);
         float dc = this->getDutycycle();
         float phs = this->current_phase;
         double x = t - this->time_offset - phs*1./frq;
@@ -259,7 +259,7 @@ namespace C0deTracker {
                 this->time_offset = time;
             }
             this->current_pitch = pitch;
-            this->current_frequency = Notes::pitch2freq(pitch);
+            this->current_frequency = Notes::pitch2freq(pitch) * this->mul_freq;
             return this->current_frequency;
         }
     }

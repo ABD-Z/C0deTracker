@@ -22,6 +22,7 @@ void clear_console(){
 }
 
 int main() {
+    C0deTrackerStream cts;
     initGlobalInstruments();
     int index = 0;
 
@@ -40,7 +41,6 @@ int main() {
     auto deltaT = std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count();
     std::cout << "Time for " << tracks_data[index]->getName() <<"  tracks creation = " << deltaT << " micro seconds" << std::endl;
     track_processor.changeTrack(tracks_data[index]);
-    C0deTrackerStream cts;
     cts.init(&track_processor);
     cts.play();
     clear_console();
@@ -85,26 +85,10 @@ int main() {
         track_processor.changeTrack(td);
         std::string FILENAME(td->getName());
         FILENAME += ".wav";
-        sf::SoundBuffer buffer;
-        std::vector<sf::Int16> samples;
-
+        cts.init(&track_processor);
         std::cout << "Begin sampling " << td->getName() << std::endl;
-
-        std::cout << "time ; pitch ; frequency" << std::endl;
-
-        unsigned int number_of_samples = track_processor.getConfig()->getSampleRate() * track_processor.getDuration() * track_processor.getConfig()->getPanning();
-        samples.reserve(number_of_samples);
-
-        for (uint_fast64_t i = 0; i < number_of_samples; ++++i) {
-            float* s = track_processor.play(0.5 * double(i) / track_processor.getConfig()->getSampleRate());
-            samples.push_back((s[0]) * BITS_16*0.5);//left speaker
-            samples.push_back((s[1]) * BITS_16*0.5);//right speaker
-        }
-
-        buffer.loadFromSamples(&samples[0], samples.size(), track_processor.getConfig()->getPanning(), track_processor.getConfig()->getSampleRate());
-        buffer.saveToFile(FILENAME);
+        cts.writeWav(FILENAME, 1);
         std::cout << "End sampling " << td->getName() << std::endl;
-
         delete td;
     }
 #endif

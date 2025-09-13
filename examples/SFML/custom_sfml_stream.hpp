@@ -1,15 +1,15 @@
 //
 // Created by Abdulmajid, Olivier NASSER on 20/09/2020.
 //
+#ifndef CODETRACKER_CUSTOM_SFML_STREAM_HPP
+#define CODETRACKER_CUSTOM_SFML_STREAM_HPP
+
 #include <SFML/Audio.hpp>
 #include <SFML/System/Lock.hpp>
 #include <SFML/System/Mutex.hpp>
 #include "../../include/c0de_tracker.hpp"
 #include <iostream>
 #include <chrono>
-
-#ifndef CODETRACKER_CUSTOM_SFML_STREAM_HPP
-#define CODETRACKER_CUSTOM_SFML_STREAM_HPP
 
 #define BITS_16 0xFFFF
 
@@ -18,6 +18,7 @@ public:
     double time = 0;
     bool init(C0deTracker::Track *t);
     void changeTrack(C0deTracker::Track *t);
+    bool saveWave(const std::string& filename, float loopcount= 1);
     ~C0deTrackerStream() override;
 
 private:

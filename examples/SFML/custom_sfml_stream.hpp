@@ -15,13 +15,13 @@
 
 class C0deTrackerStream : public sf::SoundStream {
 public:
-    double time = 0;
     bool init(C0deTracker::Track *t);
     void changeTrack(C0deTracker::Track *t);
     bool saveWave(const std::string& filename, float loopcount= 1);
     ~C0deTrackerStream() override;
 
 private:
+    double time = 0;
     C0deTracker::Track *track = nullptr;
     sf::Mutex mutex;
     sf::Int16* smpls;

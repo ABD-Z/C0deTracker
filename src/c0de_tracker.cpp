@@ -62,10 +62,6 @@ namespace  C0deTracker{
         return this->bufferSize;
     }
 
-    inline uint_fast32_t AudioConfig::calcBufferSize(uint_fast16_t sr, float bd, uint_fast8_t panning) {
-        return static_cast<uint_fast32_t>(sr * bd * panning);
-    }
-
     Key::Key(float n, float o) { this->note = n; this->octave = o;}
 
     Key::Key(){this->note = Notes::CONTINUE; this->octave = Notes::CONTINUE;}

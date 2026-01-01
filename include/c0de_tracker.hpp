@@ -95,7 +95,7 @@ namespace C0deTracker {
         uint_fast32_t getBufferSize() const;
 
     private:
-        static inline uint_fast32_t calcBufferSize(uint_fast16_t sr, float bd, uint_fast8_t panning);
+        static inline uint_fast32_t calcBufferSize(uint_fast16_t sr, float bd, uint_fast8_t panning) {return static_cast<uint_fast32_t>(sr * bd * panning);};
         uint_fast16_t sampleRate = 48000;
         float bufferDuration = 0.1f;
         bool stereo = true;

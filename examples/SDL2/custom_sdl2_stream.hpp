@@ -1,5 +1,5 @@
 //
-// Created by Abdulmajid, Olivier NASSER on 20/09/2020.
+// Created by Abdulmajid, Olivier NASSER on 30/09/2025.
 //
 #ifndef CODETRACKER_CUSTOM_SDL2_STREAM_HPP
 #define CODETRACKER_CUSTOM_SDL2_STREAM_HPP
@@ -10,12 +10,13 @@
 #include <iostream>
 #include <chrono>
 #include <fstream>
+#include <atomic>
+#include <thread>
 
 #define BITS_16 0xFFFF
 
 class C0deTrackerStream {
 public:
-    double time = 0;
     bool init(C0deTracker::Track *t);
     void play();
     void stop();
@@ -25,13 +26,20 @@ public:
     ~C0deTrackerStream();
 
 private:
+    double time = 0;
     C0deTracker::Track *track = nullptr;
     std::mutex mutex;
+    int16_t* smpls;
+
+    std::thread sampler_thread;
     SDL_AudioDeviceID device = 0;
-    bool playing = false;
+    std::atomic<bool> playing{false};
+
+    bool ongetData(int16_t* samples, std::size_t sampleCount);
+
     void openAudioDevice();
-    // SDL audio callback
-    static void audioCallback(void *userdata, Uint8 *stream, int len);
+    void samplerLoop();
+
 
 };
 #endif //CODETRACKER_CUSTOM_SDL2_STREAM_HPP

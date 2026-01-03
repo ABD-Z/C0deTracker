@@ -39,7 +39,7 @@ int main() {
     };
 
     //Method to play sound in real time with the custom stream
-    C0deTracker::Track track_processor(C0deTracker::AudioConfig(48000, 0.02f, true));
+    C0deTracker::Track track_processor(C0deTracker::AudioConfig(48000, 0.064f, true));
 #ifdef REALTIME
     auto time1 = std::chrono::system_clock::now();
     tracks_data[index]->load_data();

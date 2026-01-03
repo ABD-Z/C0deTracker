@@ -1,5 +1,5 @@
 //
-// Created by Abdulmajid, Olivier NASSER on 20/09/2020.
+// Created by Abdulmajid, Olivier NASSER on 13/09/2025.
 //
 #include "custom_sdl2_stream.hpp"
 
@@ -8,7 +8,6 @@ bool C0deTrackerStream::init(C0deTracker::Track *t) {
     printf("SAMPLE RATE = %u Hz\nBUFFER LENGTH = %f second\n", t->getConfig()->getSampleRate(),
            t->getConfig()->getBufferDuration());
     this->track = t;
-    // Initialize the stream -- important!
 
     this->openAudioDevice();
 
@@ -16,6 +15,8 @@ bool C0deTrackerStream::init(C0deTracker::Track *t) {
         printf("Failed to open SDL2 audio %s\n", SDL_GetError());
         return false;
     }
+
+    this->smpls = new int16_t [this->track->getConfig()->getBufferSize()]{0};
 
     return true;
 }
@@ -30,48 +31,81 @@ void C0deTrackerStream::play() {
     }
 
     SDL_PauseAudioDevice(device, 0);// unpause → start feeding audio
-    this->playing = true;
+    this->playing.store(true);
+
+    if (!this->sampler_thread.joinable())
+        this->sampler_thread = std::thread(&C0deTrackerStream::samplerLoop, this);
 }
 
 void C0deTrackerStream::stop() {
     if (this->device) {
+        this->playing.store(false);
+        if (this->sampler_thread.joinable())
+                this->sampler_thread.join();
+
+        SDL_ClearQueuedAudio(this->device);
         SDL_CloseAudioDevice(this->device);
         this->time = 0;
         this->device = 0;
-        this->playing = false;
     }
 }
 
 bool C0deTrackerStream::isPlaying() const {
-    return this->playing;
-}
-
-void C0deTrackerStream::audioCallback(void *userdata, Uint8 *stream, int len) {
-    auto *self = reinterpret_cast<C0deTrackerStream*>(userdata);
-    std::lock_guard<std::mutex> lock(self->mutex);
-
-    int16_t *buffer = reinterpret_cast<int16_t*>(stream);
-    unsigned int samples = len / sizeof(int16_t);
-
-    for(size_t i = 0; i < samples; i += self->track->getConfig()->getPanning()){
-
-        float* sound = self->track->play(self->time + (double(i) / self->track->getConfig()->getPanning()) / self->track->getConfig()->getSampleRate());
-        if(self->track->getConfig()->isStereo()) {
-            buffer[i] = static_cast<int16_t>(sound[0] * BITS_16*0.5);
-            buffer[i+1] = static_cast<int16_t>(sound[1] * BITS_16*0.5);
-        } else {
-            buffer[i] = static_cast<int16_t>((sound[0] + sound[1])/2 * BITS_16*0.5);
-        }
-    }
-
-    self->time += self->track->getConfig()->getBufferDuration();
+    return this->playing.load();
 }
 
 void C0deTrackerStream::changeTrack(C0deTracker::Track *t) {
     std::lock_guard<std::mutex> lock(this->mutex);
+    this->stop();
     this->track->resetState();
     this->time = 0;
     this->track = t;
+}
+
+void C0deTrackerStream::openAudioDevice() {
+    SDL_AudioSpec want{}, have{};
+    want.freq = this->track->getConfig()->getSampleRate();
+    want.format = AUDIO_S16SYS;
+    want.channels = this->track->getConfig()->getPanning();
+    want.samples = this->track->getConfig()->getBufferSize() / this->track->getConfig()->getPanning();
+    want.callback = nullptr;
+    //want.userdata = this;
+
+    this->device = SDL_OpenAudioDevice(nullptr, 0, &want, &have, 0);
+}
+
+bool C0deTrackerStream::ongetData(int16_t *samples, std::size_t sampleCount) {
+    std::lock_guard<std::mutex> lock(this->mutex);
+
+    for (size_t i = 0; i < sampleCount; i += this->track->getConfig()->getPanning()) {
+        float* sound = this->track->play(this->time + (double(i)/this->track->getConfig()->getPanning()) / this->track->getConfig()->getSampleRate());
+
+        if (this->track->getConfig()->isStereo()) {
+            samples[i]     = static_cast<int16_t>(sound[0] * BITS_16 * 0.5);
+            samples[i + 1] = static_cast<int16_t>(sound[1] * BITS_16 * 0.5);
+        } else {
+            samples[i] = static_cast<int16_t>((sound[0] + sound[1]) * 0.5 * BITS_16 * 0.5);
+        }
+    }
+
+    this->time += this->track->getConfig()->getBufferDuration();
+    return true;
+}
+
+void C0deTrackerStream::samplerLoop() {
+    while (this->playing.load()) {
+        Uint32 queued = SDL_GetQueuedAudioSize(device);
+
+        if (queued < this->track->getConfig()->getBufferSize() * sizeof(int16_t)) {
+            this->ongetData(this->smpls, this->track->getConfig()->getBufferSize());
+
+            SDL_QueueAudio(device,
+                           this->smpls,
+                           this->track->getConfig()->getBufferSize() * sizeof(int16_t));
+        } else {
+            SDL_Delay(1);
+        }
+    }
 }
 
 bool C0deTrackerStream::saveWave(const std::string& filename, float loopcount) {
@@ -135,21 +169,6 @@ bool C0deTrackerStream::saveWave(const std::string& filename, float loopcount) {
 }
 
 C0deTrackerStream::~C0deTrackerStream() {
-    if (this->device) {
-        SDL_CloseAudioDevice(device);
-        this->device = 0;
-    }
+    this->stop();
+    delete this->smpls;
 }
-
-void C0deTrackerStream::openAudioDevice() {
-    SDL_AudioSpec want{}, have{};
-    want.freq = this->track->getConfig()->getSampleRate();
-    want.format = AUDIO_S16SYS;
-    want.channels = this->track->getConfig()->getPanning();
-    want.samples = this->track->getConfig()->getBufferSize() / this->track->getConfig()->getPanning();
-    want.callback = C0deTrackerStream::audioCallback;
-    want.userdata = this;
-
-    this->device = SDL_OpenAudioDevice(nullptr, 0, &want, &have, 0);
-}
-

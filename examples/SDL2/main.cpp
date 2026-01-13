@@ -28,19 +28,19 @@ int main() {
         return 1;
     }
 
-    C0deTrackerStream cts;
-
     initGlobalInstruments();
-    int index = 0;
 
     C0deTracker::Track_Data *tracks_data[] = {new Track_Test, new TutoTrack, new FrereJacques(),
                                               new FZERO_MenuTheme(), new SuperMarioBros_OverworldTheme(),
                                               new KirbysDreamland_GreenGreensTheme(), new Sonic_GreenHillZoneTheme(), new SuperStreetFighterII_CreditTheme()
     };
 
-    //Method to play sound in real time with the custom stream
     C0deTracker::Track track_processor(C0deTracker::AudioConfig(48000, 0.064f, true));
+
+    //Method to play sound in real time with the custom stream
 #ifdef REALTIME
+    int index = 0;
+    C0deTrackerStream cts;
     auto time1 = std::chrono::system_clock::now();
     tracks_data[index]->load_data();
     auto time2 = std::chrono::system_clock::now();
@@ -85,24 +85,29 @@ int main() {
     /************************************************************/
 #else
     //Method to save in a file the song. Comment previous method to save song in file.
-
+    auto T = std::chrono::system_clock::now();
     for(auto* td : tracks_data) {
         td->load_data();
         track_processor.changeTrack(td);
-        cts.init(&track_processor);
-        std::string FILENAME(td->getName());
-        FILENAME += ".wav";
-
+        std::string filename(td->getName());
+        filename += ".wav";
         std::cout << "Begin sampling " << td->getName() << std::endl;
-
-        if (cts.saveWave(FILENAME, 1)) {
+        auto t = std::chrono::system_clock::now();
+        if (C0deTrackerStream::saveWave(&track_processor, td, filename, 1)) {
             std::cout << "End sampling " << td->getName() << std::endl;
+            std::cout << "End sampling " << td->getName() << std::endl;
+            std::cout << "Elapsed time sampling " << td->getName() << " : "
+                      << float(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - t).count())/1000
+                      << " seconds"<< std::endl;
         } else {
             std::cerr << "Failed to save WAV: " << SDL_GetError() << "\n";
         }
 
         delete td;
     }
+    std::cout << "Elapsed time sampling all tracks : "
+              << float(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - T).count())/1000
+              << " seconds" << std::endl;
 #endif
 
     return 0;

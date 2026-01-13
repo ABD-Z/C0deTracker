@@ -108,18 +108,21 @@ void C0deTrackerStream::samplerLoop() {
     }
 }
 
-bool C0deTrackerStream::saveWave(const std::string& filename, float loopcount) {
-    if (!this->track) return false;
+bool C0deTrackerStream::saveWave(C0deTracker::Track* tracker, C0deTracker::Track_Data* data, const std::string& filename, float loopcount) {
+    if(!data->is_data_loaded())
+        data->load_data();
 
-    unsigned int number_of_samples = loopcount * this->track->getConfig()->getSampleRate() * this->track->getDuration() * this->track->getConfig()->getPanning();
+    tracker->changeTrack(data);
+
+    unsigned int number_of_samples = loopcount * tracker->getConfig()->getSampleRate() * tracker->getDuration() * tracker->getConfig()->getPanning();
 
     std::vector<int16_t> samples;
     samples.reserve(number_of_samples);
 
-    for (uint_fast64_t i = 0; i < number_of_samples; i += track->getConfig()->getPanning()) {
-        float* sound = this->track->play((double(i)/this->track->getConfig()->getPanning() )/ this->track->getConfig()->getSampleRate());
+    for (uint_fast64_t i = 0; i < number_of_samples; i += tracker->getConfig()->getPanning()) {
+        float* sound = tracker->play((double(i)/tracker->getConfig()->getPanning() )/ tracker->getConfig()->getSampleRate());
 
-        if(this->track->getConfig()->isStereo()) {
+        if(tracker->getConfig()->isStereo()) {
             samples.push_back(static_cast<int16_t>(sound[0] * BITS_16*0.5));
             samples.push_back(static_cast<int16_t>(sound[1] * BITS_16*0.5));
         } else {
@@ -134,8 +137,8 @@ bool C0deTrackerStream::saveWave(const std::string& filename, float loopcount) {
         return false;
     }
 
-    uint32_t sampleRate = track->getConfig()->getSampleRate();
-    uint16_t channels = track->getConfig()->getPanning();
+    uint32_t sampleRate = tracker->getConfig()->getSampleRate();
+    uint16_t channels = tracker->getConfig()->getPanning();
     uint32_t dataSize = samples.size() * sizeof(int16_t);
 
     // --- WAV header ---
@@ -148,8 +151,8 @@ bool C0deTrackerStream::saveWave(const std::string& filename, float loopcount) {
     uint32_t subchunk1Size = 16;
     uint16_t audioFormat = 1;
     uint16_t bitsPerSample = 16;
-    uint32_t byteRate = track->getConfig()->getSampleRate() * track->getConfig()->getPanning() * bitsPerSample / 8;
-    uint16_t blockAlign = track->getConfig()->getPanning() * bitsPerSample / 8;
+    uint32_t byteRate = tracker->getConfig()->getSampleRate() * tracker->getConfig()->getPanning() * bitsPerSample / 8;
+    uint16_t blockAlign = tracker->getConfig()->getPanning() * bitsPerSample / 8;
 
     out.write(reinterpret_cast<const char*>(&subchunk1Size), 4);
     out.write(reinterpret_cast<const char*>(&audioFormat), 2);
@@ -164,6 +167,8 @@ bool C0deTrackerStream::saveWave(const std::string& filename, float loopcount) {
 
     // Samples
     out.write(reinterpret_cast<const char*>(samples.data()), dataSize);
+
+    data->free_data();
 
     return true;
 }

@@ -22,7 +22,7 @@ public:
     void stop();
     bool isPlaying() const;
     void changeTrack(C0deTracker::Track *t);
-    bool saveWave(const std::string& filename, float loopcount=1);
+    static bool saveWave(C0deTracker::Track* tracker, C0deTracker::Track_Data* data, const std::string& filename, float loopcount=1);
     ~C0deTrackerStream();
 
 private:

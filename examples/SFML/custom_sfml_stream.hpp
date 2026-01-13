@@ -17,7 +17,8 @@ class C0deTrackerStream : public sf::SoundStream {
 public:
     bool init(C0deTracker::Track *t);
     void changeTrack(C0deTracker::Track *t);
-    bool saveWave(const std::string& filename, float loopcount= 1);
+    bool isPlaying();
+    static bool saveWave(C0deTracker::Track* tracker, C0deTracker::Track_Data* data, const std::string& filename, float loopcount=1);
     ~C0deTrackerStream() override;
 
 private:
@@ -27,7 +28,6 @@ private:
     sf::Int16* smpls;
 
     bool onGetData(Chunk &data) override;
-
     void onSeek(sf::Time timeOffset) override;
 };
 #endif //CODETRACKER_CUSTOM_SFML_STREAM_HPP

@@ -51,20 +51,23 @@ void C0deTrackerStream::changeTrack(C0deTracker::Track *t) {
     this->track = t;
 }
 
-bool C0deTrackerStream::saveWave(const std::string& filename, float loopcount) {
-    if (!this->track) return false;
+bool C0deTrackerStream::saveWave(C0deTracker::Track* tracker, C0deTracker::Track_Data* data, const std::string& filename, float loopcount) {
+    if(!data->is_data_loaded())
+        data->load_data();
+
+    tracker->changeTrack(data);
 
     sf::SoundBuffer buffer;
     std::vector<sf::Int16> samples;
 
-    unsigned int number_of_samples = loopcount * this->track->getConfig()->getSampleRate() * this->track->getDuration() * this->track->getConfig()->getPanning();
+    unsigned int number_of_samples = loopcount * tracker->getConfig()->getSampleRate() * tracker->getDuration() * tracker->getConfig()->getPanning();
     samples.reserve(number_of_samples);
 
-    for (uint_fast64_t i = 0; i < number_of_samples; i += this->track->getConfig()->getPanning()) {
-        float* sound = this->track->play((double(i)/this->track->getConfig()->getPanning()) / this->track->getConfig()->getSampleRate());
+    for (uint_fast64_t i = 0; i < number_of_samples; i += tracker->getConfig()->getPanning()) {
+        float* sound = tracker->play((double(i)/tracker->getConfig()->getPanning()) / tracker->getConfig()->getSampleRate());
 
 
-        if(this->track->getConfig()->isStereo()) {
+        if(tracker->getConfig()->isStereo()) {
             samples.push_back(sound[0] * BITS_16*0.5);
             samples.push_back(sound[1] * BITS_16*0.5);
         } else {
@@ -72,16 +75,18 @@ bool C0deTrackerStream::saveWave(const std::string& filename, float loopcount) {
         }
     }
 
-    buffer.loadFromSamples(&samples[0], samples.size(), this->track->getConfig()->getPanning(), this->track->getConfig()->getSampleRate());
+    buffer.loadFromSamples(&samples[0], samples.size(), tracker->getConfig()->getPanning(), tracker->getConfig()->getSampleRate());
     buffer.saveToFile(filename);
 
+    data->free_data();
+
     return true;
-
-
 }
 
 C0deTrackerStream::~C0deTrackerStream() {
     delete this->smpls;
 }
 
-
+bool C0deTrackerStream::isPlaying() {
+    return this->getStatus() == sf::SoundSource::Status::Playing;
+}

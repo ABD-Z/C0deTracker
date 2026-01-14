@@ -472,7 +472,7 @@ namespace C0deTracker {
         float volume = 1.0f;
         ADSR amp_envelope = ADSR(100.f, 0.0f, 1.0f, 1.0f);
         bool release = false;
-        float current_pitch = -1;
+        float current_pitch = nanf("Nan");
         float current_frequency = -1;
         float current_phase = 0.0f;
         float current_envelope_amplitude = 0.f; /**<Used to calculate envelope notably for release state*/

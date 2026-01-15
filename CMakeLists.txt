@@ -39,6 +39,7 @@ set_target_properties(C0deTracker PROPERTIES
 
 option(BUILD_SFML_EXAMPLE   "Build an example using C0deTracker with SFML." OFF)
 option(BUILD_SDL_EXAMPLE   "Build an example using C0deTracker with SDL." OFF)
+option(BUILD_FMOD_EXAMPLE   "Build an example using C0deTracker with FMOD." OFF)
 
 add_subdirectory(examples/songs)
 
@@ -58,3 +59,7 @@ if (BUILD_SDL2_EXAMPLE)
     add_subdirectory(examples/SDL2)
 endif()
 
+if (BUILD_FMOD_EXAMPLE)
+    message(STATUS "CodeTrackerFMOD target available.")
+    add_subdirectory(examples/FMOD)
+endif()

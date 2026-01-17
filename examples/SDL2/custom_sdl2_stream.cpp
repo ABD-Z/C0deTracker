@@ -4,6 +4,10 @@
 #include "custom_sdl2_stream.hpp"
 
 bool C0deTrackerStream::init(C0deTracker::Track *t) {
+    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+        std::cerr << "Failed to init SDL audio: " << SDL_GetError() << "\n";
+        return false;
+    }
     this->time = 0;
     printf("SAMPLE RATE = %u Hz\nBUFFER LENGTH = %f second\n", t->getConfig()->getSampleRate(),
            t->getConfig()->getBufferDuration());
@@ -69,7 +73,6 @@ void C0deTrackerStream::openAudioDevice() {
     want.channels = this->track->getConfig()->getPanning();
     want.samples = this->track->getConfig()->getBufferSize() / this->track->getConfig()->getPanning();
     want.callback = nullptr;
-    //want.userdata = this;
 
     this->device = SDL_OpenAudioDevice(nullptr, 0, &want, &have, 0);
 }
@@ -94,12 +97,12 @@ bool C0deTrackerStream::ongetData(int16_t *samples, std::size_t sampleCount) {
 
 void C0deTrackerStream::samplerLoop() {
     while (this->playing.load()) {
-        Uint32 queued = SDL_GetQueuedAudioSize(device);
+        Uint32 queued = SDL_GetQueuedAudioSize(this->device);
 
         if (queued < this->track->getConfig()->getBufferSize() * sizeof(int16_t)) {
             this->ongetData(this->smpls, this->track->getConfig()->getBufferSize());
 
-            SDL_QueueAudio(device,
+            SDL_QueueAudio(this->device,
                            this->smpls,
                            this->track->getConfig()->getBufferSize() * sizeof(int16_t));
         } else {

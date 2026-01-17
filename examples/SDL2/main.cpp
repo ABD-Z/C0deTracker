@@ -23,11 +23,6 @@ void clear_console(){
 }
 
 int main() {
-    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-        std::cerr << "Failed to init SDL audio: " << SDL_GetError() << "\n";
-        return 1;
-    }
-
     initGlobalInstruments();
 
     C0deTracker::Track_Data *tracks_data[] = {new Track_Test, new TutoTrack, new FrereJacques(),

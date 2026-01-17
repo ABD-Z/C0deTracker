@@ -16,10 +16,12 @@ else()
     set(ARCH_TARGET "x86")
 endif()
 
+set(SDL2_DLL "${SDL2_DIR}/../lib/${ARCH_TARGET}/SDL2.dll")
+
 if (WIN32)
     add_custom_command(
             TARGET C0deTrackerSDL2 POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy "${SDL2_ROOT}/lib/${ARCH_TARGET}/SDL2.dll" $<TARGET_FILE_DIR:C0deTrackerSDL2>
+            COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_DLL} $<TARGET_FILE_DIR:C0deTrackerSDL2>
             COMMENT "Copying SDL2.dll to bin folder"
     )
 endif()

@@ -33,7 +33,7 @@ bool C0deTrackerStream::init(C0deTracker::Track *t) {
     desc.numinputbuffers = 0;
     desc.numoutputbuffers = 1;
     desc.read = &C0deTrackerStream::DSPRead;
-    //desc.setposition = onSeek;
+    desc.setposition = &C0deTrackerStream::DSPSeek;
     desc.userdata = this;
     std::snprintf(desc.name, sizeof(desc.name), "RealTimeC0deTrackerDSP");
     r = this->system->createDSP(&desc, &dsp);
@@ -104,6 +104,15 @@ bool C0deTrackerStream::ongetData(float *samples, unsigned int sampleCount) {
     return true;
 }
 
+void C0deTrackerStream::setPosition(double time) {
+    this->channel->setPosition(time * 1000, FMOD_TIMEUNIT_MS);
+}
+
+void C0deTrackerStream::onSeek(double time) {
+    std::lock_guard<std::mutex> lock(this->mutex);
+    this->time = time;
+}
+
 C0deTrackerStream::~C0deTrackerStream() {
     FMOD_RESULT r;
     this->stop();
@@ -122,6 +131,15 @@ unsigned int length, int inchannels, int* outchannels
     ERRCHECK(r);
     auto* self = static_cast<C0deTrackerStream*>(ptr);
     self->ongetData(outbuffer, length);
+    return FMOD_OK;
+}
+
+FMOD_RESULT C0deTrackerStream::DSPSeek(FMOD_DSP_STATE *dsp_state, unsigned int pos) {
+    void* ptr = nullptr;
+    FMOD_RESULT  r = FMOD_DSP_GETUSERDATA(dsp_state, &ptr);
+    ERRCHECK(r);
+    auto* self = static_cast<C0deTrackerStream*>(ptr);
+    self->onSeek(double(pos) / self->track->getConfig()->getSampleRate());
     return FMOD_OK;
 }
 

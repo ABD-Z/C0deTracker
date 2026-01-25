@@ -24,6 +24,7 @@ public:
     void stop();
     bool isPlaying() const;
     void changeTrack(C0deTracker::Track *t);
+    void setPosition(double time);
     ~C0deTrackerStream();
 
     static bool saveWave(C0deTracker::Track* tracker, C0deTracker::Track_Data* data, const std::string& filename, float loopcount=1);
@@ -38,12 +39,12 @@ private:
 
     std::atomic<bool> playing{false};
 
-    static FMOD_RESULT F_CALL DSPRead(
-            FMOD_DSP_STATE* dsp_state, float* inbuffer, float* outbuffer,
-            unsigned int length, int inchannels, int* outchannels
-    );
-
     bool ongetData(float* samples, unsigned int sampleCount);
+    void onSeek(double time);
+
+    static FMOD_RESULT F_CALL DSPRead(FMOD_DSP_STATE* dsp_state, float* inbuffer, float* outbuffer, unsigned int length,
+                                      int inchannels, int* outchannels);
+    static FMOD_RESULT F_CALL DSPSeek(FMOD_DSP_STATE* dsp_state, unsigned int pos);
 };
 
 #endif //CODETRACKER_CUSTOM_FMOD_STREAM_HPP

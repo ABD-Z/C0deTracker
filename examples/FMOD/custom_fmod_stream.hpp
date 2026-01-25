@@ -32,7 +32,7 @@ private:
     double time = 0;
     FMOD::System* system = nullptr;
     FMOD::DSP* dsp = nullptr;
-    FMOD::ChannelGroup *channelgroup = nullptr;
+    FMOD::Channel *channel = nullptr;
     C0deTracker::Track *track = nullptr;
     std::mutex mutex;
 

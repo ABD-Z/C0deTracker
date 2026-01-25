@@ -39,10 +39,10 @@ bool C0deTrackerStream::init(C0deTracker::Track *t) {
     r = this->system->createDSP(&desc, &dsp);
     ERRCHECK(r);
 
-    r = this->system->getMasterChannelGroup(&this->channelgroup);
+    r = this->dsp->setChannelFormat(FMOD_CHANNELMASK_STEREO, this->track->getConfig()->isStereo() ? 2 : 1, FMOD_SPEAKERMODE_STEREO);
     ERRCHECK(r);
 
-    r = this->channelgroup->addDSP(0, dsp);
+    r = this->system->playDSP(this->dsp, nullptr, true, &this->channel);
     ERRCHECK(r);
 
     r = this->dsp->setActive(false);
@@ -55,6 +55,10 @@ void C0deTrackerStream::play() {
     FMOD_RESULT r;
     r = this->dsp->setActive(true);
     ERRCHECK(r);
+
+    r = this->channel->setPaused(false);
+    ERRCHECK(r);
+
     this->playing.store(true);
 }
 
@@ -64,6 +68,10 @@ void C0deTrackerStream::stop() {
     this->time = 0;
     r = this->dsp->setActive(false);
     ERRCHECK(r);
+
+    r = this->channel->setPaused(true);
+    ERRCHECK(r);
+
     this->playing.store(false);
 }
 
@@ -81,12 +89,12 @@ void C0deTrackerStream::changeTrack(C0deTracker::Track *t) {
 bool C0deTrackerStream::ongetData(float *samples, unsigned int sampleCount) {
     std::lock_guard<std::mutex> lock(this->mutex);
 
-    for (size_t i = 0; i < sampleCount; i+=this->track->getConfig()->getPanning()) {
+    for (size_t i = 0; i < sampleCount; i+=1) {
         float* sound = this->track->play(this->time + double(i) / this->track->getConfig()->getSampleRate());
 
         if (this->track->getConfig()->isStereo()) {
-            samples[i + 0]     = (sound[0] * 0.5);
-            samples[i + 1] = (sound[1] * 0.5);
+            samples[i * 2 + 0] = (sound[0] * 0.5);
+            samples[i * 2 + 1] = (sound[1] * 0.5);
         } else {
             samples[i] = ((sound[0] + sound[1]) * 0.5 * 0.5);
         }

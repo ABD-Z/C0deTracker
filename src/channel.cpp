@@ -53,6 +53,7 @@ void Channel::setTime(double time) {
     const Instruction *Channel::getInstructionState() const {return &this->instruct_state;}
 
     void Channel::setInstructionState(Instruction *instruc) {
+        if (instruc == nullptr) return;
         this->instruct_state.volume = instruc->volume;
         this->instruct_state.instrument_index = instruc->instrument_index;
         this->instruct_state.key = instruc->key;
@@ -146,6 +147,7 @@ void Channel::setTime(double time) {
     Track *Channel::getTrack() const {return this->track;}
 
     void Channel::setInstrumentParams(Instrument_Data *instrument) {
+        if (instrument == nullptr) return;
         for(uint_fast8_t i = 0; i < instrument->getOscillatorsCount(); ++i)
             this->oscillators[i].setOscillatorData(&instrument->oscillators_data[i]);
 

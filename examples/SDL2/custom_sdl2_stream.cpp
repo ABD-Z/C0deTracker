@@ -95,6 +95,15 @@ bool C0deTrackerStream::ongetData(int16_t *samples, std::size_t sampleCount) {
     return true;
 }
 
+void C0deTrackerStream::setPosition(double time) {
+    this->onSeek(time);
+}
+
+void C0deTrackerStream::onSeek(double time) {
+    std::lock_guard<std::mutex> lock(this->mutex);
+    this->time = time;
+}
+
 void C0deTrackerStream::samplerLoop() {
     while (this->playing.load()) {
         Uint32 queued = SDL_GetQueuedAudioSize(this->device);

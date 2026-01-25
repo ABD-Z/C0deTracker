@@ -22,6 +22,7 @@ public:
     void stop();
     bool isPlaying() const;
     void changeTrack(C0deTracker::Track *t);
+    void setPosition(double time);
     static bool saveWave(C0deTracker::Track* tracker, C0deTracker::Track_Data* data, const std::string& filename, float loopcount=1);
     ~C0deTrackerStream();
 
@@ -36,6 +37,7 @@ private:
     std::atomic<bool> playing{false};
 
     bool ongetData(int16_t* samples, std::size_t sampleCount);
+    void onSeek(double time);
 
     void openAudioDevice();
     void samplerLoop();

@@ -136,7 +136,12 @@ bool C0deTrackerStream::saveWave(C0deTracker::Track* tracker, C0deTracker::Track
     FMOD::System* s = nullptr;
     r = FMOD::System_Create(&s); ERRCHECK(r);
 
-    r = s->setOutput(FMOD_OUTPUTTYPE_WAVWRITER_NRT); // playin is redirected to wave file
+    r = s->setSoftwareFormat(tracker->getConfig()->getSampleRate(),
+            (tracker->getConfig()->isStereo()) ? FMOD_SPEAKERMODE_STEREO : FMOD_SPEAKERMODE_MONO,
+            2);
+    ERRCHECK(r);
+
+    r = s->setOutput(FMOD_OUTPUTTYPE_WAVWRITER_NRT); // playing is redirected to write wave file
     ERRCHECK(r);
 
     s->init(1, FMOD_INIT_NORMAL, (void *) filename.c_str());
@@ -150,7 +155,7 @@ bool C0deTrackerStream::saveWave(C0deTracker::Track* tracker, C0deTracker::Track
     exinfo.numchannels      = tracker->getConfig()->getPanning();
     exinfo.defaultfrequency = tracker->getConfig()->getSampleRate();
     exinfo.length           = exinfo.defaultfrequency * exinfo.numchannels * sizeof(signed short)
-                              * tracker->getDuration() * loopcount;   // Length of sound - PCM data in bytes. 5 = seconds
+                              * tracker->getDuration() * loopcount;   // Length of sound - PCM data in bytes.
     exinfo.format           = FMOD_SOUND_FORMAT_PCM16;          // Data format of sound
 
     r = s->createSound(nullptr, FMOD_OPENUSER | FMOD_LOOP_OFF, &exinfo, &sound);
@@ -164,13 +169,13 @@ bool C0deTrackerStream::saveWave(C0deTracker::Track* tracker, C0deTracker::Track
 
     auto* out = static_cast<int16_t*>(ptr1);
     for (size_t i = 0; i < (len1 / sizeof (int16_t)) ; i+=exinfo.numchannels) {
-        float* sound = tracker->play((double(i)/exinfo.numchannels)/tracker->getConfig()->getSampleRate());
+        float *sample = tracker->play((double(i) / exinfo.numchannels) / tracker->getConfig()->getSampleRate());
 
         if (tracker->getConfig()->isStereo()) {
-            out[i + 0]     = sound[0] * BITS_16 * 0.5;
-            out[i + 1] = sound[1] * BITS_16 * 0.5;
+            out[i + 0] = sample[0] * BITS_16 * 0.5;
+            out[i + 1] = sample[1] * BITS_16 * 0.5;
         } else {
-            out[i] =  ((sound[0] + sound[1]) * 0.5 * BITS_16 * 0.5);
+            out[i] =  ((sample[0] + sample[1]) * 0.5 * BITS_16 * 0.5);
         }
     }
 
